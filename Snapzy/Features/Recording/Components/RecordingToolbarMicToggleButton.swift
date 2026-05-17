@@ -2,7 +2,7 @@
 //  ToolbarMicToggleButton.swift
 //  Snapzy
 //
-//  Toggle button for microphone mute/unmute in recording toolbar
+//  Microphone input menu button for the recording toolbar
 //  Styled to match Apple's native macOS recording toolbar
 //
 
@@ -19,7 +19,7 @@ struct ToolbarMicToggleButton: View {
   }
 
   private var accessibilityLabel: String {
-    state.captureMicrophone ? L10n.Microphone.mute : L10n.Microphone.unmute
+    L10n.Microphone.options
   }
 
   private var tooltipText: String {
@@ -27,28 +27,42 @@ struct ToolbarMicToggleButton: View {
   }
 
   var body: some View {
-    Button {
-      handleMicToggle()
+    Menu {
+      Button {
+        selectNoMicrophone()
+      } label: {
+        menuItemLabel(
+          title: L10n.Microphone.doNotUse,
+          isSelected: !state.captureMicrophone
+        )
+      }
+
+      Divider()
+
+      ForEach(microphoneMenuDevices) { device in
+        Button {
+          selectMicrophoneDevice(device)
+        } label: {
+          menuItemLabel(
+            title: device.displayName,
+            isSelected: state.captureMicrophone && state.microphoneDeviceID == device.id
+          )
+        }
+      }
     } label: {
-      Image(systemName: systemName)
-        .font(.system(size: ToolbarConstants.iconSize, weight: .medium))
-        .foregroundColor(foregroundColor)
-        .frame(
-          width: ToolbarConstants.iconButtonSize,
-          height: ToolbarConstants.iconButtonSize
-        )
-        .background(
-          RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-            .fill(Color.primary.opacity(isHovered ? 0.1 : 0))
-        )
-        .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
-        .animation(ToolbarConstants.hoverAnimation, value: isHovered)
+      micButtonLabel
     }
+    .menuStyle(.borderlessButton)
+    .menuIndicator(.hidden)
     .buttonStyle(.plain)
+    .frame(
+      width: ToolbarConstants.iconButtonSize,
+      height: ToolbarConstants.iconButtonSize
+    )
     .onHover { isHovered = $0 }
     .help(tooltipText)
     .accessibilityLabel(accessibilityLabel)
-    .accessibilityHint(L10n.Microphone.doubleTapToToggle)
+    .accessibilityHint(L10n.Microphone.chooseInput)
     .alert(L10n.Microphone.accessRequiredTitle, isPresented: $showPermissionDeniedAlert) {
       Button(L10n.Common.openSystemSettings) {
         openMicrophoneSettings()
@@ -59,17 +73,34 @@ struct ToolbarMicToggleButton: View {
     }
   }
 
-  private var foregroundColor: Color {
-    .primary.opacity(state.captureMicrophone ? 1.0 : 0.5)
+  private var microphoneMenuDevices: [RecordingMicrophoneDevice] {
+    RecordingMicrophoneDeviceProvider.availableDevices(
+      selectedDeviceID: state.microphoneDeviceID
+    )
+    .filter { !$0.isUnavailable }
   }
 
-  /// Request microphone permission when user enables toggle
-  private func handleMicToggle() {
-    if state.captureMicrophone {
-      state.captureMicrophone = false
-      return
-    }
+  private var micButtonLabel: some View {
+    ToolbarIconButtonLabel(
+      systemName: systemName,
+      isHovered: isHovered
+    )
+  }
 
+  @ViewBuilder
+  private func menuItemLabel(title: String, isSelected: Bool) -> some View {
+    if isSelected {
+      Label(title, systemImage: "checkmark")
+    } else {
+      Text(title)
+    }
+  }
+
+  private func selectNoMicrophone() {
+    state.captureMicrophone = false
+  }
+
+  private func selectMicrophoneDevice(_ device: RecordingMicrophoneDevice) {
     let status = AVCaptureDevice.authorizationStatus(for: .audio)
 
     switch status {
@@ -78,19 +109,25 @@ struct ToolbarMicToggleButton: View {
         let granted = await AVCaptureDevice.requestAccess(for: .audio)
         await MainActor.run {
           if granted {
-            state.captureMicrophone = true
+            enableMicrophone(device)
           } else {
             showPermissionDeniedAlert = true
           }
         }
       }
     case .authorized:
-      state.captureMicrophone = true
+      enableMicrophone(device)
     case .denied, .restricted:
       showPermissionDeniedAlert = true
     @unknown default:
-      state.captureMicrophone = true
+      enableMicrophone(device)
     }
+  }
+
+  private func enableMicrophone(_ device: RecordingMicrophoneDevice) {
+    state.microphoneDeviceID = device.id
+    state.captureMicrophone = true
+    UserDefaults.standard.set(device.id, forKey: PreferencesKeys.recordingMicrophoneDeviceID)
   }
 
   private func openMicrophoneSettings() {

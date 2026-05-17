@@ -24,6 +24,10 @@ final class RecordingConfigurationTests: XCTestCase {
     XCTAssertEqual(RecordingToolbarPreferences.selectedQuality(defaults: defaults), .high)
     XCTAssertTrue(RecordingToolbarPreferences.captureAudio(defaults: defaults))
     XCTAssertFalse(RecordingToolbarPreferences.captureMicrophone(defaults: defaults))
+    XCTAssertEqual(
+      RecordingToolbarPreferences.microphoneDeviceID(defaults: defaults),
+      RecordingMicrophoneDevice.systemDefaultID
+    )
     XCTAssertEqual(RecordingToolbarPreferences.outputMode(defaults: defaults), .video)
     XCTAssertTrue(RecordingToolbarPreferences.showCursor(defaults: defaults))
     XCTAssertFalse(RecordingToolbarPreferences.highlightClicks(defaults: defaults))
@@ -35,6 +39,7 @@ final class RecordingConfigurationTests: XCTestCase {
     defaults.set(VideoQuality.low.rawValue, forKey: PreferencesKeys.recordingQuality)
     defaults.set(false, forKey: PreferencesKeys.recordingCaptureAudio)
     defaults.set(true, forKey: PreferencesKeys.recordingCaptureMicrophone)
+    defaults.set("external-mic-id", forKey: PreferencesKeys.recordingMicrophoneDeviceID)
     defaults.set(RecordingOutputMode.gif.rawValue, forKey: PreferencesKeys.recordingOutputMode)
     defaults.set(false, forKey: PreferencesKeys.recordingShowCursor)
     defaults.set(true, forKey: PreferencesKeys.recordingHighlightClicks)
@@ -44,6 +49,7 @@ final class RecordingConfigurationTests: XCTestCase {
     XCTAssertEqual(RecordingToolbarPreferences.selectedQuality(defaults: defaults), .low)
     XCTAssertFalse(RecordingToolbarPreferences.captureAudio(defaults: defaults))
     XCTAssertTrue(RecordingToolbarPreferences.captureMicrophone(defaults: defaults))
+    XCTAssertEqual(RecordingToolbarPreferences.microphoneDeviceID(defaults: defaults), "external-mic-id")
     XCTAssertEqual(RecordingToolbarPreferences.outputMode(defaults: defaults), .gif)
     XCTAssertFalse(RecordingToolbarPreferences.showCursor(defaults: defaults))
     XCTAssertTrue(RecordingToolbarPreferences.highlightClicks(defaults: defaults))
@@ -58,6 +64,58 @@ final class RecordingConfigurationTests: XCTestCase {
     XCTAssertEqual(RecordingToolbarPreferences.selectedFormat(defaults: defaults), .mov)
     XCTAssertEqual(RecordingToolbarPreferences.selectedQuality(defaults: defaults), .high)
     XCTAssertEqual(RecordingToolbarPreferences.outputMode(defaults: defaults), .video)
+  }
+
+  func testRecordingToolbarPlacement_usesOutsideGapWhenBelowSelectionFits() {
+    let toolbarSize = CGSize(width: 240, height: 44)
+    let screenFrame = CGRect(x: 0, y: 0, width: 1200, height: 900)
+    let selectionRect = CGRect(x: 300, y: 220, width: 400, height: 300)
+
+    let origin = RecordingToolbarPlacement.frameOrigin(
+      toolbarSize: toolbarSize,
+      anchorRect: selectionRect,
+      screenFrame: screenFrame
+    )
+
+    XCTAssertEqual(origin.x, selectionRect.midX - toolbarSize.width / 2)
+    XCTAssertEqual(
+      origin.y,
+      selectionRect.minY - toolbarSize.height - RecordingToolbarPlacement.outsideSelectionGap
+    )
+  }
+
+  func testRecordingToolbarPlacement_usesInsideBottomInsetNearScreenBottom() {
+    let toolbarSize = CGSize(width: 240, height: 44)
+    let screenFrame = CGRect(x: 0, y: 0, width: 1200, height: 900)
+    let selectionRect = CGRect(x: 300, y: 24, width: 400, height: 300)
+
+    let origin = RecordingToolbarPlacement.frameOrigin(
+      toolbarSize: toolbarSize,
+      anchorRect: selectionRect,
+      screenFrame: screenFrame
+    )
+
+    XCTAssertEqual(
+      origin.y,
+      selectionRect.minY + RecordingToolbarPlacement.insideSelectionBottomInset
+    )
+  }
+
+  func testRecordingToolbarPlacement_clampsInsideInsetToVisibleScreen() {
+    let toolbarSize = CGSize(width: 240, height: 44)
+    let screenFrame = CGRect(x: 0, y: 0, width: 1200, height: 100)
+    let selectionRect = CGRect(x: 300, y: 24, width: 400, height: 60)
+
+    let origin = RecordingToolbarPlacement.frameOrigin(
+      toolbarSize: toolbarSize,
+      anchorRect: selectionRect,
+      screenFrame: screenFrame
+    )
+
+    XCTAssertEqual(
+      origin.y,
+      screenFrame.maxY - toolbarSize.height - RecordingToolbarPlacement.screenEdgeInset
+    )
   }
 
   func testRecordingMouseTrackerSamplesPerSecond_clampsToSupportedRange() {

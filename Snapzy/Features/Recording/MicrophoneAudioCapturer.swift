@@ -62,7 +62,7 @@ nonisolated enum MicrophoneCaptureSetupError: Error {
 nonisolated protocol MicrophoneCaptureSessionFactory {
   func authorizationStatus() -> AVAuthorizationStatus
   func makeSession() -> MicrophoneCaptureSession
-  func configureInput(on session: MicrophoneCaptureSession) throws -> String
+  func configureInput(on session: MicrophoneCaptureSession, preferredDeviceID: String?) throws -> String
   func configureOutput(
     on session: MicrophoneCaptureSession,
     delegate: AVCaptureAudioDataOutputSampleBufferDelegate,
@@ -79,8 +79,8 @@ nonisolated struct AVFoundationMicrophoneCaptureSessionFactory: MicrophoneCaptur
     AVFoundationMicrophoneCaptureSession()
   }
 
-  func configureInput(on session: MicrophoneCaptureSession) throws -> String {
-    guard let device = AVCaptureDevice.default(for: .audio) else {
+  func configureInput(on session: MicrophoneCaptureSession, preferredDeviceID: String?) throws -> String {
+    guard let device = RecordingMicrophoneDeviceProvider.captureDevice(matching: preferredDeviceID) else {
       throw MicrophoneCaptureSetupError.noDefaultDevice
     }
 
@@ -115,6 +115,7 @@ nonisolated final class MicrophoneAudioCapturer: NSObject, @unchecked Sendable {
   weak var delegate: MicrophoneAudioCapturerDelegate?
 
   private let captureSessionFactory: MicrophoneCaptureSessionFactory
+  private let preferredDeviceID: String?
   private var captureSession: MicrophoneCaptureSession?
   private let sessionQueue = DispatchQueue(
     label: "com.trongduong.snapzy.microphone.session",
@@ -127,7 +128,11 @@ nonisolated final class MicrophoneAudioCapturer: NSObject, @unchecked Sendable {
 
   private var isRunning = false
 
-  init(captureSessionFactory: MicrophoneCaptureSessionFactory = AVFoundationMicrophoneCaptureSessionFactory()) {
+  init(
+    preferredDeviceID: String? = nil,
+    captureSessionFactory: MicrophoneCaptureSessionFactory = AVFoundationMicrophoneCaptureSessionFactory()
+  ) {
+    self.preferredDeviceID = RecordingMicrophoneDeviceProvider.normalizedCaptureDeviceID(preferredDeviceID)
     self.captureSessionFactory = captureSessionFactory
     super.init()
   }
@@ -175,10 +180,14 @@ nonisolated final class MicrophoneAudioCapturer: NSObject, @unchecked Sendable {
     captureSession = session
 
     do {
-      let deviceName = try captureSessionFactory.configureInput(on: session)
+      let deviceName = try captureSessionFactory.configureInput(
+        on: session,
+        preferredDeviceID: preferredDeviceID
+      )
       try captureSessionFactory.configureOutput(on: session, delegate: self, queue: dataOutputQueue)
       session.startRunning()
       log(.info, "MicrophoneAudioCapturer: session started", context: [
+        "deviceID": preferredDeviceID ?? RecordingMicrophoneDevice.systemDefaultID,
         "device": deviceName
       ])
     } catch MicrophoneCaptureSetupError.noDefaultDevice {

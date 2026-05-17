@@ -92,62 +92,44 @@ private struct ToolbarOptionsPopoverContent: View {
 
       Divider()
 
-      // Audio Section
-      SettingsSection(title: L10n.RecordingToolbar.audioSection, icon: "speaker.wave.2") {
-        Toggle(isOn: $state.captureAudio) {
-          Text(L10n.RecordingToolbar.systemAudio)
-            .font(.system(size: 11))
-        }
-        .toggleStyle(.switch)
-        .controlSize(.small)
-      }
-
-      Divider()
-
       // Overlays Section
       SettingsSection(title: L10n.RecordingToolbar.overlaysSection, icon: "square.stack.3d.up") {
-        Toggle(isOn: Binding(
-          get: { state.showCursor },
-          set: { newValue in
-            state.showCursor = newValue
-            UserDefaults.standard.set(newValue, forKey: PreferencesKeys.recordingShowCursor)
-          }
-        )) {
-          Text(L10n.RecordingToolbar.showCursor)
-            .font(.system(size: 11))
-        }
-        .toggleStyle(.switch)
-        .controlSize(.small)
+        RightAlignedToggleRow(
+          title: L10n.RecordingToolbar.showCursor,
+          isOn: Binding(
+            get: { state.showCursor },
+            set: { newValue in
+              state.showCursor = newValue
+              UserDefaults.standard.set(newValue, forKey: PreferencesKeys.recordingShowCursor)
+            }
+          )
+        )
 
-        Toggle(isOn: Binding(
-          get: { state.highlightClicks },
-          set: { newValue in
-            state.highlightClicks = newValue
-            UserDefaults.standard.set(newValue, forKey: PreferencesKeys.recordingHighlightClicks)
-          }
-        )) {
-          Text(L10n.RecordingToolbar.highlightClicks)
-            .font(.system(size: 11))
-        }
-        .toggleStyle(.switch)
-        .controlSize(.small)
+        RightAlignedToggleRow(
+          title: L10n.RecordingToolbar.highlightClicks,
+          isOn: Binding(
+            get: { state.highlightClicks },
+            set: { newValue in
+              state.highlightClicks = newValue
+              UserDefaults.standard.set(newValue, forKey: PreferencesKeys.recordingHighlightClicks)
+            }
+          )
+        )
 
-        Toggle(isOn: Binding(
-          get: { state.showKeystrokes },
-          set: { newValue in
-            state.showKeystrokes = newValue
-            UserDefaults.standard.set(newValue, forKey: PreferencesKeys.recordingShowKeystrokes)
-          }
-        )) {
-          Text(L10n.RecordingToolbar.showKeystrokes)
-            .font(.system(size: 11))
-        }
-        .toggleStyle(.switch)
-        .controlSize(.small)
+        RightAlignedToggleRow(
+          title: L10n.RecordingToolbar.showKeystrokes,
+          isOn: Binding(
+            get: { state.showKeystrokes },
+            set: { newValue in
+              state.showKeystrokes = newValue
+              UserDefaults.standard.set(newValue, forKey: PreferencesKeys.recordingShowKeystrokes)
+            }
+          )
+        )
       }
     }
     .padding(12)
-    .frame(width: 240)
+    .frame(width: 280)
   }
 }
 
@@ -170,6 +152,25 @@ private struct SettingsSection<Content: View>: View {
       }
       content()
     }
+    .frame(maxWidth: .infinity, alignment: .leading)
+  }
+}
+
+private struct RightAlignedToggleRow: View {
+  let title: String
+  let isOn: Binding<Bool>
+
+  var body: some View {
+    HStack(spacing: 8) {
+      Text(title)
+        .font(.system(size: 11))
+      Spacer()
+      Toggle("", isOn: isOn)
+        .labelsHidden()
+        .toggleStyle(.switch)
+        .controlSize(.small)
+    }
+    .frame(maxWidth: .infinity)
   }
 }
 

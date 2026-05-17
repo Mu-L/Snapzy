@@ -49,6 +49,8 @@ struct CaptureSettingsView: View {
   @AppStorage(PreferencesKeys.recordingQuality) private var quality = "high"
   @AppStorage(PreferencesKeys.recordingCaptureAudio) private var captureAudio = true
   @AppStorage(PreferencesKeys.recordingCaptureMicrophone) private var captureMicrophone = false
+  @AppStorage(PreferencesKeys.recordingMicrophoneDeviceID)
+  private var microphoneDeviceID = RecordingMicrophoneDevice.systemDefaultID
   @AppStorage(PreferencesKeys.recordingRememberLastArea) private var rememberLastArea = true
   @AppStorage(PreferencesKeys.recordingIncludeOwnApp) private var includeOwnAppInRecordings = false
   @AppStorage(PreferencesKeys.recordingShowCursor) private var recordingShowCursor = true
@@ -66,6 +68,7 @@ struct CaptureSettingsView: View {
 
   @State private var showPermissionDeniedAlert = false
   @State private var selectedPane: CaptureSettingsPane = .general
+  @State private var microphoneDevices: [RecordingMicrophoneDevice] = []
 
   /// SwiftUI Color binding backed by archived NSColor in UserDefaults
   private var mouseHighlightSwiftColor: Binding<Color> {
@@ -525,6 +528,20 @@ struct CaptureSettingsView: View {
               ))
               .labelsHidden()
             }
+
+            SettingRow(
+              icon: "mic.badge.plus",
+              title: L10n.PreferencesCapture.microphoneInputTitle,
+              description: L10n.PreferencesCapture.microphoneInputDescription
+            ) {
+              Picker("", selection: $microphoneDeviceID) {
+                ForEach(microphoneDevices) { device in
+                  Text(device.displayName).tag(device.id)
+                }
+              }
+              .labelsHidden()
+              .frame(width: 220)
+            }
           }
           .alert(L10n.Microphone.accessRequiredTitle, isPresented: $showPermissionDeniedAlert) {
             Button(L10n.Common.openSystemSettings) {
@@ -559,6 +576,7 @@ struct CaptureSettingsView: View {
       }
       .formStyle(.grouped)
     }
+    .onAppear(perform: refreshMicrophoneDevices)
   }
 
   // MARK: - Helpers
@@ -615,6 +633,12 @@ struct CaptureSettingsView: View {
     if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone") {
       NSWorkspace.shared.open(url)
     }
+  }
+
+  private func refreshMicrophoneDevices() {
+    microphoneDevices = RecordingMicrophoneDeviceProvider.availableDevices(
+      selectedDeviceID: microphoneDeviceID
+    )
   }
 
   // MARK: - Reset Defaults

@@ -62,6 +62,10 @@ enum RecordingToolbarPreferences {
     defaults.object(forKey: PreferencesKeys.recordingCaptureMicrophone) as? Bool ?? false
   }
 
+  static func microphoneDeviceID(defaults: UserDefaults = .standard) -> String {
+    RecordingMicrophoneDeviceProvider.storedDeviceID(defaults: defaults)
+  }
+
   static func outputMode(defaults: UserDefaults = .standard) -> RecordingOutputMode {
     guard let modeString = defaults.string(forKey: PreferencesKeys.recordingOutputMode),
           let mode = RecordingOutputMode(rawValue: modeString)
@@ -84,6 +88,33 @@ enum RecordingToolbarPreferences {
   }
 }
 
+enum RecordingToolbarPlacement {
+  static let screenEdgeInset: CGFloat = 10
+  static let outsideSelectionGap: CGFloat = 20
+  static let insideSelectionBottomInset: CGFloat = 24
+
+  static func frameOrigin(
+    toolbarSize: CGSize,
+    anchorRect rect: CGRect,
+    screenFrame: CGRect
+  ) -> CGPoint {
+    let x = rect.midX - toolbarSize.width / 2
+    let minX = screenFrame.minX + screenEdgeInset
+    let maxX = screenFrame.maxX - toolbarSize.width - screenEdgeInset
+    let safeX = max(minX, min(x, maxX))
+
+    let minY = screenFrame.minY + screenEdgeInset
+    let maxY = screenFrame.maxY - toolbarSize.height - screenEdgeInset
+    let belowSelectionY = rect.minY - toolbarSize.height - outsideSelectionGap
+    let preferredY = belowSelectionY >= minY
+      ? belowSelectionY
+      : rect.minY + insideSelectionBottomInset
+    let safeY = max(minY, min(preferredY, maxY))
+
+    return CGPoint(x: safeX, y: safeY)
+  }
+}
+
 // MARK: - Observable State
 
 @MainActor
@@ -92,6 +123,7 @@ final class RecordingToolbarState: ObservableObject {
   @Published var selectedQuality: VideoQuality
   @Published var captureAudio: Bool
   @Published var captureMicrophone: Bool
+  @Published var microphoneDeviceID: String
   @Published var captureMode: RecordingCaptureMode
   @Published var outputMode: RecordingOutputMode
   @Published var showCursor: Bool
@@ -106,6 +138,7 @@ final class RecordingToolbarState: ObservableObject {
     self.selectedQuality = RecordingToolbarPreferences.selectedQuality()
     self.captureAudio = RecordingToolbarPreferences.captureAudio()
     self.captureMicrophone = RecordingToolbarPreferences.captureMicrophone()
+    self.microphoneDeviceID = RecordingToolbarPreferences.microphoneDeviceID()
     self.captureMode = .area
     self.outputMode = RecordingToolbarPreferences.outputMode()
     self.showCursor = RecordingToolbarPreferences.showCursor()
@@ -158,6 +191,10 @@ final class RecordingToolbarWindow: NSWindow {
   var captureMicrophone: Bool {
     get { state.captureMicrophone }
     set { state.captureMicrophone = newValue }
+  }
+  var microphoneDeviceID: String {
+    get { state.microphoneDeviceID }
+    set { state.microphoneDeviceID = newValue }
   }
   var captureMode: RecordingCaptureMode {
     get { state.captureMode }
@@ -288,15 +325,13 @@ final class RecordingToolbarWindow: NSWindow {
       ?? ScreenUtility.activeScreen()
     let screenFrame = screen.visibleFrame
 
-    // Position centered below the selection rect
-    let x = rect.midX - size.width / 2
-    let y = rect.minY - size.height - 20
+    let origin = RecordingToolbarPlacement.frameOrigin(
+      toolbarSize: size,
+      anchorRect: rect,
+      screenFrame: screenFrame
+    )
 
-    // Clamp to the correct screen bounds
-    let safeX = max(screenFrame.minX + 10, min(x, screenFrame.maxX - size.width - 10))
-    let safeY = max(screenFrame.minY + 10, min(y, screenFrame.maxY - size.height - 10))
-
-    setFrameOrigin(CGPoint(x: safeX, y: safeY))
+    setFrameOrigin(origin)
     orderFrontRegardless()
   }
 

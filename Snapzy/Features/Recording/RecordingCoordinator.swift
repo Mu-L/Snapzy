@@ -44,6 +44,7 @@ final class RecordingCoordinator: ObservableObject {
     let quality: VideoQuality
     let captureAudio: Bool
     let captureMicrophone: Bool
+    let microphoneDeviceID: String
     let outputMode: RecordingOutputMode
     let showCursor: Bool
     let highlightClicks: Bool
@@ -295,6 +296,7 @@ final class RecordingCoordinator: ObservableObject {
       quality: toolbarWindow.selectedQuality,
       captureAudio: toolbarWindow.captureAudio,
       captureMicrophone: toolbarWindow.captureMicrophone,
+      microphoneDeviceID: toolbarWindow.microphoneDeviceID,
       outputMode: toolbarWindow.outputMode,
       showCursor: toolbarWindow.state.showCursor,
       highlightClicks: toolbarWindow.state.highlightClicks,
@@ -311,6 +313,7 @@ final class RecordingCoordinator: ObservableObject {
       toolbar.selectedQuality = configuration.quality
       toolbar.captureAudio = configuration.captureAudio
       toolbar.captureMicrophone = configuration.captureMicrophone
+      toolbar.microphoneDeviceID = configuration.microphoneDeviceID
       toolbar.outputMode = configuration.outputMode
       toolbar.state.showCursor = configuration.showCursor
       toolbar.state.highlightClicks = configuration.highlightClicks
@@ -473,12 +476,14 @@ final class RecordingCoordinator: ObservableObject {
     let savedQuality = window.selectedQuality
     let savedCaptureAudio = window.captureAudio
     let savedCaptureMicrophone = window.captureMicrophone
+    let savedMicrophoneDeviceID = window.microphoneDeviceID
     let savedShowCursor = window.state.showCursor
     DiagnosticLogger.shared.log(.info, .recording, "Recording restart requested", context: [
       "format": savedFormat.rawValue,
       "quality": savedQuality.rawValue,
       "systemAudio": "\(savedCaptureAudio)",
       "microphone": "\(savedCaptureMicrophone)",
+      "microphoneDevice": savedMicrophoneDeviceID,
       "showCursor": "\(savedShowCursor)",
       "rect": "\(Int(rect.width))x\(Int(rect.height))",
     ])
@@ -515,6 +520,7 @@ final class RecordingCoordinator: ObservableObject {
           fps: fps,
           captureSystemAudio: savedCaptureAudio,
           captureMicrophone: savedCaptureMicrophone,
+          microphoneDeviceID: savedMicrophoneDeviceID,
           showCursor: savedShowCursor,
           saveDirectory: savePlan.finalDirectory,
           processingDirectory: savePlan.processingDirectory,
@@ -583,11 +589,13 @@ final class RecordingCoordinator: ObservableObject {
 
     // Get microphone setting from toolbar
     let captureMicrophone = window.captureMicrophone
+    let microphoneDeviceID = window.microphoneDeviceID
     DiagnosticLogger.shared.log(.debug, .recording, "Recording options resolved", context: [
       "quality": quality.rawValue,
       "fps": "\(fps)",
       "systemAudio": "\(captureSystemAudio)",
       "microphone": "\(captureMicrophone)",
+      "microphoneDevice": microphoneDeviceID,
       "showCursor": "\(showCursor)",
     ])
 
@@ -621,6 +629,7 @@ final class RecordingCoordinator: ObservableObject {
           fps: fps,
           captureSystemAudio: captureSystemAudio,
           captureMicrophone: captureMicrophone,
+          microphoneDeviceID: microphoneDeviceID,
           showCursor: showCursor,
           saveDirectory: savePlan.finalDirectory,
           processingDirectory: savePlan.processingDirectory,

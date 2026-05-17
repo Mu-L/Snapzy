@@ -17,19 +17,7 @@ struct ToolbarIconButton: View {
 
   var body: some View {
     Button(action: action) {
-      Image(systemName: systemName)
-        .font(.system(size: ToolbarConstants.iconSize, weight: .medium))
-        .foregroundColor(.primary.opacity(isHovered ? 1.0 : 0.85))
-        .frame(
-          width: ToolbarConstants.iconButtonSize,
-          height: ToolbarConstants.iconButtonSize
-        )
-        .background(
-          RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
-            .fill(Color.primary.opacity(isHovered ? 0.1 : 0))
-        )
-        .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
-        .animation(ToolbarConstants.hoverAnimation, value: isHovered)
+      ToolbarIconButtonLabel(systemName: systemName, isHovered: isHovered)
     }
     .buttonStyle(.plain)
     .onHover { isHovered = $0 }

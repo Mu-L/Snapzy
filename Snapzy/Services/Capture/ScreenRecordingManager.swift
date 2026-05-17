@@ -587,6 +587,7 @@ final class ScreenRecordingManager: NSObject, ObservableObject {
   private var fps: Int = 30
   private var captureSystemAudio: Bool = true
   private var captureMicrophone: Bool = false
+  private var microphoneDeviceID: String?
   private var showCursorInRecording: Bool = true
   private var excludeOwnApplicationFromCapture: Bool = true
   private var excludeDesktopIconsFromCapture: Bool = false
@@ -643,6 +644,7 @@ final class ScreenRecordingManager: NSObject, ObservableObject {
     fps: Int = 30,
     captureSystemAudio: Bool = true,
     captureMicrophone: Bool = false,
+    microphoneDeviceID: String? = nil,
     showCursor: Bool = true,
     saveDirectory: URL,
     processingDirectory: URL? = nil,
@@ -671,6 +673,7 @@ final class ScreenRecordingManager: NSObject, ObservableObject {
       "fps": "\(fps)",
       "systemAudio": "\(captureSystemAudio)",
       "microphone": "\(captureMicrophone)",
+      "microphoneDevice": microphoneDeviceID ?? RecordingMicrophoneDevice.systemDefaultID,
       "showCursor": "\(showCursor)",
       "excludeOwnApp": "\(excludeOwnApplication)",
       "excludeDesktopIcons": "\(excludeDesktopIcons)",
@@ -685,6 +688,7 @@ final class ScreenRecordingManager: NSObject, ObservableObject {
     self.fps = fps
     self.captureSystemAudio = captureSystemAudio
     self.captureMicrophone = captureMicrophone
+    self.microphoneDeviceID = microphoneDeviceID
     self.showCursorInRecording = showCursor
     self.excludeOwnApplicationFromCapture = excludeOwnApplication
     self.excludeDesktopIconsFromCapture = excludeDesktopIcons
@@ -868,7 +872,7 @@ final class ScreenRecordingManager: NSObject, ObservableObject {
 
       // Setup independent microphone capture if requested
       if captureMicrophone {
-        let capturer = MicrophoneAudioCapturer()
+        let capturer = MicrophoneAudioCapturer(preferredDeviceID: microphoneDeviceID)
         capturer.delegate = self
         microphoneCapturer = capturer
       }
@@ -949,6 +953,7 @@ final class ScreenRecordingManager: NSObject, ObservableObject {
       "format": videoFormat.rawValue,
       "systemAudio": "\(captureSystemAudio)",
       "microphone": "\(captureMicrophone)",
+      "microphoneDevice": microphoneDeviceID ?? RecordingMicrophoneDevice.systemDefaultID,
     ])
     self.startTime = Date()
     elapsedSeconds = 0
@@ -1949,6 +1954,7 @@ final class ScreenRecordingManager: NSObject, ObservableObject {
     exceptedWindowIDs.removeAll()
     captureWindowTarget = nil
     session.setOnFirstVideoFrame(nil)
+    microphoneDeviceID = nil
     showCursorInRecording = true
     excludeOwnApplicationFromCapture = true
     excludeDesktopIconsFromCapture = false

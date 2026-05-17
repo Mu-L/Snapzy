@@ -45,6 +45,19 @@ final class MicrophoneAudioCapturerTests: XCTestCase {
     XCTAssertEqual(factory.session.stopCallCount, 1)
   }
 
+  func testMicrophoneAudioCapturerPassesPreferredDeviceID() {
+    let factory = MockMicrophoneCaptureSessionFactory()
+    let capturer = MicrophoneAudioCapturer(
+      preferredDeviceID: "external-mic-id",
+      captureSessionFactory: factory
+    )
+
+    capturer.start()
+
+    XCTAssertEqual(factory.preferredDeviceIDs, ["external-mic-id"])
+    XCTAssertEqual(factory.configureInputCallCount, 1)
+  }
+
   func testMicrophoneAudioCapturerDoesNotStartWhenPermissionUnavailable() {
     let factory = MockMicrophoneCaptureSessionFactory(authorizationStatus: .notDetermined)
     let capturer = MicrophoneAudioCapturer(captureSessionFactory: factory)
@@ -155,6 +168,7 @@ private nonisolated final class MockMicrophoneCaptureSessionFactory: MicrophoneC
   let session = MockMicrophoneCaptureSession()
   private(set) var configureInputCallCount = 0
   private(set) var configureOutputCallCount = 0
+  private(set) var preferredDeviceIDs: [String?] = []
 
   init(authorizationStatus: AVAuthorizationStatus = .authorized) {
     authorizationStatusValue = authorizationStatus
@@ -168,8 +182,9 @@ private nonisolated final class MockMicrophoneCaptureSessionFactory: MicrophoneC
     session
   }
 
-  func configureInput(on session: MicrophoneCaptureSession) throws -> String {
+  func configureInput(on session: MicrophoneCaptureSession, preferredDeviceID: String?) throws -> String {
     configureInputCallCount += 1
+    preferredDeviceIDs.append(preferredDeviceID)
     return "Mock Microphone"
   }
 

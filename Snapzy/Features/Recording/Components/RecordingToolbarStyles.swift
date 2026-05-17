@@ -85,6 +85,28 @@ struct RecordingToolbarDivider: View {
   }
 }
 
+struct ToolbarIconButtonLabel: View {
+  let systemName: String
+  var iconSize: CGFloat = ToolbarConstants.iconSize
+  let isHovered: Bool
+
+  var body: some View {
+    Image(systemName: systemName)
+      .font(.system(size: iconSize, weight: .medium))
+      .foregroundColor(.primary.opacity(isHovered ? 1.0 : 0.85))
+      .frame(
+        width: ToolbarConstants.iconButtonSize,
+        height: ToolbarConstants.iconButtonSize
+      )
+      .background(
+        RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius)
+          .fill(Color.primary.opacity(isHovered ? 0.1 : 0))
+      )
+      .contentShape(RoundedRectangle(cornerRadius: ToolbarConstants.buttonCornerRadius))
+      .animation(ToolbarConstants.hoverAnimation, value: isHovered)
+  }
+}
+
 // MARK: - Stop Button Style (native monochrome, no red pill)
 
 struct StopButtonStyle: ButtonStyle {

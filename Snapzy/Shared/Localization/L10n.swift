@@ -2132,6 +2132,16 @@ enum L10n {
       defaultValue: "Capture your voice",
       comment: "Capture preferences setting description"
     )
+    static let microphoneInputTitle = string(
+      "preferences-capture.microphone-input-title",
+      defaultValue: "Microphone Input",
+      comment: "Capture preferences setting title"
+    )
+    static let microphoneInputDescription = string(
+      "preferences-capture.microphone-input-description",
+      defaultValue: "Choose the built-in or external microphone used for recordings",
+      comment: "Capture preferences setting description"
+    )
     static let microphoneRequiresMacOS = string(
       "preferences-capture.microphone-requires-macos",
       defaultValue: "Requires macOS 15.0+",
@@ -2617,6 +2627,11 @@ enum L10n {
       defaultValue: "Continue Without Mic",
       comment: "Alert button title to continue recording without microphone access"
     )
+    static let doNotUse = string(
+      "microphone.do-not-use",
+      defaultValue: "Do Not Use Microphone",
+      comment: "Microphone menu option to disable microphone capture"
+    )
     static let unavailableVersion = string(
       "microphone.unavailable-version",
       defaultValue: "Microphone unavailable on this macOS version",
@@ -2642,10 +2657,30 @@ enum L10n {
       defaultValue: "Microphone off",
       comment: "Tooltip when microphone capture is disabled"
     )
+    static let options = string(
+      "microphone.options",
+      defaultValue: "Microphone options",
+      comment: "Accessibility label for the microphone options menu button"
+    )
+    static let chooseInput = string(
+      "microphone.choose-input",
+      defaultValue: "Choose a microphone input",
+      comment: "Accessibility hint for the microphone options menu button"
+    )
     static let doubleTapToToggle = string(
       "microphone.double-tap-toggle",
       defaultValue: "Double-tap to toggle",
       comment: "Accessibility hint for toggling microphone capture"
+    )
+    static let systemDefault = string(
+      "microphone.system-default",
+      defaultValue: "System Default Microphone",
+      comment: "Microphone picker option for the current macOS default input device"
+    )
+    static let unavailable = string(
+      "microphone.unavailable",
+      defaultValue: "Unavailable",
+      comment: "Microphone picker suffix for a stored input device that is not currently connected"
     )
   }
 
@@ -5053,7 +5088,7 @@ enum L10n {
     )
     static let recordingOptionsHint = string(
       "recording-toolbar.options-hint",
-      defaultValue: "Opens settings for format, quality, and audio",
+      defaultValue: "Opens settings for format, quality, and overlays",
       comment: "Accessibility hint for recording toolbar options button"
     )
     static let settingsTitle = string(
@@ -5085,6 +5120,11 @@ enum L10n {
       "recording-toolbar.system-audio",
       defaultValue: "System Audio",
       comment: "Recording toolbar setting label"
+    )
+    static let microphoneInput = string(
+      "recording-toolbar.microphone-input",
+      defaultValue: "Microphone",
+      comment: "Recording toolbar microphone input picker label"
     )
     static let highlightClicks = string(
       "recording-toolbar.highlight-clicks",
