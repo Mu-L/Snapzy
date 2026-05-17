@@ -23,7 +23,12 @@ final class VideoEditorExportSettingsTests: XCTestCase {
     let activeLevel = NSWindow.Level(rawValue: NSWindow.Level.floating.rawValue + 1)
     window.applyActiveEditorLevel()
     XCTAssertEqual(window.level, activeLevel)
+    XCTAssertGreaterThan(window.level.rawValue, NSWindow.Level.floating.rawValue)
 
+    window.restoreRestingLevel()
+    XCTAssertEqual(window.level, .normal)
+
+    window.applyActiveEditorLevel()
     window.syncLevelWithFocusState()
     XCTAssertEqual(window.level, .normal)
   }

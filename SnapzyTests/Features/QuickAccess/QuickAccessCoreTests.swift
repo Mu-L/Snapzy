@@ -132,6 +132,36 @@ final class QuickAccessCoreTests: XCTestCase {
     XCTAssertGreaterThan(window.level.rawValue, NSWindow.Level.floating.rawValue + 1)
   }
 
+  func testQuickAccessWindowLevels_keepActiveEditorsAboveCardsAndBelowPins() {
+    let panel = QuickAccessPanel(
+      contentRect: NSRect(x: 0, y: 0, width: 204, height: 520)
+    )
+    defer { panel.close() }
+
+    let pinWindow = makePinWindow()
+    defer { pinWindow.close() }
+
+    let annotateWindow = AnnotateWindow(
+      contentRect: NSRect(x: 0, y: 0, width: 800, height: 600)
+    )
+    defer { annotateWindow.close() }
+
+    let videoEditorWindow = VideoEditorWindow(
+      contentRect: NSRect(x: 0, y: 0, width: 800, height: 600)
+    )
+    defer { videoEditorWindow.close() }
+
+    annotateWindow.applyActiveEditorLevel()
+    videoEditorWindow.applyActiveEditorLevel()
+
+    XCTAssertEqual(panel.level, .floating)
+    XCTAssertGreaterThan(annotateWindow.level.rawValue, panel.level.rawValue)
+    XCTAssertGreaterThan(videoEditorWindow.level.rawValue, panel.level.rawValue)
+    XCTAssertEqual(annotateWindow.level, videoEditorWindow.level)
+    XCTAssertGreaterThan(pinWindow.level.rawValue, annotateWindow.level.rawValue)
+    XCTAssertGreaterThan(pinWindow.level.rawValue, videoEditorWindow.level.rawValue)
+  }
+
   func testQuickAccessPanel_interactiveRegionTracksVisibleCardsOnly() {
     let panelHeight =
       QuickAccessLayout.scaledCardHeight(1) * 5
@@ -348,6 +378,24 @@ final class QuickAccessCoreTests: XCTestCase {
     let store = QuickAccessActionConfigurationStore(defaults: defaults)
     Self.retainedActionStores.append(store)
     return store
+  }
+
+  private func makePinWindow() -> QuickAccessPinWindow {
+    let image = NSImage(size: CGSize(width: 24, height: 16))
+    let state = QuickAccessPinWindowState(
+      id: UUID(),
+      url: URL(fileURLWithPath: "/tmp/pinned.png"),
+      image: image,
+      thumbnail: image,
+      baseSize: CGSize(width: 320, height: 220),
+      maxSize: CGSize(width: 1200, height: 900)
+    )
+    Self.retainedPinWindowStates.append(state)
+
+    return QuickAccessPinWindow(
+      contentRect: NSRect(x: 0, y: 0, width: 320, height: 220),
+      state: state
+    )
   }
 }
 
