@@ -52,14 +52,7 @@ struct QuickAccessCardView: View {
 
   var body: some View {
     ZStack(alignment: .center) {
-      // Thumbnail with blur effect on hover
-      Image(nsImage: item.thumbnail)
-        .resizable()
-        .aspectRatio(contentMode: .fill)
-        .frame(width: scaledWidth, height: scaledHeight)
-        .clipped()
-        .blur(radius: isHovering ? 2 : 0)
-        .cornerRadius(cornerRadius)
+      thumbnailLayer
 
       // Pin indicator (pinned items when pin action is NOT assigned to a slot)
       if item.isPinned, !isPinActionOnCard {
@@ -95,12 +88,14 @@ struct QuickAccessCardView: View {
       }
     }
     .frame(width: scaledWidth, height: scaledHeight)
+    .clipShape(cardShape)
+    .contentShape(cardShape)
     .background(
-      RoundedRectangle(cornerRadius: cornerRadius)
+      cardShape
         .fill(Color.black.opacity(0.1))
     )
     .overlay(
-      RoundedRectangle(cornerRadius: cornerRadius)
+      cardShape
         .stroke(Color.white.opacity(0.2), lineWidth: 1)
     )
     .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
@@ -188,6 +183,10 @@ struct QuickAccessCardView: View {
 
   private var canPerformCardActions: Bool {
     item.processingState == .idle && !isCloudUploading
+  }
+
+  private var cardShape: RoundedRectangle {
+    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
   }
 
   private var orderedEnabledActions: [QuickAccessActionKind] {
@@ -490,6 +489,19 @@ struct QuickAccessCardView: View {
   }
 
   // MARK: - Subviews
+
+  private var thumbnailLayer: some View {
+    // Clipped scaled-to-fill images can still expose their hidden area to hit
+    // testing, so the thumbnail stays decorative and the card owns interaction.
+    Image(nsImage: item.thumbnail)
+      .resizable()
+      .aspectRatio(contentMode: .fill)
+      .frame(width: scaledWidth, height: scaledHeight)
+      .clipped()
+      .blur(radius: isHovering ? 2 : 0)
+      .contentShape(Rectangle())
+      .allowsHitTesting(false)
+  }
 
   private func durationBadge(_ duration: String) -> some View {
     VStack {
