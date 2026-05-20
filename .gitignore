@@ -12,3 +12,5 @@ Snapzy/Config/Secrets.xcconfig
 *.xcuserstate
 
 /plans
+
+.codex
