@@ -27,6 +27,7 @@ enum L10n {
     ("preferences-about.", "Settings"),
     ("preferences-quick-access.", "QuickAccess"),
     ("preferences-history.", "Settings"),
+    ("preferences-advanced.", "Settings"),
     ("preferences-permissions.", "Permissions"),
     ("history-background-style.", "Settings"),
     ("history-panel-position.", "Settings"),
@@ -181,11 +182,162 @@ enum L10n {
       defaultValue: "Cloud",
       comment: "Preferences tab title"
     )
+    static let advancedTab = string(
+      "preferences.tab.advanced",
+      defaultValue: "Advanced",
+      comment: "Preferences tab title"
+    )
     static let aboutTab = string(
       "preferences.tab.about",
       defaultValue: "About",
       comment: "Preferences tab title"
     )
+  }
+
+  enum PreferencesAdvanced {
+    static let backupSection = string(
+      "preferences-advanced.backup-section",
+      defaultValue: "Backup",
+      comment: "Advanced preferences backup section title"
+    )
+    static let exportTitle = string(
+      "preferences-advanced.export-title",
+      defaultValue: "Save settings to a file",
+      comment: "Advanced preferences export row title"
+    )
+    static let exportDescription = string(
+      "preferences-advanced.export-description",
+      defaultValue: "Create a portable backup you can keep, sync, or import on another Mac.",
+      comment: "Advanced preferences export row description"
+    )
+    static let importTitle = string(
+      "preferences-advanced.import-title",
+      defaultValue: "Restore settings from a file",
+      comment: "Advanced preferences import row title"
+    )
+    static let importDescription = string(
+      "preferences-advanced.import-description",
+      defaultValue: "Validate a TOML file first, then apply supported Snapzy settings.",
+      comment: "Advanced preferences import row description"
+    )
+    static let exportButton = string(
+      "preferences-advanced.export-button",
+      defaultValue: "Export",
+      comment: "Export config button"
+    )
+    static let importButton = string(
+      "preferences-advanced.import-button",
+      defaultValue: "Import",
+      comment: "Import config button"
+    )
+    static let openConfigButton = string(
+      "preferences-advanced.open-config-button",
+      defaultValue: "Open config.toml",
+      comment: "Open TOML config file button"
+    )
+    static let lastResultSection = string(
+      "preferences-advanced.last-result-section",
+      defaultValue: "Last Result",
+      comment: "Configuration import/export result section"
+    )
+    static func errorsTitle(_ count: Int) -> String {
+      format(
+        "preferences-advanced.errors-title",
+        defaultValue: "Errors (%d)",
+        comment: "Advanced preferences result errors group title",
+        count
+      )
+    }
+    static func warningsTitle(_ count: Int) -> String {
+      format(
+        "preferences-advanced.warnings-title",
+        defaultValue: "Warnings (%d)",
+        comment: "Advanced preferences result warnings group title",
+        count
+      )
+    }
+    static let openConfigUnavailable = string(
+      "preferences-advanced.open-config-unavailable",
+      defaultValue: "Could not open config.toml.",
+      comment: "Open config file unavailable result message"
+    )
+    static let exportPanelTitle = string(
+      "preferences-advanced.export-panel-title",
+      defaultValue: "Export Snapzy Config",
+      comment: "Config export save panel title"
+    )
+    static let importPanelTitle = string(
+      "preferences-advanced.import-panel-title",
+      defaultValue: "Import Snapzy Config",
+      comment: "Config import open panel title"
+    )
+    static func exported(_ path: String) -> String {
+      format(
+        "preferences-advanced.exported",
+        defaultValue: "Exported config to %@",
+        comment: "Config export success message",
+        path
+      )
+    }
+    static func openedConfig(_ path: String) -> String {
+      format(
+        "preferences-advanced.opened-config",
+        defaultValue: "Opened config.toml from %@",
+        comment: "Config file opened success message",
+        path
+      )
+    }
+    static func openConfigMissing(_ path: String) -> String {
+      format(
+        "preferences-advanced.open-config-missing",
+        defaultValue: "No config file exists at %@. Export a backup first, then open it here.",
+        comment: "Config file missing warning message",
+        path
+      )
+    }
+    static func openConfigFailed(_ path: String) -> String {
+      format(
+        "preferences-advanced.open-config-failed",
+        defaultValue: "macOS could not open %@.",
+        comment: "Config file open failure message",
+        path
+      )
+    }
+    static let exportFailed = string(
+      "preferences-advanced.export-failed",
+      defaultValue: "Config export failed.",
+      comment: "Config export failure message"
+    )
+    static let importFailed = string(
+      "preferences-advanced.import-failed",
+      defaultValue: "Config import failed.",
+      comment: "Config import failure message"
+    )
+    static func importFailedWithErrors(_ count: Int) -> String {
+      format(
+        "preferences-advanced.import-failed-with-errors",
+        defaultValue: "Config import failed with %d error(s).",
+        comment: "Config import validation error summary",
+        count
+      )
+    }
+    static func imported(_ count: Int) -> String {
+      format(
+        "preferences-advanced.imported",
+        defaultValue: "Imported %d config setting(s).",
+        comment: "Config import success summary",
+        count
+      )
+    }
+    static func importedWithWarnings(_ count: Int, _ warningCount: Int) -> String {
+      format(
+        "preferences-advanced.imported-with-warnings",
+        defaultValue: "Imported %d config setting(s) with %d warning(s).",
+        comment: "Config import success with warnings summary",
+        count,
+        warningCount
+      )
+    }
   }
 
   enum Actions {

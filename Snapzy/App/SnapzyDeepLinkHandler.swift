@@ -179,6 +179,8 @@ private enum SnapzyDeepLinkAction {
       return .permissions
     case "cloud", "uploads":
       return .cloud
+    case "advanced", "configuration", "config", "toml":
+      return .advanced
     case "about":
       return .about
     default:

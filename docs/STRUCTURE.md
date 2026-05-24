@@ -38,12 +38,14 @@ flowchart LR
     subgraph PlatformServices["Platform services"]
         KS["KeyboardShortcutManager"]
         CL["CloudManager"]
+        CFG["SnapzyConfigurationService"]
         UP["UpdaterManager"]
         DG["DiagnosticLogger + CrashSentinel"]
         DI["DesktopIconManager"]
     end
 
     subgraph Storage["Persistence"]
+        TOML["~/.config/snapzy/config.toml"]
         STC["Application Support/Snapzy/Captures"]
         AS["Application Support/Snapzy/AnnotationSessions"]
         RMD["RecordingMetadataStore"]
@@ -59,6 +61,7 @@ flowchart LR
     D --> G
     D --> KS
     D --> UP
+    F --> CFG
     C --> DG
 
     G --> H
@@ -92,6 +95,10 @@ flowchart LR
     N --> RMD
     CL --> DB
     CL --> KC
+    CFG --> TOML
+    CFG --> UD
+    CFG --> KS
+    CFG --> CL
     G --> UD
     KS --> UD
     F --> UD
@@ -134,6 +141,7 @@ Snapzy/
       ScrollingCapture/
     Clipboard/
     Cloud/
+    Configuration/
     Diagnostics/
     FileAccess/
     Media/
@@ -196,7 +204,7 @@ SnapzyUITests/
 | `Features/QuickAccess/` | Floating post-capture stack, temp-file persistence UX, drag-to-app, pinned screenshot windows |
 | `Features/Annotate/` | Image editor, export, crop, blur, mockup, cutout-aware editing, inline area annotate |
 | `Features/VideoEditor/` | Trim, zoom, background, Smart Camera, GIF/video export |
-| `Features/Preferences/` | General, Capture, Quick Access, Shortcuts, Permissions, History storage/retention, Cloud, About tabs |
+| `Features/Preferences/` | General, Capture, Quick Access, Shortcuts, Permissions, History storage/retention, Cloud, Advanced, About tabs |
 | `Features/Shortcuts/` | Keyboard shortcut cheat-sheet overlay |
 | `Features/Updates/` | Sparkle menu binding and update UI bridge |
 | `Features/CrashReport/` | Crash report prompt and diagnostics UX |
@@ -208,6 +216,7 @@ SnapzyUITests/
 | `Services/Capture/` | ScreenCaptureKit capture engine, area selection overlay/controller, OCR scanning overlay, window-target resolution, recording engine, temp storage, post-capture routing |
 | `Services/Capture/ScrollingCapture/` | Long screenshot session model, live preview, stitcher, HUD, metrics |
 | `Services/Cloud/` | S3/R2 providers, upload orchestration, GRDB history, Keychain credentials, encrypted transfer |
+| `Services/Configuration/` | TOML export/import facade, focused TOML parser/writer, schema validation, preference mutation helpers |
 | `Services/FileAccess/` | Sandbox-scoped save-folder permissions and bookmarks |
 | `Services/Media/` | OCR, QR payload detection, foreground cutout, GIF conversion helpers, WebP encode |
 | `Services/Shortcuts/` | Global shortcuts, conflict detection, system shortcut checks |
@@ -237,6 +246,9 @@ SnapzyUITests/
       assets/
         <uuid>.bin               # optional embedded image assets
   snapzy.db
+
+~/.config/snapzy/
+  config.toml                  # suggested user-managed export/import path
 ```
 
 | Store | Used for |
@@ -246,6 +258,7 @@ SnapzyUITests/
 | `Application Support/Snapzy/Captures/` | Temp captures, per-session recording processing files, and recording metadata sidecars |
 | `Application Support/Snapzy/AnnotationSessions/` | Sidecar packages for committed editable screenshot annotation sessions |
 | `Application Support/Snapzy/snapzy.db` | Cloud upload history via GRDB |
+| `~/.config/snapzy/config.toml` | Suggested user-managed TOML preferences export/import file, only accessed after explicit save/open panel confirmation |
 
 ## Implementation Notes That Matter
 
@@ -266,6 +279,7 @@ SnapzyUITests/
 - `ScrollingCaptureCoordinator` is its own subsystem. Treat `Services/Capture/ScrollingCapture/*` as a unit.
 - `ScrollingCaptureFrameSource` publishes timestamped region frames into `ScrollingCaptureFrameRing`, so live preview and commit/stitch decisions share one bounded frame timeline before falling back to still area capture.
 - `CloudManager` is a facade. Provider-specific behavior lives under `Services/Cloud/`.
+- `SnapzyConfigurationService` is the Settings-facing facade for TOML export/import. It validates the whole file before applying any imported mutation and intentionally excludes Keychain secrets, history rows, temp captures, and sandbox bookmarks.
 - `Shared/Localization/L10n.swift` is the bridge for user-facing copy that does not live directly in SwiftUI view literals.
 - `Resources/Localization/Shared/*.xcstrings` and `Resources/Localization/Features/*.xcstrings` are the runtime localization catalogs.
 - `tools/localization/CatalogTool.swift` owns audit and verify for split localization catalogs.
@@ -333,6 +347,7 @@ Directory structure mirrors the app: `SnapzyTests/Services/Cloud/AWSV4SignerTest
 | Editable screenshot annotation history | `Features/Annotate/Services/AnnotationSessionStore.swift`, `Features/Annotate/Models/PersistedAnnotationSession.swift`, `Features/History/`, `Services/History/CaptureHistoryRetentionService.swift` |
 | Video editor or Smart Camera | `Features/VideoEditor/`, `Services/Capture/RecordingMetadata.swift` |
 | Cloud upload/config transfer | `Services/Cloud/`, `Features/Preferences/Components/PreferencesCloudSettingsView.swift`, `Features/QuickAccess/Components/QuickAccessCardView.swift`, `Features/Annotate/Components/AnnotateBottomBarView.swift` |
+| TOML config export/import | `Services/Configuration/`, `Features/Preferences/Components/PreferencesAdvancedSettingsView.swift`, `docs/CONFIGURATION.md` |
 | Onboarding or app startup | `App/`, `Features/Splash/`, `Features/Onboarding/` |
 | Shortcuts and conflicts | `Services/Shortcuts/`, `Features/Shortcuts/` |
 | Unit tests for services | `SnapzyTests/Services/`, `SnapzyTests/Helpers/` |
@@ -349,3 +364,6 @@ Directory structure mirrors the app: `SnapzyTests/Services/Cloud/AWSV4SignerTest
 - Annotate, Video Editor, GIF conversion, and cloud upload pause Quick Access countdowns for the active item and resume them when the activity ends.
 - During recording, the menu bar item no longer turns into a left-click stop button. It keeps the normal menu path available, adds a live timer to the status item, and exposes stop plus pause/resume from the active menu section.
 - When Preferences is opened during an active recording with own-app capture enabled, Snapzy temporarily excludes that Settings window from the stream instead of forcing the user to stop recording first.
+- TOML config import is all-or-nothing for validation errors. Warnings, such as
+  imported folder paths that may need macOS file-access confirmation, are shown
+  after import and do not block applied changes.

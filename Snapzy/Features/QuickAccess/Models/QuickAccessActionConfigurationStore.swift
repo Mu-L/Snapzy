@@ -98,6 +98,25 @@ final class QuickAccessActionConfigurationStore: ObservableObject {
     save()
   }
 
+  func applyConfiguration(
+    order: [QuickAccessActionKind]?,
+    enabledActions: Set<QuickAccessActionKind>?,
+    slotAssignments: [QuickAccessActionSlot: QuickAccessActionKind]?
+  ) {
+    if let order {
+      actionOrder = Self.normalizedOrder(from: order.map(\.rawValue))
+    }
+    if let enabledActions {
+      self.enabledActions = enabledActions
+    }
+    if let slotAssignments {
+      self.slotAssignments = Self.normalizedSlotAssignments(
+        from: rawSlotAssignments(from: slotAssignments)
+      )
+    }
+    save()
+  }
+
   private func save() {
     defaults.set(actionOrder.map(\.rawValue), forKey: PreferencesKeys.quickAccessActionOrder)
     defaults.set(

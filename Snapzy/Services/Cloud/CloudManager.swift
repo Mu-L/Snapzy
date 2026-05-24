@@ -219,6 +219,10 @@ final class CloudManager: ObservableObject {
     cachedMaskedAccessKey = isConfigured ? cachedMaskedAccessKey : DisplayStrings.hidden
   }
 
+  func reloadStateFromDefaults() {
+    loadState()
+  }
+
   /// Load masked endpoint for display (e.g. "https://0ef6••••e2ca.r2.cloudflarestorage.com")
   func maskedEndpoint() -> String {
     guard let config = cachedConfiguration,

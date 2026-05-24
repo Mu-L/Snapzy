@@ -11,6 +11,7 @@ Flow-first entrypoint for humans and agents working in Snapzy.
 | [`STRUCTURE.md`](STRUCTURE.md) | Real source-tree map, runtime architecture, edit guide | Any code change |
 | [`LOCALIZATION.md`](LOCALIZATION.md) | Localization architecture for `Resources/Localization`, ownership rules, verification | Copy, UI text, alerts, onboarding, preferences |
 | [`CAPTURE.md`](CAPTURE.md) | Feature flows for capture, scrolling capture, recording, post-capture, editors | Capture, media, UX work |
+| [`CONFIGURATION.md`](CONFIGURATION.md) | TOML export/import schema, scope, and security boundaries | Settings sync, dotfiles, config import/export |
 | [`BUILD.md`](BUILD.md) | Archive, export, and DMG packaging commands | Packaging, release prep |
 | [`RELEASES.md`](RELEASES.md) | Release and appcast workflow | Shipping updates |
 | [`UPDATE_TESTING.md`](UPDATE_TESTING.md) | Local Sparkle update test harness | Updater changes |
@@ -61,6 +62,7 @@ flowchart TD
 - Tests: `STRUCTURE.md` -> `DEVELOPMENT.md`
 - Localization or user-facing copy: `STRUCTURE.md` -> `LOCALIZATION.md` -> `CAPTURE.md` when capture/editor UX is affected
 - Onboarding, menu bar, preferences: `STRUCTURE.md`
+- TOML config export/import: `STRUCTURE.md` -> `CONFIGURATION.md`
 - Cloud storage and upload UX: `STRUCTURE.md` + `CAPTURE.md`
 - Build, release, updater: `DEVELOPMENT.md` -> `BUILD.md` -> `RELEASES.md` -> `UPDATE_TESTING.md`
 
@@ -74,5 +76,8 @@ flowchart TD
 - Annotation sidecars are cleaned with their source screenshots through Quick Access delete, History delete, clear-history, retention sweep, and temp-to-export save/move paths. They are not draft autosaves for unsaved Annotate windows during app quit.
 - Full Annotate drag-to-app closes the editor by default. Settings → Annotate → `Close after drop` can be turned off to keep the editor session alive after sharing a rendered copy; `Reactivate after drop` controls whether that preserved editor is activated after drop.
 - During recording, the menu bar item stays menu-first instead of left-click-to-stop. It shows the live timer, keeps Preferences reachable, and temporarily excludes the Settings window from own-app recordings when needed.
+- Settings -> Advanced exports and imports portable TOML preferences. The
+  suggested path is `~/.config/snapzy/config.toml`, but import/export always
+  happens through user-confirmed macOS panels.
 
 If one of these behaviors changes, update this file, [`STRUCTURE.md`](STRUCTURE.md), [`CAPTURE.md`](CAPTURE.md), and the root [`README.md`](../README.md) in the same change.
