@@ -126,19 +126,28 @@ struct HistoryBackdropView: View {
 
   var body: some View {
     ZStack {
-      switch style {
-      case .hud:
-        Rectangle().fill(.ultraThinMaterial)
-        Rectangle().fill(hudTint)
-        glow(color: Color.white.opacity(colorScheme == .dark ? 0.06 : 0.38), width: compact ? 44 : 220, height: compact ? 44 : 220, x: compact ? -14 : -170, y: compact ? -10 : -120)
-        glow(color: Color.black.opacity(colorScheme == .dark ? 0.08 : 0.03), width: compact ? 50 : 240, height: compact ? 50 : 240, x: compact ? 18 : 180, y: compact ? 14 : 130)
-      case .solid:
-        Color(nsColor: WindowSurfacePalette.backgroundColor(for: themeManager.preferredAppearance))
-      }
+      if compact {
+        switch style {
+        case .hud:
+          Color(white: 0.15)
+        case .solid:
+          Color(nsColor: WindowSurfacePalette.backgroundColor(for: themeManager.preferredAppearance))
+        }
+      } else {
+        switch style {
+        case .hud:
+          Rectangle().fill(.ultraThinMaterial)
+          Rectangle().fill(hudTint)
+          glow(color: Color.white.opacity(colorScheme == .dark ? 0.06 : 0.38), width: 220, height: 220, x: -170, y: -120)
+          glow(color: Color.black.opacity(colorScheme == .dark ? 0.08 : 0.03), width: 240, height: 240, x: 180, y: 130)
+        case .solid:
+          Color(nsColor: WindowSurfacePalette.backgroundColor(for: themeManager.preferredAppearance))
+        }
 
-      if style == .hud {
-        Rectangle()
-          .fill(surfaceTint)
+        if style == .hud {
+          Rectangle()
+            .fill(surfaceTint)
+        }
       }
 
       if compact {
@@ -179,67 +188,61 @@ struct HistoryBackdropView: View {
   }
 
   private var compactPreviewOverlay: some View {
-    ZStack {
-      RoundedRectangle(cornerRadius: 8, style: .continuous)
-        .fill(previewWindowFill)
-        .overlay(
-          RoundedRectangle(cornerRadius: 8, style: .continuous)
-            .stroke(previewWindowStroke, lineWidth: 0.8)
-        )
-        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.08), radius: 4, x: 0, y: 2)
-
-      VStack(spacing: 0) {
+    VStack(spacing: 0) {
+      // Header: traffic lights, miniature filter pills, and circular action button
+      HStack(spacing: 0) {
         HStack(spacing: 3) {
-          Circle().fill(Color.red.opacity(0.88)).frame(width: 3.6, height: 3.6)
-          Circle().fill(Color.yellow.opacity(0.88)).frame(width: 3.6, height: 3.6)
-          Circle().fill(Color.green.opacity(0.88)).frame(width: 3.6, height: 3.6)
-          Spacer(minLength: 0)
+          Circle().fill(Color.red.opacity(0.9)).frame(width: 3.5, height: 3.5)
+          Circle().fill(Color.yellow.opacity(0.9)).frame(width: 3.5, height: 3.5)
+          Circle().fill(Color.green.opacity(0.9)).frame(width: 3.5, height: 3.5)
         }
-        .padding(.horizontal, 5)
-        .frame(height: 9)
-        .background(previewToolbarFill)
+        .padding(.leading, 6)
 
-        HStack(spacing: 4) {
-          ForEach(0..<3, id: \.self) { index in
-            RoundedRectangle(cornerRadius: 4.5, style: .continuous)
-              .fill(previewCardFill.opacity(index == 0 ? 1 : 0.86))
-              .frame(width: 10.5, height: 14)
-              .overlay(
-                RoundedRectangle(cornerRadius: 4.5, style: .continuous)
-                  .stroke(previewCardStroke, lineWidth: 0.7)
-              )
-          }
+        Spacer()
+
+        HStack(spacing: 3) {
+          Capsule()
+            .fill(Color.accentColor)
+            .frame(width: 10, height: 5)
+          Capsule()
+            .fill(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.08))
+            .frame(width: 10, height: 5)
+          Capsule()
+            .fill(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.08))
+            .frame(width: 10, height: 5)
         }
-        .padding(.horizontal, 6)
-        .padding(.top, 6)
 
-        Spacer(minLength: 0)
+        Spacer()
 
-        RoundedRectangle(cornerRadius: 3, style: .continuous)
-          .fill(previewChipFill.opacity(0.78))
-          .frame(width: 18, height: 3.5)
-          .padding(.bottom, 6)
+        Circle()
+          .fill(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.08))
+          .frame(width: 5, height: 5)
+          .padding(.trailing, 6)
       }
-      .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-    }
-    .frame(width: 46, height: 34)
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-  }
+      .frame(height: 14)
+      .background(previewToolbarFill)
 
-  private var previewChipFill: Color {
-    colorScheme == .dark ? Color.white.opacity(0.22) : Color.white.opacity(0.86)
+      // Content area: Symmetrical grid of capture items (landscape screenshot cards)
+      HStack(spacing: 6) {
+        ForEach(0..<3, id: \.self) { index in
+          RoundedRectangle(cornerRadius: 2, style: .continuous)
+            .fill(previewCardFill.opacity(index == 0 ? 1.0 : 0.68))
+            .frame(width: 16, height: 26)
+            .overlay(
+              RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .stroke(previewWindowStroke, lineWidth: 0.5)
+            )
+        }
+      }
+      .padding(.horizontal, 6)
+      .padding(.top, 6)
+
+      Spacer(minLength: 0)
+    }
   }
 
   private var previewCardFill: Color {
     colorScheme == .dark ? Color.white.opacity(0.12) : Color.white.opacity(0.78)
-  }
-
-  private var previewCardStroke: Color {
-    colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)
-  }
-
-  private var previewWindowFill: Color {
-    colorScheme == .dark ? Color.black.opacity(0.22) : Color.white.opacity(0.72)
   }
 
   private var previewWindowStroke: Color {

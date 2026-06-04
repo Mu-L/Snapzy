@@ -248,28 +248,18 @@ private struct HistoryBackgroundStyleThumbnail: View {
   let isSelected: Bool
 
   var body: some View {
-    ZStack {
-      RoundedRectangle(cornerRadius: 8, style: .continuous)
-        .fill(containerFill)
-
-      HistoryBackdropView(style: style, cornerRadius: 6, compact: true)
-        .padding(4)
-    }
-    .frame(width: 72, height: 52)
-    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-    .overlay(
-      RoundedRectangle(cornerRadius: 8, style: .continuous)
-        .stroke(isSelected ? Color.accentColor : borderColor, lineWidth: isSelected ? 3 : 1)
-    )
-    .shadow(color: .black.opacity(0.15), radius: 2, x: 0, y: 1)
+    HistoryBackdropView(style: style, cornerRadius: 8, compact: true)
+      .frame(width: 72, height: 52)
+      .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+      .overlay(
+        RoundedRectangle(cornerRadius: 8, style: .continuous)
+          .stroke(isSelected ? Color.accentColor : borderColor, lineWidth: isSelected ? 2 : 1)
+      )
+      .shadow(color: .black.opacity(0.15), radius: 2, x: 0, y: 1)
   }
 
   private var borderColor: Color {
     colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)
-  }
-
-  private var containerFill: Color {
-    colorScheme == .dark ? Color.white.opacity(0.03) : Color.black.opacity(0.02)
   }
 }
 
