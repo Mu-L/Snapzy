@@ -74,6 +74,12 @@ struct VideoEditorToolbarView: View {
 
       ToolbarDivider()
 
+      if !state.isGIF {
+        leftSidebarToggleButton
+
+        ToolbarDivider()
+      }
+
       fileActionsGroup
     }
     .padding(.leading, trafficLightsInsetWidth)
@@ -116,7 +122,36 @@ struct VideoEditorToolbarView: View {
       }
       .keyboardShortcut("i", modifiers: [])
       .help(state.isVideoInfoSidebarVisible ? L10n.VideoEditor.hideVideoInfoHint : L10n.VideoEditor.showVideoInfoHint)
+      .popover(isPresented: $state.isVideoInfoSidebarVisible, arrowEdge: .bottom) {
+        VideoDetailsSidebarView(state: state)
+          .frame(width: 320)
+          .frame(height: 380)
+      }
     }
+  }
+
+  private var leftSidebarToggleButton: some View {
+    ToolbarButton(
+      icon: "rectangle.on.rectangle",
+      isSelected: state.isLeftSidebarVisible,
+      highlightColor: ZoomColors.primary
+    ) {
+      state.toggleLeftSidebar()
+    }
+    .keyboardShortcut("b", modifiers: [.command])
+    .help(state.isLeftSidebarVisible ? L10n.VideoEditor.hideLeftSidebarHint : L10n.VideoEditor.showLeftSidebarHint)
+  }
+
+  private var rightSidebarToggleButton: some View {
+    ToolbarButton(
+      icon: "sidebar.right",
+      isSelected: state.isRightSidebarVisible,
+      highlightColor: ZoomColors.primary
+    ) {
+      state.toggleRightSidebar()
+    }
+    .keyboardShortcut("b", modifiers: [.command, .shift])
+    .help(state.isRightSidebarVisible ? L10n.VideoEditor.hideRightSidebarHint : L10n.VideoEditor.showRightSidebarHint)
   }
 
   // MARK: - Center Section
@@ -170,19 +205,9 @@ struct VideoEditorToolbarView: View {
 
   private var rightSection: some View {
     HStack(spacing: WindowSpacingConfiguration.default.toolbarItemSpacing) {
-      // Right sidebar toggle (video only — zoom/background don't apply to GIF)
       if !state.isGIF {
-        ToolbarButton(
-          icon: "sidebar.right",
-          isSelected: state.isRightSidebarVisible,
-          highlightColor: ZoomColors.primary
-        ) {
-          state.toggleRightSidebar()
-        }
-        .keyboardShortcut(".", modifiers: [.command])
-        .help(state.isRightSidebarVisible ? L10n.VideoEditor.hideSidebarHint : L10n.VideoEditor.showSidebarHint)
+        rightSidebarToggleButton
       }
-
     }
   }
 

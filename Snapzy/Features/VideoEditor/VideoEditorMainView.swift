@@ -15,7 +15,6 @@ struct VideoEditorMainView: View {
   var onSave: (() -> Void)?
   var onCancel: (() -> Void)?
 
-  private let videoDetailsSidebarWidth: CGFloat = 280
 
   // Computed property for current frame preview
   private var currentFrameImage: NSImage? {
@@ -124,9 +123,8 @@ struct VideoEditorMainView: View {
 
   private var videoWorkspaceRow: some View {
     HStack(spacing: 0) {
-      if state.isVideoInfoSidebarVisible {
-        VideoDetailsSidebarView(state: state)
-          .frame(width: videoDetailsSidebarWidth)
+      if state.isLeftSidebarVisible {
+        VideoEditorLeftSidebar(state: state)
           .frame(maxHeight: .infinity, alignment: .top)
 
         Divider()
@@ -144,7 +142,7 @@ struct VideoEditorMainView: View {
         .frame(maxHeight: .infinity, alignment: .top)
       }
     }
-    .animation(.easeInOut(duration: 0.2), value: state.isVideoInfoSidebarVisible)
+    .animation(.easeInOut(duration: 0.2), value: state.isLeftSidebarVisible)
     .animation(.easeInOut(duration: 0.2), value: state.isRightSidebarVisible)
   }
 

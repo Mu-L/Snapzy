@@ -764,7 +764,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tải bản chụp/ghi lên cloud & sao chép liên kết"
+            "value" : "Tải bản chụp\/ghi lên cloud & sao chép liên kết"
           }
         },
         "zh-Hans" : {
@@ -1886,132 +1886,132 @@
         }
       }
     },
-    "preferences-capture.annotate-close-after-drag-description" : {
-      "extractionState" : "manual",
+    "preferences-capture.animation-duration-description" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Den Annotate-Editor nach einem erfolgreichen Drag-to-App-Drop automatisch schließen"
+            "value" : "Ripple-Erweiterungsgeschwindigkeit (%@s)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatically close the Annotate editor after a successful drag-to-app drop"
+            "value" : "Ripple expand speed (%@s)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cerrar automáticamente el editor Annotate tras soltar correctamente en otra app"
+            "value" : "Velocidad de expansión de ondulación (%@s)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fermer automatiquement l’éditeur Annotate après un dépôt réussi dans une autre app"
+            "value" : "Vitesse d'expansion de l'ondulation (%@s)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "別のアプリへのドラッグ＆ドロップが成功した後、Annotate エディタを自動的に閉じる"
+            "value" : "リップル拡大速度 (%@s)"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "다른 앱으로 드래그 앤 드롭에 성공한 후 Annotate 편집기를 자동으로 닫기"
+            "value" : "리플 확장 속도(%@s)"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Автоматически закрывать редактор Annotate после успешного перетаскивания в другое приложение"
+            "value" : "Скорость расширения Ripple (%@s)"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tự động đóng trình chỉnh sửa Annotate sau khi thả thành công sang ứng dụng khác"
+            "value" : "Tốc độ lan của gợn sóng (%@s)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "成功拖放到其他应用后自动关闭 Annotate 编辑器"
+            "value" : "波纹扩展速度(%@s)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "成功拖放到其他 App 後自動關閉 Annotate 編輯器"
+            "value" : "波紋擴展速度(%@s)"
           }
         }
       }
     },
-    "preferences-capture.annotate-close-after-drag-title" : {
-      "extractionState" : "manual",
+    "preferences-capture.animation-duration-title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nach Drop schließen"
+            "value" : "Animationsdauer"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Close after drop"
+            "value" : "Animation Duration"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cerrar tras soltar"
+            "value" : "Duración de la animación"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fermer après dépôt"
+            "value" : "Durée de l'animation"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ドロップ後に閉じる"
+            "value" : "アニメーションの長さ"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "드롭 후 닫기"
+            "value" : "애니메이션 기간"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Закрывать после переноса"
+            "value" : "Продолжительность анимации"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Đóng sau khi thả"
+            "value" : "Thời lượng hiệu ứng"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "放下后关闭"
+            "value" : "动画持续时间"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "放開後關閉"
+            "value" : "動畫持續時間"
           }
         }
       }
@@ -2142,138 +2142,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "放開後重新啟用編輯器"
-          }
-        }
-      }
-    },
-    "preferences-capture.annotate-quick-properties-sync-description" : {
-      "comment" : "Annotate preferences setting description for synchronizing quick annotation properties",
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einen Satz Standards für kompatible Anmerkungswerkzeuge verwenden. Deaktivieren, damit jedes Werkzeug Farbe, Linie, Radius, Textgröße und Wasserzeichen getrennt behält"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Use one set of defaults for compatible annotation tools. Turn off to keep each tool's color, stroke, radius, text size, and watermark values separate."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usa un solo conjunto de valores para herramientas de anotación compatibles. Desactívalo para mantener separados el color, trazo, radio, tamaño de texto y marca de agua de cada herramienta"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utilise un seul jeu de valeurs par défaut pour les outils d’annotation compatibles. Désactivez pour garder séparés la couleur, le trait, le rayon, la taille du texte et le filigrane de chaque outil"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "対応する注釈ツールで既定値を1セット共有します。オフにすると、各ツールの色、線幅、角丸、文字サイズ、ウォーターマーク値を個別に保持します"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "호환되는 주석 도구에서 한 세트의 기본값을 사용합니다. 끄면 각 도구의 색상, 선, 반경, 글자 크기, 워터마크 값을 따로 유지합니다"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Использовать один набор значений по умолчанию для совместимых инструментов аннотаций. Отключите, чтобы цвет, линия, радиус, размер текста и водяной знак хранились отдельно для каждого инструмента"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dùng chung một bộ mặc định cho các công cụ chú thích tương thích. Tắt để mỗi công cụ giữ riêng màu, nét, bo góc, cỡ chữ và watermark"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "为兼容的注释工具使用同一组默认值。关闭后，每个工具的颜色、描边、圆角、文字大小和水印值会分开保存"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "為相容的註解工具使用同一組預設值。關閉後，每個工具的顏色、描邊、圓角、文字大小與浮水印值會分開保存"
-          }
-        }
-      }
-    },
-    "preferences-capture.annotate-quick-properties-sync-title" : {
-      "comment" : "Annotate preferences setting title for synchronizing quick annotation properties",
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Werkzeug-Standards synchronisieren"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync tool defaults"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincronizar valores de herramientas"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Synchroniser les réglages"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ツール既定値を同期"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "도구 기본값 동기화"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синхронизировать настройки"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Đồng bộ mặc định"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "同步工具默认值"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "同步工具預設值"
           }
         }
       }
@@ -2603,132 +2471,264 @@
         }
       }
     },
-    "preferences-capture.animation-duration-description" : {
-      "extractionState" : "stale",
+    "preferences-capture.annotate-close-after-drag-description" : {
+      "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ripple-Erweiterungsgeschwindigkeit (%@s)"
+            "value" : "Den Annotate-Editor nach einem erfolgreichen Drag-to-App-Drop automatisch schließen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ripple expand speed (%@s)"
+            "value" : "Automatically close the Annotate editor after a successful drag-to-app drop"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Velocidad de expansión de ondulación (%@s)"
+            "value" : "Cerrar automáticamente el editor Annotate tras soltar correctamente en otra app"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vitesse d'expansion de l'ondulation (%@s)"
+            "value" : "Fermer automatiquement l’éditeur Annotate après un dépôt réussi dans une autre app"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "リップル拡大速度 (%@s)"
+            "value" : "別のアプリへのドラッグ＆ドロップが成功した後、Annotate エディタを自動的に閉じる"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "리플 확장 속도(%@s)"
+            "value" : "다른 앱으로 드래그 앤 드롭에 성공한 후 Annotate 편집기를 자동으로 닫기"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Скорость расширения Ripple (%@s)"
+            "value" : "Автоматически закрывать редактор Annotate после успешного перетаскивания в другое приложение"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tốc độ lan của gợn sóng (%@s)"
+            "value" : "Tự động đóng trình chỉnh sửa Annotate sau khi thả thành công sang ứng dụng khác"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "波纹扩展速度(%@s)"
+            "value" : "成功拖放到其他应用后自动关闭 Annotate 编辑器"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "波紋擴展速度(%@s)"
+            "value" : "成功拖放到其他 App 後自動關閉 Annotate 編輯器"
           }
         }
       }
     },
-    "preferences-capture.animation-duration-title" : {
-      "extractionState" : "stale",
+    "preferences-capture.annotate-close-after-drag-title" : {
+      "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Animationsdauer"
+            "value" : "Nach Drop schließen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Animation Duration"
+            "value" : "Close after drop"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Duración de la animación"
+            "value" : "Cerrar tras soltar"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Durée de l'animation"
+            "value" : "Fermer après dépôt"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アニメーションの長さ"
+            "value" : "ドロップ後に閉じる"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "애니메이션 기간"
+            "value" : "드롭 후 닫기"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Продолжительность анимации"
+            "value" : "Закрывать после переноса"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Thời lượng hiệu ứng"
+            "value" : "Đóng sau khi thả"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "动画持续时间"
+            "value" : "放下后关闭"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "動畫持續時間"
+            "value" : "放開後關閉"
+          }
+        }
+      }
+    },
+    "preferences-capture.annotate-quick-properties-sync-description" : {
+      "comment" : "Annotate preferences setting description for synchronizing quick annotation properties",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einen Satz Standards für kompatible Anmerkungswerkzeuge verwenden. Deaktivieren, damit jedes Werkzeug Farbe, Linie, Radius, Textgröße und Wasserzeichen getrennt behält"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use one set of defaults for compatible annotation tools. Turn off to keep each tool's color, stroke, radius, text size, and watermark values separate."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa un solo conjunto de valores para herramientas de anotación compatibles. Desactívalo para mantener separados el color, trazo, radio, tamaño de texto y marca de agua de cada herramienta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilise un seul jeu de valeurs par défaut pour les outils d’annotation compatibles. Désactivez pour garder séparés la couleur, le trait, le rayon, la taille du texte et le filigrane de chaque outil"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "対応する注釈ツールで既定値を1セット共有します。オフにすると、各ツールの色、線幅、角丸、文字サイズ、ウォーターマーク値を個別に保持します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "호환되는 주석 도구에서 한 세트의 기본값을 사용합니다. 끄면 각 도구의 색상, 선, 반경, 글자 크기, 워터마크 값을 따로 유지합니다"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Использовать один набор значений по умолчанию для совместимых инструментов аннотаций. Отключите, чтобы цвет, линия, радиус, размер текста и водяной знак хранились отдельно для каждого инструмента"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dùng chung một bộ mặc định cho các công cụ chú thích tương thích. Tắt để mỗi công cụ giữ riêng màu, nét, bo góc, cỡ chữ và watermark"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为兼容的注释工具使用同一组默认值。关闭后，每个工具的颜色、描边、圆角、文字大小和水印值会分开保存"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "為相容的註解工具使用同一組預設值。關閉後，每個工具的顏色、描邊、圓角、文字大小與浮水印值會分開保存"
+          }
+        }
+      }
+    },
+    "preferences-capture.annotate-quick-properties-sync-title" : {
+      "comment" : "Annotate preferences setting title for synchronizing quick annotation properties",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Werkzeug-Standards synchronisieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync tool defaults"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizar valores de herramientas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchroniser les réglages"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ツール既定値を同期"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "도구 기본값 동기화"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синхронизировать настройки"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đồng bộ mặc định"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步工具默认值"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步工具預設值"
           }
         }
       }
@@ -2869,61 +2869,189 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verfügbare Token: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Verwende /, um Unterordner zu erstellen."
+            "value" : "Verfügbare Token: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Verwende \/, um Unterordner zu erstellen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Available tokens: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Use / to create subfolders."
+            "value" : "Available tokens: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Use \/ to create subfolders."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tokens disponibles: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Usa / para crear subcarpetas."
+            "value" : "Tokens disponibles: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Usa \/ para crear subcarpetas."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jetons disponibles : {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Utilisez / pour créer des sous-dossiers."
+            "value" : "Jetons disponibles : {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Utilisez \/ pour créer des sous-dossiers."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "利用可能なトークン: {datetime}、{date}、{year}、{yearShort}、{month}、{monthName}、{monthShort}、{day}、{time}、{ms}、{timestamp}、{type}。/ でサブフォルダを作成できます。"
+            "value" : "利用可能なトークン: {datetime}、{date}、{year}、{yearShort}、{month}、{monthName}、{monthShort}、{day}、{time}、{ms}、{timestamp}、{type}。\/ でサブフォルダを作成できます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사용 가능한 토큰: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. /를 사용해 하위 폴더를 만들 수 있습니다."
+            "value" : "사용 가능한 토큰: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. \/를 사용해 하위 폴더를 만들 수 있습니다."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Доступные токены: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Используйте / для создания подпапок."
+            "value" : "Доступные токены: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Используйте \/ для создания подпапок."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Các token có sẵn: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Dùng / để tạo thư mục con."
+            "value" : "Các token có sẵn: {datetime}, {date}, {year}, {yearShort}, {month}, {monthName}, {monthShort}, {day}, {time}, {ms}, {timestamp}, {type}. Dùng \/ để tạo thư mục con."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可用标记：{datetime}、{date}、{year}、{yearShort}、{month}、{monthName}、{monthShort}、{day}、{time}、{ms}、{timestamp}、{type}。使用 / 创建子文件夹。"
+            "value" : "可用标记：{datetime}、{date}、{year}、{yearShort}、{month}、{monthName}、{monthShort}、{day}、{time}、{ms}、{timestamp}、{type}。使用 \/ 创建子文件夹。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可用標記：{datetime}、{date}、{year}、{yearShort}、{month}、{monthName}、{monthShort}、{day}、{time}、{ms}、{timestamp}、{type}。使用 / 建立子資料夾。"
+            "value" : "可用標記：{datetime}、{date}、{year}、{yearShort}、{month}、{monthName}、{monthShort}、{day}、{time}、{ms}、{timestamp}、{type}。使用 \/ 建立子資料夾。"
+          }
+        }
+      }
+    },
+    "preferences-capture.default-preset-description" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wendet direkt nach jeder Screenshot-Aufnahme ein Annotate-Preset an"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apply an Annotate preset right after each screenshot capture"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aplica un preajuste de Annotate justo después de cada captura de pantalla"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applique un préréglage Annotate juste après chaque capture d’écran"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "各スクリーンショット撮影直後にAnnotateプリセットを適用します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "각 스크린샷 캡처 직후 Annotate 프리셋을 적용합니다"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Применяет пресет Annotate сразу после каждого снимка экрана"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Áp dụng preset Annotate ngay sau mỗi lần chụp ảnh"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每次截图后立即应用 Annotate 预设"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每次截圖後立即套用 Annotate 預設"
+          }
+        }
+      }
+    },
+    "preferences-capture.default-preset-title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard-Voreinstellung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default Preset"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preajuste predeterminado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préréglage par défaut"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルトプリセット"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기본 프리셋"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пресет по умолчанию"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preset mặc định"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认预设"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "預設值"
           }
         }
       }
@@ -4293,194 +4421,67 @@
         }
       }
     },
-    "preferences-capture.default-preset-description" : {
+    "preferences-capture.microphone-description" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wendet direkt nach jeder Screenshot-Aufnahme ein Annotate-Preset an"
+            "value" : "Erfassen Sie Ihre Stimme"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apply an Annotate preset right after each screenshot capture"
+            "value" : "Capture your voice"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aplica un preajuste de Annotate justo después de cada captura de pantalla"
+            "value" : "Captura tu voz"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Applique un préréglage Annotate juste après chaque capture d’écran"
+            "value" : "Capturez votre voix"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "各スクリーンショット撮影直後にAnnotateプリセットを適用します"
+            "value" : "あなたの声をキャプチャ"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "각 스크린샷 캡처 직후 Annotate 프리셋을 적용합니다"
+            "value" : "목소리를 담아"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Применяет пресет Annotate сразу после каждого снимка экрана"
+            "value" : "Запечатлейте свой голос"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Áp dụng preset Annotate ngay sau mỗi lần chụp ảnh"
+            "value" : "Ghi lại giọng nói của bạn"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每次截图后立即应用 Annotate 预设"
+            "value" : "录制麦克风声音"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每次截圖後立即套用 Annotate 預設"
-          }
-        }
-      }
-    },
-    "preferences-capture.default-preset-title" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Standard-Voreinstellung"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Default Preset"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preajuste predeterminado"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Préréglage par défaut"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デフォルトプリセット"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기본 프리셋"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пресет по умолчанию"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preset mặc định"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "默认预设"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "預設值"
-          }
-        }
-      }
-    },
-    "preferences-capture.section-screenshot-preset" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Voreinstellung"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preset"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preajuste"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Préréglage"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "プリセット"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "프리셋"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пресет"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preset ảnh chụp"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "预设"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "預設"
+            "value" : "錄製麥克風聲音"
           }
         }
       }
@@ -4615,71 +4616,6 @@
         }
       }
     },
-    "preferences-capture.microphone-description" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erfassen Sie Ihre Stimme"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Capture your voice"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Captura tu voz"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Capturez votre voix"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "あなたの声をキャプチャ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "목소리를 담아"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Запечатлейте свой голос"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ghi lại giọng nói của bạn"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "录制麦克风声音"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "錄製麥克風聲音"
-          }
-        }
-      }
-    },
     "preferences-capture.microphone-requires-macos" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4749,16 +4685,64 @@
       "comment" : "Capture preferences setting description",
       "extractionState" : "stale",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine Benachrichtigung anzeigen, wenn Text in die Zwischenablage kopiert wird"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Show a toast when text is copied to clipboard"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar un aviso cuando el texto se copia al portapapeles"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher une notification lorsque le texte est copié dans le presse-papiers"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "テキストがクリップボードにコピーされたときにトーストを表示する"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "텍스트가 클립보드에 복사되었을 때 알림 표시"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать уведомление при копировании текста в буфер обмена"
+          }
+        },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hiển thị thông báo khi văn bản được sao chép vào bộ nhớ tạm"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当文本复制到剪贴板时显示提示"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "當文字複製到剪貼簿時顯示提示"
           }
         }
       }
@@ -4767,16 +4751,64 @@
       "comment" : "Capture preferences setting title",
       "extractionState" : "stale",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfolgsbenachrichtigung"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Success Notification"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificación de éxito"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notification de succès"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "成功通知"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "성공 알림"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уведомление об успехе"
+          }
+        },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Thông báo thành công"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "成功通知"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "成功通知"
           }
         }
       }
@@ -5232,6 +5264,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "錄制預覽：%@"
+          }
+        }
+      }
+    },
+    "preferences-capture.recording-show-cursor-description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mauszeiger in aufgezeichnete Videos und GIFs einbinden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Include mouse pointer in recorded videos and GIFs"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incluir el puntero del mouse en videos y GIF grabados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inclure le pointeur de la souris dans les vidéos et GIF enregistrés"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "録画したビデオとGIFにマウス ポインタを含める"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "녹화된 비디오와 GIF에 마우스 포인터 포함"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включить указатель мыши в записанные видео и GIF"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bao gồm con trỏ chuột trong video và GIF đã ghi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在录制的视频和 GIF 中包含鼠标指针"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在錄製的影片和 GIF 中包含滑鼠游標"
           }
         }
       }
@@ -6475,16 +6572,64 @@
       "comment" : "Capture preferences section title",
       "extractionState" : "stale",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OCR (Textextraktion)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "OCR (Text Extraction)"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OCR (Extracción de texto)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OCR (Extraction de texte)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OCR (テキスト抽出)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OCR (텍스트 추출)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OCR (Распознавание текста)"
+          }
+        },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "OCR (Trích xuất văn bản)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OCR (文本识别)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OCR (文字識別)"
           }
         }
       }
@@ -6814,6 +6959,70 @@
         }
       }
     },
+    "preferences-capture.section-screenshot-preset" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voreinstellung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preset"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preajuste"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préréglage"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プリセット"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프리셋"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пресет"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preset ảnh chụp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预设"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "預設"
+          }
+        }
+      }
+    },
     "preferences-capture.section-scrolling-capture" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -6875,71 +7084,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "捲動截圖"
-          }
-        }
-      }
-    },
-    "preferences-capture.recording-show-cursor-description" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mauszeiger in aufgezeichnete Videos und GIFs einbinden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Include mouse pointer in recorded videos and GIFs"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Incluir el puntero del mouse en videos y GIF grabados"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inclure le pointeur de la souris dans les vidéos et GIF enregistrés"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "録画したビデオとGIFにマウス ポインタを含める"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "녹화된 비디오와 GIF에 마우스 포인터 포함"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Включить указатель мыши в записанные видео и GIF"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bao gồm con trỏ chuột trong video và GIF đã ghi"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在录制的视频和 GIF 中包含鼠标指针"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在錄製的影片和 GIF 中包含滑鼠游標"
           }
         }
       }
@@ -8829,6 +8973,71 @@
         }
       }
     },
+    "scrolling-capture-status.alignment-paused" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausrichtung pausiert. Machen Sie langsamer und behalten Sie eine Richtung bei, damit Snapzy sich erholen kann."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alignment paused. Slow down and keep one direction so Snapzy can recover."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alineación pausada. Reduce la velocidad y mantén una dirección para que Snapzy pueda recuperarse."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’alignement s’est arrêté. Ralentissez et gardez une direction pour que Snapzy puisse récupérer."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アライメントは一時停止されました。 Snapzy が回復できるように、速度を落として一方向を維持してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정렬이 일시중지되었습니다. Snapzy가 회복할 수 있도록 속도를 줄이고 한 방향을 유지하세요."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выравнивание приостановлено. Снизьте скорость и держитесь одного направления, чтобы Snapzy мог восстановиться."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đã tạm dừng căn chỉnh. Hãy cuộn chậm hơn và giữ một hướng để Snapzy khôi phục."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对齐暂停。放慢速度并保持一个方向，以便 Snapzy 能够恢复。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "對齊暫停。放慢速度並保持一個方向，以便 Snapzy 能夠恢復。"
+          }
+        }
+      }
+    },
     "scrolling-capture-status.auto-scroll-needs-accessibility" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -8955,71 +9164,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自動捲動已暫停。將指標移回所選區域內即可繼續。"
-          }
-        }
-      }
-    },
-    "scrolling-capture-status.alignment-paused" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ausrichtung pausiert. Machen Sie langsamer und behalten Sie eine Richtung bei, damit Snapzy sich erholen kann."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alignment paused. Slow down and keep one direction so Snapzy can recover."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alineación pausada. Reduce la velocidad y mantén una dirección para que Snapzy pueda recuperarse."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’alignement s’est arrêté. Ralentissez et gardez une direction pour que Snapzy puisse récupérer."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アライメントは一時停止されました。 Snapzy が回復できるように、速度を落として一方向を維持してください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "정렬이 일시중지되었습니다. Snapzy가 회복할 수 있도록 속도를 줄이고 한 방향을 유지하세요."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Выравнивание приостановлено. Снизьте скорость и держитесь одного направления, чтобы Snapzy мог восстановиться."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Đã tạm dừng căn chỉnh. Hãy cuộn chậm hơn và giữ một hướng để Snapzy khôi phục."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "对齐暂停。放慢速度并保持一个方向，以便 Snapzy 能够恢复。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "對齊暫停。放慢速度並保持一個方向，以便 Snapzy 能夠恢復。"
           }
         }
       }
@@ -12144,71 +12288,6 @@
         }
       }
     },
-    "scrolling-capture.guidance-place-mouse-inside-selection" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maus in den Aufnahmebereich bewegen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Place mouse inside the capture area"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Coloca el ratón dentro del área de captura"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Placez la souris dans la zone de capture"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "マウスをキャプチャ領域内に置いてください"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "마우스를 캡처 영역 안에 두세요"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Поместите мышь в область захвата"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Đặt chuột vào vùng chụp"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将鼠标放在捕捉区域内"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "將滑鼠放在擷取區域內"
-          }
-        }
-      }
-    },
     "scrolling-capture.guidance-continue-manually" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -13310,6 +13389,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一個方向，穩健步伐"
+          }
+        }
+      }
+    },
+    "scrolling-capture.guidance-place-mouse-inside-selection" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maus in den Aufnahmebereich bewegen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Place mouse inside the capture area"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coloca el ratón dentro del área de captura"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Placez la souris dans la zone de capture"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マウスをキャプチャ領域内に置いてください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마우스를 캡처 영역 안에 두세요"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поместите мышь в область захвата"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đặt chuột vào vùng chụp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将鼠标放在捕捉区域内"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將滑鼠放在擷取區域內"
           }
         }
       }

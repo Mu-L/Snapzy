@@ -27,26 +27,6 @@ enum EditorAction: Equatable {
   )
 }
 
-/// Tab selection for the video editor right sidebar.
-enum VideoEditorSidebarTab: CaseIterable, Hashable {
-  case background
-  case zoom
-
-  var icon: String {
-    switch self {
-    case .background: return "swatchpalette"
-    case .zoom: return "plus.magnifyingglass"
-    }
-  }
-
-  var title: String {
-    switch self {
-    case .background: return L10n.VideoEditor.backgroundTab
-    case .zoom: return L10n.VideoEditor.zoomTab
-    }
-  }
-}
-
 /// Playback state changes frequently, so it stays isolated from the broader editor model.
 @MainActor
 final class VideoEditorPlaybackState: ObservableObject {
@@ -190,8 +170,8 @@ final class VideoEditorState: ObservableObject {
   @Published var selectedZoomId: UUID? = nil
   @Published var isZoomTrackVisible: Bool = true
   @Published var isVideoInfoSidebarVisible: Bool = false
+  @Published var isLeftSidebarVisible: Bool = false
   @Published var isRightSidebarVisible: Bool = false
-  @Published var selectedRightSidebarTab: VideoEditorSidebarTab = .background
   @Published var zoomTransitionDuration: TimeInterval = ZoomCalculator.defaultTransitionDuration {
     didSet {
       let clamped = ZoomCalculator.clampTransitionDuration(zoomTransitionDuration)
@@ -237,7 +217,6 @@ final class VideoEditorState: ObservableObject {
   @Published var backgroundCornerRadius: CGFloat = 0
   @Published var backgroundAlignment: ImageAlignment = .center
   @Published var backgroundAspectRatio: AspectRatioOption = .auto
-  @Published var isBackgroundSidebarVisible: Bool = false
 
   // MARK: - Export State
 
@@ -1034,7 +1013,6 @@ final class VideoEditorState: ObservableObject {
   func openZoomConfiguration(id: UUID) {
     guard zoomSegments.contains(where: { $0.id == id }) else { return }
     selectedZoomId = id
-    selectedRightSidebarTab = .zoom
     isRightSidebarVisible = true
   }
 
@@ -1070,14 +1048,14 @@ final class VideoEditorState: ObservableObject {
     isVideoInfoSidebarVisible.toggle()
   }
 
-  /// Toggle right sidebar visibility
-  func toggleRightSidebar() {
-    isRightSidebarVisible.toggle()
+  /// Toggle the left background sidebar visibility.
+  func toggleLeftSidebar() {
+    isLeftSidebarVisible.toggle()
   }
 
-  /// Toggle background sidebar visibility
-  func toggleBackgroundSidebar() {
-    isBackgroundSidebarVisible.toggle()
+  /// Toggle the right zoom configuration sidebar visibility.
+  func toggleRightSidebar() {
+    isRightSidebarVisible.toggle()
   }
 
   // MARK: - Export Settings Methods

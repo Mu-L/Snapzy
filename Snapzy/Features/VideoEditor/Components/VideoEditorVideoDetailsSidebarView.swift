@@ -26,6 +26,19 @@ struct VideoDetailsSidebarView: View {
           Text(L10n.VideoEditor.videoDetails)
             .font(Typography.sectionHeader)
             .foregroundColor(SidebarColors.labelPrimary)
+
+          Spacer()
+
+          Button {
+            state.isVideoInfoSidebarVisible = false
+          } label: {
+            Image(systemName: "xmark")
+              .font(.system(size: 10, weight: .semibold))
+              .foregroundColor(SidebarColors.labelSecondary)
+              .frame(width: 16, height: 16)
+              .contentShape(Rectangle())
+          }
+          .buttonStyle(.plain)
         }
 
         Divider()
@@ -113,6 +126,7 @@ private struct DetailRow: View {
         .foregroundColor(SidebarColors.labelPrimary)
         .lineLimit(1)
         .truncationMode(.middle)
+        .help(value)
     }
   }
 }

@@ -3576,67 +3576,130 @@
         }
       }
     },
-    "video-editor.hide-sidebar-hint" : {
-      "extractionState" : "stale",
+    "video-editor.hide-left-sidebar-hint" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seitenleiste ausblenden (⌘.)"
+            "value" : "Linke Seitenleiste ausblenden (⌘B)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hide Sidebar (⌘.)"
+            "value" : "Hide Left Sidebar (⌘B)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ocultar barra lateral (⌘.)"
+            "value" : "Ocultar barra lateral izquierda (⌘B)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Masquer la barre latérale (⌘.)"
+            "value" : "Masquer la barre latérale gauche (⌘B)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "サイドバーを非表示にする (⌘.)"
+            "value" : "左サイドバーを非表示にする (⌘B)"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사이드바 숨기기(⌘.)"
+            "value" : "왼쪽 사이드바 숨기기(⌘B)"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Скрыть боковую панель (⌘.)"
+            "value" : "Скрыть левую боковую панель (⌘B)"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "An sidebar (⌘.)"
+            "value" : "Ẩn sidebar trái (⌘B)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隐藏侧边栏（⌘。）"
+            "value" : "隐藏左侧边栏（⌘B）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隱藏側邊欄（⌘。）"
+            "value" : "隱藏左側邊欄（⌘B）"
+          }
+        }
+      }
+    },
+    "video-editor.hide-right-sidebar-hint" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechte Seitenleiste ausblenden (⌘⇧B)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide Right Sidebar (⌘⇧B)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar barra lateral derecha (⌘⇧B)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masquer la barre latérale droite (⌘⇧B)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右サイドバーを非表示にする (⌘⇧B)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오른쪽 사이드바 숨기기(⌘⇧B)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыть правую боковую панель (⌘⇧B)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ẩn sidebar phải (⌘⇧B)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐藏右侧边栏（⌘⇧B）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隱藏右側邊欄（⌘⇧B）"
           }
         }
       }
@@ -5916,67 +5979,130 @@
         }
       }
     },
-    "video-editor.show-sidebar-hint" : {
-      "extractionState" : "stale",
+    "video-editor.show-left-sidebar-hint" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seitenleiste anzeigen (⌘.)"
+            "value" : "Linke Seitenleiste anzeigen (⌘B)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Show Sidebar (⌘.)"
+            "value" : "Show Left Sidebar (⌘B)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar barra lateral (⌘.)"
+            "value" : "Mostrar barra lateral izquierda (⌘B)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Afficher la barre latérale (⌘.)"
+            "value" : "Afficher la barre latérale gauche (⌘B)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "サイドバーを表示 (⌘.)"
+            "value" : "左サイドバーを表示 (⌘B)"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사이드바 표시(⌘.)"
+            "value" : "왼쪽 사이드바 표시(⌘B)"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Показать боковую панель (⌘.)"
+            "value" : "Показать левую боковую панель (⌘B)"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hiện sidebar (⌘.)"
+            "value" : "Hiện sidebar trái (⌘B)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示侧边栏 (⌘。)"
+            "value" : "显示左侧边栏 (⌘B)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "顯示側邊欄 (⌘。)"
+            "value" : "顯示左側邊欄 (⌘B)"
+          }
+        }
+      }
+    },
+    "video-editor.show-right-sidebar-hint" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechte Seitenleiste anzeigen (⌘⇧B)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Right Sidebar (⌘⇧B)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar barra lateral derecha (⌘⇧B)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher la barre latérale droite (⌘⇧B)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右サイドバーを表示 (⌘⇧B)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오른쪽 사이드바 표시(⌘⇧B)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать правую боковую панель (⌘⇧B)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiện sidebar phải (⌘⇧B)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示右侧边栏 (⌘⇧B)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示右側邊欄 (⌘⇧B)"
           }
         }
       }

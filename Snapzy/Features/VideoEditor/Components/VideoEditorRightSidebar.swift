@@ -2,51 +2,31 @@
 //  VideoEditorRightSidebar.swift
 //  Snapzy
 //
-//  Tabbed right sidebar for video editor with Zoom and Background settings
-//  Uses vertical tab bar on right edge for better scalability
+//  Sidebars for video editor background controls and zoom configuration
 //
 
 import SwiftUI
 
-/// Tabbed right sidebar combining Zoom and Background settings
-/// Layout: [Content Area] | [Vertical Tab Bar]
+/// Left sidebar for background and canvas settings, matching the Annotate window pattern.
+struct VideoEditorLeftSidebar: View {
+  @ObservedObject var state: VideoEditorState
+
+  var body: some View {
+    VideoBackgroundSidebarView(state: state)
+      .frame(width: 240)
+      .frame(maxHeight: .infinity)
+  }
+}
+
+/// Right sidebar for zoom configuration and future item-specific properties.
 struct VideoEditorRightSidebar: View {
   @ObservedObject var state: VideoEditorState
   let previewImage: NSImage?
 
   var body: some View {
-    HStack(spacing: 0) {
-      tabContent
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-      Divider()
-
-      VerticalTabBar(
-        selection: $state.selectedRightSidebarTab,
-        tabs: VideoEditorSidebarTab.allCases
-      ) { tab in
-        (icon: tab.icon, title: tab.title)
-      }
-    }
-    .frame(width: 320)
-    .frame(maxHeight: .infinity)
-    .onChange(of: state.selectedZoomId) { newValue in
-      if newValue != nil {
-        withAnimation(.easeInOut(duration: 0.15)) {
-          state.selectedRightSidebarTab = .zoom
-        }
-      }
-    }
-  }
-
-  @ViewBuilder
-  private var tabContent: some View {
-    switch state.selectedRightSidebarTab {
-    case .zoom:
-      ZoomSettingsContent(state: state, previewImage: previewImage)
-    case .background:
-      VideoBackgroundSidebarView(state: state)
-    }
+    ZoomSettingsContent(state: state, previewImage: previewImage)
+      .frame(width: 320)
+      .frame(maxHeight: .infinity)
   }
 }
 

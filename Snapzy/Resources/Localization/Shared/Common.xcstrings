@@ -982,61 +982,61 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installieren Sie Snapzy in /Applications, bevor Sie Berechtigungen erteilen. Aktueller Pfad: %@"
+            "value" : "Installieren Sie Snapzy in \/Applications, bevor Sie Berechtigungen erteilen. Aktueller Pfad: %@"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Install Snapzy in /Applications before granting permissions. Current path: %@"
+            "value" : "Install Snapzy in \/Applications before granting permissions. Current path: %@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instale Snapzy en /Aplicaciones antes de otorgar permisos. Ruta actual: %@"
+            "value" : "Instale Snapzy en \/Aplicaciones antes de otorgar permisos. Ruta actual: %@"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installez Snapzy dans /Applications avant d'accorder les autorisations. Chemin actuel : %@"
+            "value" : "Installez Snapzy dans \/Applications avant d'accorder les autorisations. Chemin actuel : %@"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "権限を付与する前に、/Applications に Snapzy をインストールします。現在のパス: %@"
+            "value" : "権限を付与する前に、\/Applications に Snapzy をインストールします。現在のパス: %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "권한을 부여하기 전에 /Applications에 Snapzy를 설치하세요. 현재 경로: %@"
+            "value" : "권한을 부여하기 전에 \/Applications에 Snapzy를 설치하세요. 현재 경로: %@"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Прежде чем предоставлять разрешения, установите Snapzy в каталоге /Applications. Текущий путь: %@"
+            "value" : "Прежде чем предоставлять разрешения, установите Snapzy в каталоге \/Applications. Текущий путь: %@"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hãy cài Snapzy trong /Applications trước khi cấp quyền. Đường dẫn hiện tại: %@"
+            "value" : "Hãy cài Snapzy trong \/Applications trước khi cấp quyền. Đường dẫn hiện tại: %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在授予权限之前，在 /Applications 中安装 Snapzy。当前路径：%@"
+            "value" : "在授予权限之前，在 \/Applications 中安装 Snapzy。当前路径：%@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在授予權限之前，在 /Applications 中安裝 Snapzy。當前路徑：%@"
+            "value" : "在授予權限之前，在 \/Applications 中安裝 Snapzy。當前路徑：%@"
           }
         }
       }
@@ -1520,7 +1520,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rapport hauteur/largeur"
+            "value" : "Rapport hauteur\/largeur"
           }
         },
         "ja" : {
@@ -2864,16 +2864,64 @@
     "common.drag-colors-here" : {
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farben hierher ziehen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Drag colors here"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrastra los colores aquí"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faire glisser les couleurs ici"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ここに色をドラッグ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "여기로 색상 드래그"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перетащите цвета сюда"
+          }
+        },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kéo màu vào đây"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拖动颜色到此处"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拖曳顏色至此"
           }
         }
       }
@@ -3203,6 +3251,71 @@
         }
       }
     },
+    "common.favorite" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorite"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorito"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favori"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入り"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "즐겨찾기"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Избранное"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yêu thích"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收藏"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收藏"
+          }
+        }
+      }
+    },
     "common.file" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3264,23 +3377,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "檔案"
-          }
-        }
-      }
-    },
-    "common.favorite" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Favorite"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yêu thích"
           }
         }
       }
@@ -5823,16 +5919,64 @@
     "common.restore" : {
       "extractionState" : "stale",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiederherstellen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Restore"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurer"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復元"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복원"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Восстановить"
+          }
+        },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Khôi phục"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还原"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "還原"
           }
         }
       }

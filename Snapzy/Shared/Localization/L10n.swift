@@ -5242,15 +5242,25 @@ enum L10n {
       defaultValue: "Filename",
       comment: "Placeholder for the rename field in the video editor toolbar"
     )
-    static let showSidebarHint = string(
-      "video-editor.show-sidebar-hint",
-      defaultValue: "Show Sidebar (⌘.)",
-      comment: "Tooltip for showing the right sidebar in the video editor"
+    static let showLeftSidebarHint = string(
+      "video-editor.show-left-sidebar-hint",
+      defaultValue: "Show Left Sidebar (⌘B)",
+      comment: "Tooltip for showing the left background sidebar in the video editor"
     )
-    static let hideSidebarHint = string(
-      "video-editor.hide-sidebar-hint",
-      defaultValue: "Hide Sidebar (⌘.)",
-      comment: "Tooltip for hiding the right sidebar in the video editor"
+    static let hideLeftSidebarHint = string(
+      "video-editor.hide-left-sidebar-hint",
+      defaultValue: "Hide Left Sidebar (⌘B)",
+      comment: "Tooltip for hiding the left background sidebar in the video editor"
+    )
+    static let showRightSidebarHint = string(
+      "video-editor.show-right-sidebar-hint",
+      defaultValue: "Show Right Sidebar (⌘⇧B)",
+      comment: "Tooltip for showing the right zoom configuration sidebar in the video editor"
+    )
+    static let hideRightSidebarHint = string(
+      "video-editor.hide-right-sidebar-hint",
+      defaultValue: "Hide Right Sidebar (⌘⇧B)",
+      comment: "Tooltip for hiding the right zoom configuration sidebar in the video editor"
     )
     static let undoShortcutHint = string(
       "video-editor.undo-shortcut-hint",
