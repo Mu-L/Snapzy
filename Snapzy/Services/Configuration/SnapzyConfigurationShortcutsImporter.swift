@@ -187,7 +187,10 @@ extension SnapzyConfigurationImporter {
     if let key, key.isEmpty {
       mutations.append {
         AnnotateShortcutManager.shared.setShortcut(nil, for: kind)
-        AnnotateShortcutManager.shared.setActionShortcutEnabled(false, for: kind)
+      }
+      mutations.append {
+        let enabled = explicitEnabled ?? (disabled.map { !$0.contains(kind) } ?? false)
+        AnnotateShortcutManager.shared.setActionShortcutEnabled(enabled, for: kind)
       }
       return
     }
@@ -304,6 +307,8 @@ private extension AnnotateShortcutManager {
       setTogglePinShortcut(config)
     case .cloudUpload:
       setCloudUploadShortcut(config)
+    case .autoRedactSensitiveData:
+      setAutoRedactSensitiveDataShortcut(config)
     }
   }
 }

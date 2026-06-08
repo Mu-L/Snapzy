@@ -600,6 +600,16 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
       }
     }
 
+    NotificationCenter.default.addObserver(
+      forName: .annotateAutoRedactSensitiveData,
+      object: window,
+      queue: .main
+    ) { [weak self] _ in
+      MainActor.assumeIsolated {
+        self?.state.autoRedactSensitiveData()
+      }
+    }
+
     // Drag-to-app: hide window when drag starts
     NotificationCenter.default.addObserver(
       forName: .annotateDragStarted,

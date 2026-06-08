@@ -136,6 +136,7 @@ extension AnnotateActionShortcutKind {
     case .toggleSidebar: return "toggle_sidebar"
     case .togglePin: return "toggle_pin"
     case .cloudUpload: return "cloud_upload"
+    case .autoRedactSensitiveData: return "auto_redact_sensitive_data"
     }
   }
 }

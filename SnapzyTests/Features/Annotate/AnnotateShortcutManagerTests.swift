@@ -107,4 +107,9 @@ final class AnnotateShortcutManagerTests: XCTestCase {
     XCTAssertNotNil(manager.shortcut(for: .copyAndClose))
     XCTAssertNotNil(manager.shortcut(for: .toggleSidebar))
   }
+
+  func testAutoRedactSensitiveDataShortcut_defaultsToUnsetButEnabled() {
+    XCTAssertNil(manager.shortcut(for: .autoRedactSensitiveData))
+    XCTAssertTrue(manager.isActionShortcutEnabled(for: .autoRedactSensitiveData))
+  }
 }

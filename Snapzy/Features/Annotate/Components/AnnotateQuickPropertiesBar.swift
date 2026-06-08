@@ -367,6 +367,19 @@ struct AnnotateQuickPropertiesBar: View {
       }
 
       activePropertySlot(
+        isVisible: showBlurType,
+        isEnabled: state.quickPropertiesSupportsBlurType && state.hasImage && !state.isSensitiveRedactionScanning && state.editorMode == .annotate && !state.isCropInteractionActive,
+        showsLeadingDivider: true,
+        width: nil
+      ) {
+        QuickAutoRedactControl(
+          state: state,
+          buttonWidth: density.controlButtonWidth,
+          groupSpacing: density.groupSpacing
+        )
+      }
+
+      activePropertySlot(
         isVisible: showStrokeWidth,
         isEnabled: state.quickPropertiesSupportsStrokeWidth,
         showsLeadingDivider: hasBeforeStrokeWidth,
@@ -1599,6 +1612,41 @@ private struct QuickBlurTypeControl: View {
           .help(blurType.displayName)
         }
       }
+    }
+  }
+}
+
+private struct QuickAutoRedactControl: View {
+  @ObservedObject var state: AnnotateState
+  let buttonWidth: CGFloat
+  let groupSpacing: CGFloat
+
+  var body: some View {
+    QuickPropertiesGroup(title: L10n.AnnotateUI.autoRedact, spacing: groupSpacing) {
+      Button {
+        state.autoRedactSensitiveData()
+      } label: {
+        Image(systemName: state.isSensitiveRedactionScanning ? "hourglass" : "shield.lefthalf.filled")
+          .font(.system(size: 12, weight: .semibold))
+          .foregroundColor(state.isSensitiveRedactionScanning ? .accentColor : .secondary)
+          .frame(width: buttonWidth, height: 24)
+          .background(
+            RoundedRectangle(cornerRadius: 7)
+              .fill(SidebarColors.itemDefault)
+          )
+          .overlay(
+            RoundedRectangle(cornerRadius: 7)
+              .stroke(Color.secondary.opacity(0.14), lineWidth: 1)
+          )
+      }
+      .buttonStyle(.plain)
+      .disabled(!state.hasImage || state.isSensitiveRedactionScanning || state.editorMode != .annotate || state.isCropInteractionActive)
+      .opacity((!state.hasImage || state.isSensitiveRedactionScanning || state.editorMode != .annotate || state.isCropInteractionActive) ? 0.4 : 1)
+      .help(
+        state.isSensitiveRedactionScanning
+          ? L10n.AnnotateUI.autoRedactionScanning
+          : L10n.AnnotateUI.autoRedactSensitiveData
+      )
     }
   }
 }

@@ -14,6 +14,7 @@ extension Notification.Name {
   static let annotateSaveAs = Notification.Name("annotateSaveAs")
   static let annotateCopyAndClose = Notification.Name("annotateCopyAndClose")
   static let annotateCloudUpload = Notification.Name("annotateCloudUpload")
+  static let annotateAutoRedactSensitiveData = Notification.Name("annotateAutoRedactSensitiveData")
   static let annotatePasteImage = Notification.Name("annotatePasteImage")
   static let annotateTogglePin = Notification.Name("annotateTogglePin")
   static let annotateDragStarted = Notification.Name("annotateDragStarted")
@@ -165,6 +166,15 @@ class AnnotateWindow: NSWindow {
     // Cloud Upload — configurable (default: ⌘U)
     if AnnotateShortcutManager.shared.matchesCloudUpload(event) {
       NotificationCenter.default.post(name: .annotateCloudUpload, object: self)
+      return true
+    }
+
+    // Auto Redact Sensitive Data — configurable (default: unset)
+    if AnnotateShortcutManager.shared.matchesAutoRedactSensitiveData(event) {
+      if isTextInputActive {
+        return super.performKeyEquivalent(with: event)
+      }
+      NotificationCenter.default.post(name: .annotateAutoRedactSensitiveData, object: self)
       return true
     }
 

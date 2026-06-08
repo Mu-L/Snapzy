@@ -28,6 +28,7 @@ struct ShortcutsSettingsView: View {
   @State private var toggleSidebarShortcut: ShortcutConfig?
   @State private var togglePinShortcut: ShortcutConfig?
   @State private var cloudUploadShortcut: ShortcutConfig?
+  @State private var autoRedactSensitiveDataShortcut: ShortcutConfig?
   @State private var globalShortcutEnabled: [GlobalShortcutKind: Bool]
   @State private var annotateActionEnabled: [AnnotateActionShortcutKind: Bool]
   @State private var globalValidationIssues: [GlobalShortcutKind: ShortcutValidationIssue] = [:]
@@ -67,6 +68,9 @@ struct ShortcutsSettingsView: View {
     _toggleSidebarShortcut = State(initialValue: AnnotateShortcutManager.shared.toggleSidebarShortcut)
     _togglePinShortcut = State(initialValue: AnnotateShortcutManager.shared.togglePinShortcut)
     _cloudUploadShortcut = State(initialValue: AnnotateShortcutManager.shared.cloudUploadShortcut)
+    _autoRedactSensitiveDataShortcut = State(
+      initialValue: AnnotateShortcutManager.shared.autoRedactSensitiveDataShortcut
+    )
     _globalShortcutEnabled = State(
       initialValue: Dictionary(
         uniqueKeysWithValues: GlobalShortcutKind.allCases.map {
@@ -480,6 +484,17 @@ struct ShortcutsSettingsView: View {
             validationIssue: annotateActionValidationIssues[.cloudUpload],
             onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .cloudUpload) }
           )
+
+          ShortcutRecorderView(
+            label: L10n.ShortcutOverlay.autoRedactSensitiveData,
+            icon: "shield.lefthalf.filled",
+            description: L10n.PreferencesShortcuts.autoRedactSensitiveDataDescription,
+            shortcut: $autoRedactSensitiveDataShortcut,
+            defaultShortcut: AnnotateShortcutManager.defaultAutoRedactSensitiveData,
+            isEnabled: annotateActionEnabledBinding(for: .autoRedactSensitiveData),
+            validationIssue: annotateActionValidationIssues[.autoRedactSensitiveData],
+            onShortcutChanged: { handleAnnotateActionShortcutChange($0, for: .autoRedactSensitiveData) }
+          )
         }
 
         Section(L10n.ShortcutOverlay.annotateToolKeys) {
@@ -559,6 +574,7 @@ struct ShortcutsSettingsView: View {
     toggleSidebarShortcut = AnnotateShortcutManager.defaultToggleSidebar
     togglePinShortcut = AnnotateShortcutManager.defaultTogglePin
     cloudUploadShortcut = AnnotateShortcutManager.defaultCloudUpload
+    autoRedactSensitiveDataShortcut = AnnotateShortcutManager.defaultAutoRedactSensitiveData
     globalShortcutEnabled = Dictionary(
       uniqueKeysWithValues: GlobalShortcutKind.allCases.map { ($0, true) }
     )
@@ -764,6 +780,9 @@ struct ShortcutsSettingsView: View {
       case .cloudUpload:
         cloudUploadShortcut = config
         annotateManager.setCloudUploadShortcut(config)
+      case .autoRedactSensitiveData:
+        autoRedactSensitiveDataShortcut = config
+        annotateManager.setAutoRedactSensitiveDataShortcut(config)
       }
       return true
     case .reject(let issue):

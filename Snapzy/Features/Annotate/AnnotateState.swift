@@ -126,6 +126,9 @@ final class AnnotateState: ObservableObject {
   @Published private(set) var isCutoutProcessing: Bool = false
   @Published var cutoutErrorMessage: String?
   private var activeCutoutOperationID: UUID?
+  @Published private(set) var isSensitiveRedactionScanning: Bool = false
+  private var activeSensitiveRedactionOperationID: UUID?
+  private var sensitiveRedactionToast: AppToastHandle?
 
   /// QuickAccess item ID if opened from quick access card (nil for drag-drop workflow)
   let quickAccessItemId: UUID?
@@ -1418,6 +1421,7 @@ final class AnnotateState: ObservableObject {
   private func resetCanvasForNewBaseImage(image: NSImage, url: URL?) {
     let shouldApplyDefaultPreset = !hasImage
     resetBackgroundCutoutState(markUnsaved: false)
+    cancelSensitiveRedactionScan()
     sourceImage = image
     sourceURL = url
     // Reset annotations for new image
@@ -1451,6 +1455,127 @@ final class AnnotateState: ObservableObject {
   }
 
   // MARK: - Background Cutout
+
+  func autoRedactSensitiveData() {
+    guard !isSensitiveRedactionScanning else { return }
+    guard let image = effectiveSourceImage else {
+      showSensitiveRedactionToast(message: L10n.AnnotateUI.autoRedactionImageUnavailable, style: .warning)
+      return
+    }
+
+    if editingTextAnnotationId != nil {
+      commitTextEditing()
+    }
+
+    let operationID = UUID()
+    activeSensitiveRedactionOperationID = operationID
+    isSensitiveRedactionScanning = true
+    sensitiveRedactionToast = AppToastManager.shared.show(
+      message: L10n.AnnotateUI.autoRedactionScanning,
+      style: .info,
+      duration: nil,
+      variant: .compact,
+      iconMode: .spinner
+    )
+
+    Task {
+      do {
+        let result = try await AnnotateSensitiveRedactionService.shared.detectRegions(in: image)
+        guard activeSensitiveRedactionOperationID == operationID else { return }
+
+        isSensitiveRedactionScanning = false
+        activeSensitiveRedactionOperationID = nil
+
+        let insertedCount = applySensitiveRedactionRegions(result.regions)
+        if insertedCount == 0 {
+          updateSensitiveRedactionToast(message: L10n.AnnotateUI.autoRedactionNoMatches, style: .warning)
+        } else {
+          updateSensitiveRedactionToast(
+            message: L10n.AnnotateUI.autoRedactionComplete(insertedCount),
+            style: .success
+          )
+        }
+
+        DiagnosticLogger.shared.log(.info, .annotate, "Sensitive redaction scan completed", context: [
+          "regions": "\(insertedCount)"
+        ])
+      } catch {
+        guard activeSensitiveRedactionOperationID == operationID else { return }
+
+        isSensitiveRedactionScanning = false
+        activeSensitiveRedactionOperationID = nil
+        let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        updateSensitiveRedactionToast(message: message, style: .error)
+        DiagnosticLogger.shared.log(.error, .annotate, "Sensitive redaction scan failed", context: [
+          "error": String(describing: type(of: error))
+        ])
+      }
+    }
+  }
+
+  @discardableResult
+  func applySensitiveRedactionRegions(_ regions: [AnnotateSensitiveRedactionRegion]) -> Int {
+    let clampedRegions = regions
+      .map { region in
+        AnnotateSensitiveRedactionRegion(
+          kind: region.kind,
+          bounds: region.bounds.standardized.intersection(sourceImageBounds).standardized,
+          confidence: region.confidence
+        )
+      }
+      .filter { !$0.bounds.isEmpty && $0.bounds.width >= 2 && $0.bounds.height >= 2 }
+
+    guard !clampedRegions.isEmpty else { return 0 }
+
+    saveState()
+    let blurProperties = annotationCreationProperties(for: .blur)
+    let redactionBlurType = blurType
+    let newAnnotations = clampedRegions.map { region in
+      AnnotationItem(
+        type: .blur(redactionBlurType),
+        bounds: region.bounds,
+        properties: blurProperties
+      )
+    }
+
+    annotations.append(contentsOf: newAnnotations)
+    setSelectedAnnotationIds(Set(newAnnotations.map(\.id)))
+    selectedTool = .selection
+    finishTextEditing()
+    return newAnnotations.count
+  }
+
+  private func cancelSensitiveRedactionScan() {
+    activeSensitiveRedactionOperationID = nil
+    isSensitiveRedactionScanning = false
+    if let toast = sensitiveRedactionToast {
+      AppToastManager.shared.dismiss(toast)
+      sensitiveRedactionToast = nil
+    }
+  }
+
+  private func showSensitiveRedactionToast(message: String, style: AppToastStyle) {
+    AppToastManager.shared.show(
+      message: message,
+      style: style,
+      variant: .compact
+    )
+  }
+
+  private func updateSensitiveRedactionToast(message: String, style: AppToastStyle) {
+    if let toast = sensitiveRedactionToast {
+      AppToastManager.shared.update(
+        toast,
+        message: message,
+        style: style,
+        duration: 2.5,
+        variant: .compact
+      )
+      sensitiveRedactionToast = nil
+    } else {
+      showSensitiveRedactionToast(message: message, style: style)
+    }
+  }
 
   func toggleBackgroundCutout() {
     if isCutoutApplied {
@@ -3068,6 +3193,9 @@ final class AnnotateState: ObservableObject {
   private func baseAnnotationProperties(for tool: AnnotationToolType) -> AnnotationProperties {
     if tool != .watermark {
       var properties = AnnotationProperties(strokeColor: sharedAnnotationColor ?? .red)
+      if tool == .blur {
+        properties.strokeWidth = AnnotationProperties.controlValueRange.lowerBound
+      }
       applySharedParameterDefaults(to: &properties, for: tool)
       if tool == .filledRectangle {
         properties.fillColor = properties.strokeColor

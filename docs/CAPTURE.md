@@ -363,7 +363,7 @@ flowchart TD
 flowchart TD
     A["Quick Access screenshot or auto-open"] --> B["AnnotateManager"]
     B --> C["AnnotateWindowController + AnnotateState"]
-    C --> D["Canvas, crop, blur, text, watermark, shapes, mockup, cutout, background effects"]
+    C --> D["Canvas, crop, blur, auto sensitive redaction, text, watermark, shapes, mockup, cutout, background effects"]
 
     D --> E{"Action"}
     E -->|Save / export| F["AnnotateExporter.renderFinalImage()"]
@@ -392,6 +392,7 @@ flowchart TD
 - Screenshot default-preset auto-apply uses the lightweight `AnnotateExporter.renderCanvasEffects(sourceImage:effects:)` path. It derives `AnnotationCanvasEffects` directly from the selected preset, renders the committed screenshot file, and returns editable session data without constructing a full `AnnotateState`.
 - Full Annotate sidebar background effects include gradients, wallpapers, solid colors, and blurred presets. The blurred presets combine with the selected wallpaper or solid color background, precompute image-backed blur for preview performance, and render through the same exporter path used by save, copy, and drag-to-app.
 - Blur annotations render through a non-blocking preview cache in the editor. Cache misses draw a lightweight placeholder, background work is coalesced per annotation, and final save/copy/share/export still renders through the deterministic exporter path.
+- Auto sensitive redaction is a trigger action inside the quick properties bar of the blur annotation tool. It runs local Vision OCR plus deterministic detectors for emails, phone numbers, URLs, payment card-like numbers, credentials, and common access tokens, then creates editable pixelated blur annotations in one undo checkpoint. It does not persist recognized text or bake redaction pixels until the normal export/copy/save path renders the image.
 - Watermark annotations are editable items with text, style, opacity, size, rotation, and color controls; export/copy/share/upload render them through the same final image pipeline as other annotations.
 - The crop tool can shrink or expand the editable canvas. Dragging crop handles outside the source image creates empty canvas space that accepts the same annotations as the original image area and is included in export/copy/share/upload.
 - Drag-to-app starts with a lazy file promise and guarantees a rendered file-URL fallback for apps that do not support file promises, so the first drag attempt can be accepted by file-url-only targets.

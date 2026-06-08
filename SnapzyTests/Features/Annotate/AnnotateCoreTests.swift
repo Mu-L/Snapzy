@@ -166,6 +166,289 @@ final class AnnotateCoreTests: XCTestCase {
     XCTAssertFalse(state.showSidebar)
   }
 
+  func testSensitiveDataDetectorFindsCommonSensitivePatterns() {
+    let detector = AnnotateSensitiveDataDetector()
+    let text = """
+    Email admin@example.com, URL https://snapzy.app/share, card 4111 1111 1111 1111,
+    invalid raw card 4111111111111112, token ghp_abcdefghijklmnopqrstuvwxyz123456,
+    api_key = sk-localSecret12345
+    """
+
+    let matches = detector.detect(in: text)
+    let kinds = Set(matches.map(\.kind))
+
+    XCTAssertTrue(kinds.contains(.email))
+    XCTAssertTrue(kinds.contains(.url))
+    XCTAssertTrue(kinds.contains(.creditCard))
+    XCTAssertTrue(kinds.contains(.accessToken))
+    XCTAssertTrue(kinds.contains(.credential))
+    XCTAssertEqual(matches.filter { $0.kind == .creditCard }.count, 1)
+  }
+
+  func testSensitiveDataDetectorTreatsGroupedPaymentCardsAsSensitiveEvenWhenLuhnInvalid() {
+    let detector = AnnotateSensitiveDataDetector()
+
+    let groupedMatches = detector.detect(in: "Card 4532 3100 9999 1048")
+    let rawMatches = detector.detect(in: "Build 4532310099991048")
+    let genericGroupedMatches = detector.detect(in: "Order 1234 5678 9012 3456")
+
+    XCTAssertTrue(groupedMatches.contains { $0.kind == .creditCard })
+    XCTAssertFalse(rawMatches.contains { $0.kind == .creditCard })
+    XCTAssertFalse(genericGroupedMatches.contains { $0.kind == .creditCard })
+  }
+
+  func testSensitiveRedactionContextDetectsPaymentCardFieldsSplitByOCR() {
+    let imageSize = CGSize(width: 544.5, height: 398)
+    let lines = [
+      AnnotateSensitiveOCRLine(text: "/ BANK NAME", bounds: CGRect(x: 111, y: 102, width: 141, height: 20), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "4532 3100 9999", bounds: CGRect(x: 106, y: 210, width: 211, height: 20), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "1048", bounds: CGRect(x: 333, y: 211, width: 61, height: 20), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "MEMBER", bounds: CGRect(x: 108, y: 255, width: 37, height: 8), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "SINCE", bounds: CGRect(x: 108, y: 264, width: 25, height: 9), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "00", bounds: CGRect(x: 152, y: 255, width: 21, height: 14), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "VALID", bounds: CGRect(x: 215, y: 255, width: 26, height: 8), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "THRU", bounds: CGRect(x: 215, y: 264, width: 24, height: 8), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "00-00", bounds: CGRect(x: 260, y: 254, width: 48, height: 15), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "CARDHOLDER NAME", bounds: CGRect(x: 108, y: 290, width: 155, height: 15), confidence: 1)
+    ]
+
+    let regions = AnnotateSensitiveRedactionService.contextualRegions(from: lines, imageSize: imageSize)
+    let kinds = Set(regions.map(\.kind))
+
+    XCTAssertTrue(kinds.contains(.creditCard))
+    XCTAssertTrue(kinds.contains(.paymentCardExpiration))
+    XCTAssertTrue(kinds.contains(.paymentCardholderName))
+    XCTAssertEqual(regions.filter { $0.kind == .creditCard }.count, 1)
+    XCTAssertTrue(
+      regions.contains {
+        $0.kind == .creditCard
+          && $0.bounds.contains(CGRect(x: 106, y: 210, width: 288, height: 21))
+      }
+    )
+    XCTAssertFalse(regions.contains { $0.bounds.intersects(CGRect(x: 152, y: 255, width: 21, height: 14)) && $0.kind != .creditCard })
+  }
+
+  func testSensitiveRedactionContextDetectsPaymentCardFieldsSplitIntoFourOCRFragments() {
+    let imageSize = CGSize(width: 667, height: 521.5)
+    let cardNumberBounds = CGRect(x: 145, y: 238.4, width: 285, height: 22.9)
+    let lines = [
+      AnnotateSensitiveOCRLine(text: "/ BANK NAME", bounds: CGRect(x: 154, y: 131.9, width: 135, height: 16), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "4532", bounds: CGRect(x: 145, y: 238.7, width: 58.1, height: 20.2), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "3100", bounds: CGRect(x: 211.1, y: 238.4, width: 66.8, height: 22.6), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "9999", bounds: CGRect(x: 294, y: 238.7, width: 59.1, height: 20.2), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "1048", bounds: CGRect(x: 370, y: 238.8, width: 60, height: 20), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "MEMBER", bounds: CGRect(x: 143.9, y: 283.4, width: 38.1, height: 8.6), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "SINCE", bounds: CGRect(x: 145, y: 291.7, width: 25, height: 9), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "00", bounds: CGRect(x: 189, y: 282.7, width: 21, height: 14), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "VALID", bounds: CGRect(x: 252, y: 283.7, width: 25, height: 8), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "THRU", bounds: CGRect(x: 252, y: 292.7, width: 23, height: 8), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "00-00", bounds: CGRect(x: 297, y: 282.7, width: 48, height: 14), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "CARDHOLDER NAME", bounds: CGRect(x: 145, y: 318.7, width: 154, height: 14), confidence: 1)
+    ]
+
+    let regions = AnnotateSensitiveRedactionService.contextualRegions(from: lines, imageSize: imageSize)
+
+    XCTAssertEqual(regions.filter { $0.kind == .creditCard }.count, 1)
+    XCTAssertTrue(regions.contains { $0.kind == .creditCard && $0.bounds.contains(cardNumberBounds) })
+    XCTAssertTrue(regions.contains { $0.kind == .paymentCardExpiration })
+    XCTAssertTrue(regions.contains { $0.kind == .paymentCardholderName })
+    XCTAssertFalse(regions.contains { $0.bounds.intersects(CGRect(x: 189, y: 282.7, width: 21, height: 14)) && $0.kind != .creditCard })
+  }
+
+  func testSensitiveRedactionContextDetectsPaymentCardInsideAnnotateWindowScreenshotOCRNoise() {
+    let imageSize = CGSize(width: 1272, height: 826)
+    let cardNumberBounds = CGRect(x: 482.5, y: 437.9, width: 284.8, height: 22.2)
+    let lines = [
+      AnnotateSensitiveOCRLine(text: "Save as...", bounds: CGRect(x: 1094.5, y: 40.5, width: 61, height: 13.1), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "Done", bounds: CGRect(x: 1185.1, y: 40.7, width: 33.3, height: 12.9), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "Selected Blur", bounds: CGRect(x: 94.3, y: 88.5, width: 74, height: 9.5), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "Blur Type", bounds: CGRect(x: 245.9, y: 88.5, width: 48.2, height: 11.4), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "4532 3100", bounds: CGRect(x: 482.5, y: 437.9, width: 131.3, height: 22.2), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "9999 1048", bounds: CGRect(x: 630.5, y: 437.9, width: 136.8, height: 22.2), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "MEMBER 00", bounds: CGRect(x: 482.5, y: 482.3, width: 64.7, height: 14.8), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "SINCE", bounds: CGRect(x: 482.5, y: 491.5, width: 24, height: 9.2), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "VALID", bounds: CGRect(x: 589.8, y: 482.3, width: 25.9, height: 11.1), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "THRU", bounds: CGRect(x: 589.8, y: 491.5, width: 24, height: 9.2), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "00-00", bounds: CGRect(x: 632.3, y: 482.3, width: 49.9, height: 16.6), confidence: 1),
+      AnnotateSensitiveOCRLine(text: "CARDHOLDER NAME", bounds: CGRect(x: 480.7, y: 519.3, width: 157.2, height: 14.8), confidence: 1)
+    ]
+
+    let regions = AnnotateSensitiveRedactionService.contextualRegions(from: lines, imageSize: imageSize)
+
+    XCTAssertEqual(regions.filter { $0.kind == .creditCard }.count, 1)
+    XCTAssertTrue(regions.contains { $0.kind == .creditCard && $0.bounds.contains(cardNumberBounds) })
+    XCTAssertTrue(regions.contains { $0.kind == .paymentCardExpiration })
+    XCTAssertTrue(regions.contains { $0.kind == .paymentCardholderName })
+  }
+
+  func testSensitiveDataDetectorPrecisionRecallGateMeetsP99OnCuratedCorpus() {
+    struct Sample {
+      let text: String
+      let expectedKinds: Set<AnnotateSensitiveDataKind>
+    }
+
+    let detector = AnnotateSensitiveDataDetector()
+    let samples: [Sample] = [
+      Sample(text: "Email admin@example.com", expectedKinds: [.email]),
+      Sample(text: "URL https://snapzy.app/share", expectedKinds: [.url]),
+      Sample(text: "Phone +1 415-555-2671", expectedKinds: [.phoneNumber]),
+      Sample(text: "Card 4111 1111 1111 1111", expectedKinds: [.creditCard]),
+      Sample(text: "Mock card 4532 3100 9999 1048", expectedKinds: [.creditCard]),
+      Sample(text: "api_key = sk-localSecret12345", expectedKinds: [.credential]),
+      Sample(text: "Authorization: Bearer abcdefghijklmnop", expectedKinds: [.accessToken]),
+      Sample(text: "GitHub ghp_abcdefghijklmnopqrstuvwxyz123456", expectedKinds: [.accessToken]),
+      Sample(text: "Build 4532310099991048", expectedKinds: []),
+      Sample(text: "Order 1234 5678 9012 3456", expectedKinds: []),
+      Sample(text: "Version 2026-06-07 build 973", expectedKinds: []),
+      Sample(text: "Member since 00", expectedKinds: []),
+      Sample(text: "Invoice total 1048", expectedKinds: [])
+    ]
+
+    var truePositives = 0
+    var falsePositives = 0
+    var falseNegatives = 0
+
+    for sample in samples {
+      let actualKinds = Set(detector.detect(in: sample.text).map(\.kind))
+      truePositives += actualKinds.intersection(sample.expectedKinds).count
+      falsePositives += actualKinds.subtracting(sample.expectedKinds).count
+      falseNegatives += sample.expectedKinds.subtracting(actualKinds).count
+    }
+
+    let precision = Double(truePositives) / Double(max(truePositives + falsePositives, 1))
+    let recall = Double(truePositives) / Double(max(truePositives + falseNegatives, 1))
+
+    XCTAssertGreaterThanOrEqual(precision, 0.99)
+    XCTAssertGreaterThanOrEqual(recall, 0.99)
+  }
+
+  func testSensitiveRedactionVisionBoxConvertsToImageCoordinates() {
+    let rect = AnnotateSensitiveRedactionService.imageRect(
+      fromVisionBoundingBox: CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.1),
+      imageSize: CGSize(width: 400, height: 200)
+    )
+
+    XCTAssertEqual(rect.origin.x, 100, accuracy: 0.0001)
+    XCTAssertEqual(rect.origin.y, 140, accuracy: 0.0001)
+    XCTAssertEqual(rect.width, 200, accuracy: 0.0001)
+    XCTAssertEqual(rect.height, 20, accuracy: 0.0001)
+  }
+
+  func testSensitiveRedactionRectUsesFullLineBoundsWhenMatchCoversMostOCRLine() {
+    let text = "admin@example.com"
+    let matchRange = NSRange(text.startIndex..<text.endIndex, in: text)
+    let lineRect = CGRect(x: 10, y: 18, width: 120, height: 18)
+    let tightMatchRect = CGRect(x: 28, y: 22, width: 80, height: 10)
+
+    let rect = AnnotateSensitiveRedactionService.redactionRect(
+      forMatchRect: tightMatchRect,
+      lineRect: lineRect,
+      matchRange: matchRange,
+      text: text,
+      kind: .email,
+      imageSize: CGSize(width: 200, height: 100)
+    )
+
+    XCTAssertTrue(rect.contains(lineRect))
+  }
+
+  func testSensitiveRedactionRectKeepsSubstringBoundsScopedInsideLongOCRLine() {
+    let text = "Email admin@example.com sent to finance"
+    let matchRange = (text as NSString).range(of: "admin@example.com")
+    let lineRect = CGRect(x: 10, y: 18, width: 240, height: 18)
+    let tightMatchRect = CGRect(x: 60, y: 22, width: 100, height: 10)
+
+    let rect = AnnotateSensitiveRedactionService.redactionRect(
+      forMatchRect: tightMatchRect,
+      lineRect: lineRect,
+      matchRange: matchRange,
+      text: text,
+      kind: .email,
+      imageSize: CGSize(width: 300, height: 100)
+    )
+
+    XCTAssertTrue(rect.contains(tightMatchRect))
+    XCTAssertFalse(rect.contains(lineRect))
+    XCTAssertGreaterThan(rect.minX, lineRect.minX)
+    XCTAssertLessThan(rect.maxX, lineRect.maxX)
+  }
+
+  @MainActor
+  func testApplySensitiveRedactionsAddsEditableBlurBatchWithSingleUndo() throws {
+    let cgImage = try XCTUnwrap(TestImageFactory.solidColor(width: 200, height: 100))
+    let image = NSImage(cgImage: cgImage, size: NSSize(width: 200, height: 100))
+    let state = makeAnnotateState()
+    state.loadImage(image)
+    let expectedBlurProperties = state.annotationCreationProperties(for: .blur)
+
+    let insertedCount = state.applySensitiveRedactionRegions([
+      AnnotateSensitiveRedactionRegion(
+        kind: .email,
+        bounds: CGRect(x: 10, y: 12, width: 80, height: 18),
+        confidence: 0.95
+      ),
+      AnnotateSensitiveRedactionRegion(
+        kind: .accessToken,
+        bounds: CGRect(x: 120, y: 48, width: 60, height: 16),
+        confidence: 0.98
+      )
+    ])
+
+    XCTAssertEqual(insertedCount, 2)
+    XCTAssertEqual(state.annotations.count, 2)
+    XCTAssertEqual(state.selectedAnnotationIds.count, 2)
+    XCTAssertTrue(state.hasUnsavedChanges)
+    XCTAssertTrue(state.canUndo)
+    for annotation in state.annotations {
+      guard case .blur(.pixelated) = annotation.type else {
+        XCTFail("Expected pixelated blur annotation")
+        return
+      }
+      XCTAssertEqual(annotation.properties, expectedBlurProperties)
+    }
+
+    state.undo()
+
+    XCTAssertTrue(state.annotations.isEmpty)
+    XCTAssertFalse(state.hasSelectedAnnotations)
+  }
+
+  @MainActor
+  func testApplySensitiveRedactionsUsesBlurQuickPropertiesDefaults() throws {
+    let cgImage = try XCTUnwrap(TestImageFactory.solidColor(width: 200, height: 100))
+    let image = NSImage(cgImage: cgImage, size: NSSize(width: 200, height: 100))
+    let state = makeAnnotateState(defaults: UserDefaultsFactory.make())
+    state.loadImage(image)
+    state.activateTool(.blur)
+
+    XCTAssertEqual(state.annotationCreationProperties(for: .blur).strokeWidth, 1)
+    XCTAssertEqual(state.quickStrokeWidthDisplayText, "8")
+
+    state.quickStrokeWidthBinding.wrappedValue = 6
+    state.setActiveBlurType(.gaussian)
+    let expectedBlurProperties = state.annotationCreationProperties(for: .blur)
+
+    let insertedCount = state.applySensitiveRedactionRegions([
+      AnnotateSensitiveRedactionRegion(
+        kind: .email,
+        bounds: CGRect(x: 10, y: 12, width: 80, height: 18),
+        confidence: 0.95
+      )
+    ])
+
+    XCTAssertEqual(insertedCount, 1)
+    let annotation = try XCTUnwrap(state.annotations.first)
+    guard case .blur(.gaussian) = annotation.type else {
+      XCTFail("Expected gaussian blur annotation")
+      return
+    }
+    XCTAssertEqual(annotation.properties, expectedBlurProperties)
+    XCTAssertEqual(state.quickPropertiesTool, .blur)
+    XCTAssertTrue(state.quickPropertiesSupportsBlurType)
+    XCTAssertTrue(state.quickPropertiesSupportsStrokeWidth)
+    XCTAssertEqual(state.quickStrokeWidthBinding.wrappedValue, 6)
+  }
+
   func testInlineAreaControls_nearFullscreenSelectionUsesBottomInnerPlacement() {
     let containerSize = CGSize(width: 1512, height: 982)
     let rect = CGRect(origin: .zero, size: containerSize)

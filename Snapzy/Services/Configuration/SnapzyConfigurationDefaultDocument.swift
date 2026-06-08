@@ -217,7 +217,13 @@ enum SnapzyConfigurationDefaultDocument {
     writeShortcutValues(&writer, shortcut: shortcutConfig)
   }
 
-  private static func writeShortcutValues(_ writer: inout SimpleTOMLWriter, shortcut: ShortcutConfig) {
+  private static func writeShortcutValues(_ writer: inout SimpleTOMLWriter, shortcut: ShortcutConfig?) {
+    guard let shortcut else {
+      writer.value("key", "")
+      writer.stringArray("modifiers", [])
+      return
+    }
+
     writer.value("key", SnapzyConfigurationShortcutCodec.exportKey(shortcut))
     writer.stringArray("modifiers", SnapzyConfigurationShortcutCodec.exportModifiers(shortcut))
   }
@@ -239,12 +245,13 @@ enum SnapzyConfigurationDefaultDocument {
     }
   }
 
-  private static func annotateActionShortcut(for kind: AnnotateActionShortcutKind) -> ShortcutConfig {
+  private static func annotateActionShortcut(for kind: AnnotateActionShortcutKind) -> ShortcutConfig? {
     switch kind {
     case .copyAndClose: return AnnotateShortcutManager.defaultCopyAndClose
     case .toggleSidebar: return AnnotateShortcutManager.defaultToggleSidebar
     case .togglePin: return AnnotateShortcutManager.defaultTogglePin
     case .cloudUpload: return AnnotateShortcutManager.defaultCloudUpload
+    case .autoRedactSensitiveData: return AnnotateShortcutManager.defaultAutoRedactSensitiveData
     }
   }
 }

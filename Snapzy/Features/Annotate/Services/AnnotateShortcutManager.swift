@@ -16,6 +16,7 @@ enum AnnotateActionShortcutKind: String, CaseIterable, Codable {
   case toggleSidebar
   case togglePin
   case cloudUpload
+  case autoRedactSensitiveData
 }
 
 /// Manager for annotation tool keyboard shortcuts
@@ -33,6 +34,7 @@ final class AnnotateShortcutManager: ObservableObject {
   @Published private(set) var toggleSidebarShortcut: ShortcutConfig?
   @Published private(set) var togglePinShortcut: ShortcutConfig?
   @Published private(set) var cloudUploadShortcut: ShortcutConfig?
+  @Published private(set) var autoRedactSensitiveDataShortcut: ShortcutConfig?
   @Published private(set) var disabledActionShortcuts: Set<AnnotateActionShortcutKind> = []
 
   /// UserDefaults key prefix
@@ -41,6 +43,7 @@ final class AnnotateShortcutManager: ObservableObject {
   private let toggleSidebarKey = "annotate.action.toggleSidebar"
   private let togglePinKey = "annotate.action.togglePin"
   private let cloudUploadKey = "annotate.action.cloudUpload"
+  private let autoRedactSensitiveDataKey = "annotate.action.autoRedactSensitiveData"
   private let disabledToolShortcutsKey = PreferencesKeys.disabledAnnotateToolShortcuts
   private let disabledActionShortcutsKey = PreferencesKeys.disabledAnnotateActionShortcuts
   private let explicitEmptyActionShortcutData = Data("null".utf8)
@@ -75,11 +78,15 @@ final class AnnotateShortcutManager: ObservableObject {
     modifiers: UInt32(cmdKey)
   )
 
+  /// No default shortcut; available for users who want a local Annotate action key.
+  static let defaultAutoRedactSensitiveData: ShortcutConfig? = nil
+
   private init() {
     copyAndCloseShortcut = Self.defaultCopyAndClose
     toggleSidebarShortcut = Self.defaultToggleSidebar
     togglePinShortcut = Self.defaultTogglePin
     cloudUploadShortcut = Self.defaultCloudUpload
+    autoRedactSensitiveDataShortcut = Self.defaultAutoRedactSensitiveData
     loadShortcuts()
     loadDisabledToolShortcuts()
     loadActionShortcuts()
@@ -142,6 +149,7 @@ final class AnnotateShortcutManager: ObservableObject {
     setToggleSidebarShortcut(Self.defaultToggleSidebar)
     setTogglePinShortcut(Self.defaultTogglePin)
     setCloudUploadShortcut(Self.defaultCloudUpload)
+    setAutoRedactSensitiveDataShortcut(Self.defaultAutoRedactSensitiveData)
   }
 
   // MARK: - Action Shortcut Mutation
@@ -166,6 +174,11 @@ final class AnnotateShortcutManager: ObservableObject {
     saveActionShortcut(config, forKey: cloudUploadKey)
   }
 
+  func setAutoRedactSensitiveDataShortcut(_ config: ShortcutConfig?) {
+    autoRedactSensitiveDataShortcut = config
+    saveActionShortcut(config, forKey: autoRedactSensitiveDataKey)
+  }
+
   func isActionShortcutEnabled(for kind: AnnotateActionShortcutKind) -> Bool {
     !disabledActionShortcuts.contains(kind)
   }
@@ -180,6 +193,8 @@ final class AnnotateShortcutManager: ObservableObject {
       return togglePinShortcut
     case .cloudUpload:
       return cloudUploadShortcut
+    case .autoRedactSensitiveData:
+      return autoRedactSensitiveDataShortcut
     }
   }
 
@@ -221,6 +236,13 @@ final class AnnotateShortcutManager: ObservableObject {
     guard isActionShortcutEnabled(for: .cloudUpload) else { return false }
     guard let cloudUploadShortcut else { return false }
     return matchesShortcut(cloudUploadShortcut, event: event)
+  }
+
+  /// Check if an NSEvent matches the Auto Redact Sensitive Data shortcut.
+  func matchesAutoRedactSensitiveData(_ event: NSEvent) -> Bool {
+    guard isActionShortcutEnabled(for: .autoRedactSensitiveData) else { return false }
+    guard let autoRedactSensitiveDataShortcut else { return false }
+    return matchesShortcut(autoRedactSensitiveDataShortcut, event: event)
   }
 
   // MARK: - Validation
@@ -279,6 +301,10 @@ final class AnnotateShortcutManager: ObservableObject {
     toggleSidebarShortcut = loadActionShortcut(forKey: toggleSidebarKey, defaultValue: Self.defaultToggleSidebar)
     togglePinShortcut = loadActionShortcut(forKey: togglePinKey, defaultValue: Self.defaultTogglePin)
     cloudUploadShortcut = loadActionShortcut(forKey: cloudUploadKey, defaultValue: Self.defaultCloudUpload)
+    autoRedactSensitiveDataShortcut = loadActionShortcut(
+      forKey: autoRedactSensitiveDataKey,
+      defaultValue: Self.defaultAutoRedactSensitiveData
+    )
   }
 
   private func loadDisabledActionShortcuts() {
@@ -299,7 +325,7 @@ final class AnnotateShortcutManager: ObservableObject {
     }
   }
 
-  private func loadActionShortcut(forKey key: String, defaultValue: ShortcutConfig) -> ShortcutConfig? {
+  private func loadActionShortcut(forKey key: String, defaultValue: ShortcutConfig?) -> ShortcutConfig? {
     guard let data = UserDefaults.standard.data(forKey: key) else { return defaultValue }
     if data == explicitEmptyActionShortcutData {
       return nil

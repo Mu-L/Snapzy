@@ -169,6 +169,8 @@ enum ShortcutOverlayContentBuilder {
       return (L10n.ShortcutOverlay.togglePin, "pin")
     case .cloudUpload:
       return (L10n.ShortcutOverlay.cloudUpload, "icloud.and.arrow.up")
+    case .autoRedactSensitiveData:
+      return (L10n.ShortcutOverlay.autoRedactSensitiveData, "shield.lefthalf.filled")
     }
   }
 

@@ -1718,6 +1718,11 @@ enum L10n {
       defaultValue: "Cloud Upload",
       comment: "Annotate action shortcut title"
     )
+    static let autoRedactSensitiveData = string(
+      "shortcut-overlay.auto-redact-sensitive-data",
+      defaultValue: "Auto Redact Sensitive Data",
+      comment: "Annotate action shortcut title"
+    )
   }
 
   enum ShortcutRecorder {
@@ -2876,6 +2881,11 @@ enum L10n {
       "preferences-shortcuts.cloud-upload-description",
       defaultValue: "Upload annotated image to cloud",
       comment: "Description for annotate cloud upload shortcut"
+    )
+    static let autoRedactSensitiveDataDescription = string(
+      "preferences-shortcuts.auto-redact-sensitive-data-description",
+      defaultValue: "Find sensitive text locally and add editable blur annotations",
+      comment: "Description for annotate auto redaction shortcut"
     )
     static let annotationToolDescription = string(
       "preferences-shortcuts.annotation-tool-description",
@@ -4239,6 +4249,39 @@ enum L10n {
       defaultValue: "Toggle sidebar",
       comment: "Tooltip for toggling the annotate sidebar"
     )
+    static let autoRedactSensitiveData = string(
+      "annotate.auto-redact-sensitive-data",
+      defaultValue: "Auto Redact Sensitive Data",
+      comment: "Tooltip for triggering automatic sensitive-data redaction in annotate"
+    )
+    static let autoRedact = string(
+      "annotate.auto-redact",
+      defaultValue: "Auto Redact",
+      comment: "Label for auto redaction button"
+    )
+    static let autoRedactionScanning = string(
+      "annotate.auto-redaction-scanning",
+      defaultValue: "Scanning for sensitive data...",
+      comment: "Toast and tooltip shown while annotate scans locally for sensitive data"
+    )
+    static let autoRedactionNoMatches = string(
+      "annotate.auto-redaction-no-matches",
+      defaultValue: "No sensitive data found.",
+      comment: "Toast shown when automatic sensitive-data redaction finds no matches"
+    )
+    static let autoRedactionImageUnavailable = string(
+      "annotate.auto-redaction-image-unavailable",
+      defaultValue: "No image available to scan.",
+      comment: "Toast shown when automatic sensitive-data redaction cannot run because no image is loaded"
+    )
+    static func autoRedactionComplete(_ count: Int) -> String {
+      format(
+        "annotate.auto-redaction-complete",
+        defaultValue: "Added %d redactions.",
+        comment: "Toast shown after automatic sensitive-data redaction completes. %d is the number of blur annotations added.",
+        count
+      )
+    }
     static let backgroundRemovedClickToRestore = string(
       "annotate.background-removed-click-to-restore",
       defaultValue: "Background Removed (Click to restore)",

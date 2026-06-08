@@ -122,4 +122,48 @@ final class SnapzyConfigurationImporterTests: XCTestCase {
     XCTAssertFalse(result.hasErrors)
     XCTAssertFalse(manager.isActionShortcutEnabled(for: .copyAndClose))
   }
+
+  func testImportAnnotateActionAllowsEmptyShortcutWhileEnabled() {
+    let defaults = UserDefaultsFactory.make()
+    let manager = AnnotateShortcutManager.shared
+    manager.resetToDefaults()
+    defer { manager.resetToDefaults() }
+
+    let source = """
+    schema_version = 1
+
+    [shortcuts.annotate_actions.auto_redact_sensitive_data]
+    enabled = true
+    key = ""
+    modifiers = []
+    """
+
+    let result = SnapzyConfigurationImporter.importTOML(source, defaults: defaults)
+
+    XCTAssertFalse(result.hasErrors)
+    XCTAssertNil(manager.shortcut(for: .autoRedactSensitiveData))
+    XCTAssertTrue(manager.isActionShortcutEnabled(for: .autoRedactSensitiveData))
+  }
+
+  func testImportAnnotateActionAppliesAutoRedactShortcut() {
+    let defaults = UserDefaultsFactory.make()
+    let manager = AnnotateShortcutManager.shared
+    manager.resetToDefaults()
+    defer { manager.resetToDefaults() }
+
+    let source = """
+    schema_version = 1
+
+    [shortcuts.annotate_actions.auto_redact_sensitive_data]
+    enabled = true
+    key = "r"
+    modifiers = ["command", "shift"]
+    """
+
+    let result = SnapzyConfigurationImporter.importTOML(source, defaults: defaults)
+
+    XCTAssertFalse(result.hasErrors)
+    XCTAssertNotNil(manager.shortcut(for: .autoRedactSensitiveData))
+    XCTAssertTrue(manager.isActionShortcutEnabled(for: .autoRedactSensitiveData))
+  }
 }

@@ -152,6 +152,11 @@ max_count = 500
 key = "3"
 modifiers = ["command", "shift"]
 enabled = true
+
+[shortcuts.annotate_actions.auto_redact_sensitive_data]
+enabled = true
+key = ""
+modifiers = []
 ```
 
 ## Manual Testing
