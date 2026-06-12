@@ -158,7 +158,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
   }
 
   private let windowHideSettleDelay: TimeInterval = 1.0 / 60.0
-  private let frozenSnapshotWindowHideSettleDelay: TimeInterval = 0.15
+  private let frozenSnapshotWindowHideSettleDelay: TimeInterval = 1.0 / 60.0
 
   @MainActor
   private final class HiddenWindowSession {
@@ -988,31 +988,36 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
     guard !lazyAreaSnapshotFailedDisplayIDs.contains(displayID) else { return }
 
     let startedAt = Date()
-    if !showCursor, !excludeDesktopIcons, !excludeDesktopWidgets {
-      let fastSnapshot = AreaSelectionController.shared.withDisplayOverlayHidden(for: displayID) {
-        captureManager.captureFastDisplaySnapshot(
-          displayID: displayID,
-          showCursor: false,
-          excludeDesktopIcons: false,
-          excludeDesktopWidgets: false,
-          excludeOwnApplication: false
-        )
-      }
-      if let fastSnapshot {
-        applyLazyFrozenSnapshot(
-          fastSnapshot,
-          mode: excludeOwnApplication ? "coregraphics-hidden-overlay" : "coregraphics",
-          displayID: displayID,
-          startedAt: startedAt,
-          sessionID: sessionID,
-          frozenSession: frozenSession
-        )
-        return
-      }
-    }
-
     let task = Task { @MainActor [weak self] in
       guard let self else { return }
+      guard self.activeAreaSelectionSessionID == sessionID else { return }
+
+      // Try fast CG path first (only when no cursor/desktop exclusion needed)
+      if !showCursor, !excludeDesktopIcons, !excludeDesktopWidgets {
+        let fastSnapshot = AreaSelectionController.shared.withDisplayOverlayHidden(for: displayID) {
+          self.captureManager.captureFastDisplaySnapshot(
+            displayID: displayID,
+            showCursor: false,
+            excludeDesktopIcons: false,
+            excludeDesktopWidgets: false,
+            excludeOwnApplication: false
+          )
+        }
+        if let fastSnapshot {
+          self.applyLazyFrozenSnapshot(
+            fastSnapshot,
+            mode: excludeOwnApplication ? "coregraphics-hidden-overlay" : "coregraphics",
+            displayID: displayID,
+            startedAt: startedAt,
+            sessionID: sessionID,
+            frozenSession: frozenSession
+          )
+          self.lazyAreaSnapshotTasks[displayID] = nil
+          return
+        }
+      }
+
+      // SCK async path
       do {
         let snapshots = try await self.captureManager.captureDisplaySnapshots(
           displayIDs: [displayID],

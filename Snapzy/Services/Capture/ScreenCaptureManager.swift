@@ -303,48 +303,62 @@ final class ScreenCaptureManager: ObservableObject {
       throw CaptureError.noDisplayFound
     }
 
-    var snapshots: [CGDirectDisplayID: FrozenDisplaySnapshot] = [:]
+    let snapshots = try await withThrowingTaskGroup(
+      of: (CGDirectDisplayID, FrozenDisplaySnapshot).self,
+      returning: [CGDirectDisplayID: FrozenDisplaySnapshot].self
+    ) { group in
+      for screen in screensToCapture {
+        guard let displayID = screen.displayID else { continue }
+        guard let display = content.displays.first(where: { $0.displayID == Int(displayID) }) else {
+          throw CaptureError.noDisplayFound
+        }
 
-    for screen in screensToCapture {
-      guard let displayID = screen.displayID else { continue }
-      guard let display = content.displays.first(where: { $0.displayID == Int(displayID) }) else {
-        throw CaptureError.noDisplayFound
+        // Compute filter, scale factor, and configuration on the main actor
+        // before entering the child task, since these methods are @MainActor-isolated.
+        let filter = buildFilter(
+          display: display,
+          content: content,
+          excludeDesktopIcons: excludeDesktopIcons,
+          excludeDesktopWidgets: excludeDesktopWidgets,
+          excludeOwnApplication: excludeOwnApplication
+        )
+        let scaleFactor = displaySnapshotScaleFactor(
+          for: screen,
+          display: display,
+          contentFilter: filter
+        )
+        let configuration = makeDisplaySnapshotConfiguration(
+          for: screen,
+          scaleFactor: scaleFactor,
+          showsCursor: showCursor
+        )
+        let screenFrame = screen.frame
+
+        group.addTask { @MainActor in
+          let image = try await Self.captureImageCompat(
+            contentFilter: filter,
+            configuration: configuration
+          )
+          let imageScaleFactor = Self.imageScaleFactor(
+            for: image,
+            screenFrame: screenFrame,
+            fallback: scaleFactor
+          )
+          return (displayID, FrozenDisplaySnapshot(
+            displayID: displayID,
+            screenFrame: screenFrame,
+            scaleFactor: imageScaleFactor,
+            colorSpaceName: configuration.colorSpaceName,
+            image: image
+          ))
+        }
       }
 
-      let filter = buildFilter(
-        display: display,
-        content: content,
-        excludeDesktopIcons: excludeDesktopIcons,
-        excludeDesktopWidgets: excludeDesktopWidgets,
-        excludeOwnApplication: excludeOwnApplication
-      )
-      let scaleFactor = displaySnapshotScaleFactor(
-        for: screen,
-        display: display,
-        contentFilter: filter
-      )
-      let configuration = makeDisplaySnapshotConfiguration(
-        for: screen,
-        scaleFactor: scaleFactor,
-        showsCursor: showCursor
-      )
-      let image = try await Self.captureImageCompat(
-        contentFilter: filter,
-        configuration: configuration
-      )
-      let imageScaleFactor = Self.imageScaleFactor(
-        for: image,
-        screenFrame: screen.frame,
-        fallback: scaleFactor
-      )
-
-      snapshots[displayID] = FrozenDisplaySnapshot(
-        displayID: displayID,
-        screenFrame: screen.frame,
-        scaleFactor: imageScaleFactor,
-        colorSpaceName: configuration.colorSpaceName,
-        image: image
-      )
+      var result: [CGDirectDisplayID: FrozenDisplaySnapshot] = [:]
+      for try await (displayID, snapshot) in group {
+        result[displayID] = snapshot
+      }
+      return result
     }
 
     guard !snapshots.isEmpty else {

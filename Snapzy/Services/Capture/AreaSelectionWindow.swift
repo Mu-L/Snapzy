@@ -661,6 +661,7 @@ final class AreaSelectionController: NSObject {
 
   private func updateManualSelection(to screenPoint: CGPoint) {
     guard manualSelectionStartPoint != nil else { return }
+    guard screenPoint != manualSelectionCurrentPoint else { return }
     manualSelectionCurrentPoint = screenPoint
     requestDisplayActivationForManualSelection()
     renderManualSelectionIfNeeded()
@@ -1135,12 +1136,19 @@ final class AreaSelectionOverlayView: NSView {
 
   private var snapshotLayer: CALayer!
   private var dimLayer: CALayer!
+  private lazy var reusableDimMaskLayer: CAShapeLayer = {
+    let layer = CAShapeLayer()
+    layer.fillRule = .evenOdd
+    return layer
+  }()
   private var horizontalCrosshairLayer: CAShapeLayer!
   private var verticalCrosshairLayer: CAShapeLayer!
   private var selectionBorderLayer: CAShapeLayer!
   private var crosshairIndicatorLayer: CAShapeLayer!
   private var sizeIndicatorBackgroundLayer: CALayer!
   private var sizeIndicatorTextLayer: CATextLayer!
+  private var lastSizeIndicatorText: String?
+  private var lastSizeIndicatorTextSize: CGSize = .zero
   private var modeHintBackgroundLayer: CALayer!
   private var modeHintTextLayer: CATextLayer!
 
@@ -1600,14 +1608,14 @@ final class AreaSelectionOverlayView: NSView {
   }
 
   private func updateDimLayerMask(for selectionRect: CGRect) {
-    // Create mask that clears the selection area (even-odd fill rule)
-    let maskLayer = CAShapeLayer()
+    // Reuse mask layer to avoid per-frame CAShapeLayer allocation
     let path = CGMutablePath()
     path.addRect(bounds)
     path.addRect(selectionRect)
-    maskLayer.path = path
-    maskLayer.fillRule = .evenOdd
-    dimLayer.mask = maskLayer
+    reusableDimMaskLayer.path = path
+    if dimLayer.mask !== reusableDimMaskLayer {
+      dimLayer.mask = reusableDimMaskLayer
+    }
   }
 
   private var screenScaleFactor: CGFloat {
@@ -1642,13 +1650,21 @@ final class AreaSelectionOverlayView: NSView {
   private func hideSizeIndicator() {
     sizeIndicatorBackgroundLayer.isHidden = true
     sizeIndicatorTextLayer.isHidden = true
+    lastSizeIndicatorText = nil
   }
 
   private func updateSizeIndicator(for rect: CGRect, measuredSize: CGSize? = nil) {
     let displayedSize = measuredSize ?? rect.size
     let sizeText = "\(Int(displayedSize.width)) x \(Int(displayedSize.height))"
     let attributes = overlayTextAttributes
-    let textSize = sizeText.size(withAttributes: attributes)
+    let textSize: CGSize
+    if sizeText == lastSizeIndicatorText {
+      textSize = lastSizeIndicatorTextSize
+    } else {
+      textSize = sizeText.size(withAttributes: attributes)
+      lastSizeIndicatorText = sizeText
+      lastSizeIndicatorTextSize = textSize
+    }
     let padding: CGFloat = 6
     var backgroundRect = CGRect(
       x: rect.maxX - textSize.width - padding * 2 - 4,
