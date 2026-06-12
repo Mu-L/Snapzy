@@ -6,6 +6,22 @@
     <description>Snapzy application updates</description>
     <language>en</language>
     <item>
+      <title>Version 1.22.1</title>
+      <sparkle:version>119</sparkle:version>
+      <sparkle:shortVersionString>1.22.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <pubDate>Fri, 12 Jun 2026 11:05:11 +0000</pubDate>
+      <description><![CDATA[
+        <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
+        <h3>🐛 Bug Fixes</h3><ul><li>retain and restore previously active application during area selection</li><li>commit first area-selection drag and apply cursor on capture start</li></ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/duongductrong/Snapzy/releases/download/v1.22.1/Snapzy-v1.22.1.dmg"
+        sparkle:edSignature="gxxvu4jM/zHgI0+LwclziHYsXCxhJN026NwwS67njs5TspVcupg1GtuDvkWRe0lwuKnASstWtq9jb92vT2L6BA=="
+        length="45727269"
+        type="application/octet-stream"/>
+    </item>
+    <item>
       <title>Version 1.22.0</title>
       <sparkle:version>118</sparkle:version>
       <sparkle:shortVersionString>1.22.0</sparkle:shortVersionString>
