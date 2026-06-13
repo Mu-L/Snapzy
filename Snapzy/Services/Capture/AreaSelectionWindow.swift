@@ -363,6 +363,14 @@ final class AreaSelectionController: NSObject {
       NSApp.activate(ignoringOtherApps: true)
     } else {
       previouslyActiveApplication = nil
+      // For non-frozen sessions (recording, OCR, cutout) we cannot activate
+      // the app without dimming live windows. Force cursor rect evaluation
+      // on pooled windows as a best-effort hint — this prompts macOS to
+      // apply the overlay's cursor rects sooner than waiting for the next
+      // mouse-move event.
+      for (_, window) in windowPool {
+        window.invalidateCursorRects(for: window.overlayView)
+      }
     }
 
     startWindowSelectionPreparationIfNeeded()
@@ -588,6 +596,11 @@ final class AreaSelectionController: NSObject {
     
     resetCallbacks()
     dismissesAfterSelection = true
+
+    // Ensure cursor is restored to arrow after selection ends.
+    // Window hiding (orderOut) does not always trigger mouseExited,
+    // so the transparent/camera cursor could persist without this.
+    NSCursor.arrow.set()
   }
 
   /// Cancel the current selection
@@ -605,6 +618,11 @@ final class AreaSelectionController: NSObject {
     previouslyActiveApplication = nil
     
     resetCallbacks()
+
+    // Ensure cursor is restored to arrow after cancellation.
+    // Window hiding (orderOut) does not always trigger mouseExited,
+    // so the transparent/camera cursor could persist without this.
+    NSCursor.arrow.set()
   }
 
   /// Complete selection with the given rect

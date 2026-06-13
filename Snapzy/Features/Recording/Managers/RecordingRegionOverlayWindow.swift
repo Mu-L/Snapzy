@@ -144,6 +144,14 @@ final class RecordingRegionOverlayWindow: NSPanel {
     setInteractionEnabled(enabled)
   }
 
+  override func close() {
+    // Restore cursor to arrow before closing — the overlay may have set
+    // a resize, openHand, or crosshair cursor that could persist if the
+    // window is dismissed before mouseExited fires.
+    NSCursor.arrow.set()
+    super.close()
+  }
+
   // Non-activating: prevent stealing focus from other apps
   override var canBecomeKey: Bool { false }
   override var canBecomeMain: Bool { false }

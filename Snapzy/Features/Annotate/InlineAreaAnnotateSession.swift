@@ -396,6 +396,12 @@ final class InlineAreaAnnotateSession: ObservableObject {
     removeKeyMonitors()
     removeSelectionMonitor()
     frozenSession.invalidate()
+
+    // Restore cursor before closing windows — the inline overlay uses a
+    // transparent 1×1 cursor that could persist if window closure does not
+    // trigger cursor rect re-evaluation.
+    NSCursor.arrow.set()
+
     if closeWindow {
       for window in windows.allObjects {
         window.close()

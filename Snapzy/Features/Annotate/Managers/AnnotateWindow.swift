@@ -217,6 +217,17 @@ class AnnotateWindow: NSWindow {
     interactionState?.redo()
   }
 
+  override func close() {
+    // Restore cursor if the window is closed during a space-hold pan gesture
+    // (e.g., user presses ⌘W while Space is held). The keyUp event that would
+    // normally restore the arrow cursor never fires after window closure.
+    if isSpaceHeld {
+      isSpaceHeld = false
+      NSCursor.arrow.set()
+    }
+    super.close()
+  }
+
   // MARK: - Scroll Wheel, Magnification Zoom & Pan
 
   /// Track whether Space key is currently held for pan mode
