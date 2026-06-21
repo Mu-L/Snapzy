@@ -165,6 +165,12 @@ final class SandboxOffDataMigrationService {
 
     markCompleted(configuration, sourceDataDirectory: sourceDataDirectory)
 
+    cleanupLegacySandboxData(
+      sourceDataDirectory: sourceDataDirectory,
+      bundleIdentifier: bundleIdentifier,
+      configuration: configuration
+    )
+
     let result = SandboxOffDataMigrationResult(
       didRun: true,
       copiedApplicationSupportItems: applicationSupportSummary.copiedItems,
@@ -366,5 +372,38 @@ final class SandboxOffDataMigrationService {
     }
 
     return summary
+  }
+
+  private func cleanupLegacySandboxData(
+    sourceDataDirectory: URL,
+    bundleIdentifier: String,
+    configuration: Configuration
+  ) {
+    let fileManager = configuration.fileManager
+
+    let sourceAppSupport = sourceDataDirectory
+      .appendingPathComponent("Library", isDirectory: true)
+      .appendingPathComponent("Application Support", isDirectory: true)
+      .appendingPathComponent(appSupportFolderName, isDirectory: true)
+
+    let sourceLogs = sourceDataDirectory
+      .appendingPathComponent("Library", isDirectory: true)
+      .appendingPathComponent("Logs", isDirectory: true)
+      .appendingPathComponent(appSupportFolderName, isDirectory: true)
+
+    let sourcePrefs = sourceDataDirectory
+      .appendingPathComponent("Library", isDirectory: true)
+      .appendingPathComponent("Preferences", isDirectory: true)
+      .appendingPathComponent("\(bundleIdentifier).plist")
+
+    for url in [sourceAppSupport, sourceLogs, sourcePrefs] {
+      guard fileManager.fileExists(atPath: url.path) else { continue }
+      do {
+        try fileManager.removeItem(at: url)
+        sandboxOffMigrationLogger.info("Cleaned up legacy sandbox data at: \(url.lastPathComponent, privacy: .public)")
+      } catch {
+        sandboxOffMigrationLogger.error("Failed to clean up legacy data at \(url.path, privacy: .public): \(error.localizedDescription, privacy: .public)")
+      }
+    }
   }
 }
