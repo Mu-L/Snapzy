@@ -367,7 +367,7 @@ struct ShortcutsSettingsView: View {
             icon: "dot.viewfinder",
             description: L10n.PreferencesShortcuts.smartElementCaptureDescription,
             shortcut: $smartElementShortcut,
-            defaultShortcut: nil,
+            defaultShortcut: .defaultSmartElement,
             isEnabled: globalEnabledBinding(for: .smartElement),
             validationIssue: globalValidationIssues[.smartElement],
             onShortcutChanged: { handleGlobalShortcutChange($0, for: .smartElement) }
@@ -639,7 +639,7 @@ struct ShortcutsSettingsView: View {
     scrollingCaptureShortcut = .defaultScrollingCapture
     objectCutoutShortcut = .defaultObjectCutout
     ocrShortcut = .defaultOCR
-    smartElementShortcut = nil
+    smartElementShortcut = .defaultSmartElement
 
     let captureKinds: [GlobalShortcutKind] = [
       .fullscreen, .area, .areaAnnotate, .activeWindow, .scrollingCapture, .objectCutout, .ocr, .smartElement
@@ -658,7 +658,7 @@ struct ShortcutsSettingsView: View {
     manager.setScrollingCaptureShortcut(.defaultScrollingCapture)
     manager.setObjectCutoutShortcut(.defaultObjectCutout)
     manager.setOCRShortcut(.defaultOCR)
-    manager.setSmartElementShortcut(nil)
+    manager.setSmartElementShortcut(.defaultSmartElement)
     CaptureOverlayShortcutSettings.resetApplicationCaptureShortcut()
 
     if refresh {

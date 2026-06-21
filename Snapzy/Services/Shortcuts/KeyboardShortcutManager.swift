@@ -55,6 +55,12 @@ struct ShortcutConfig: Equatable, Codable {
     modifiers: UInt32(cmdKey | shiftKey)
   )
 
+  /// Option + Shift + 4
+  static let defaultSmartElement = ShortcutConfig(
+    keyCode: UInt32(kVK_ANSI_4),
+    modifiers: UInt32(optionKey | shiftKey)
+  )
+
   /// Cmd + Shift + 1
   static let defaultObjectCutout = ShortcutConfig(
     keyCode: UInt32(kVK_ANSI_1),
@@ -502,7 +508,7 @@ final class KeyboardShortcutManager {
   private(set) var cloudUploadsShortcut: ShortcutConfig
   private(set) var shortcutListShortcut: ShortcutConfig
   private(set) var ocrShortcut: ShortcutConfig
-  private(set) var smartElementShortcut: ShortcutConfig? = nil
+  private(set) var smartElementShortcut: ShortcutConfig
   private(set) var objectCutoutShortcut: ShortcutConfig
   private(set) var historyShortcut: ShortcutConfig
   private(set) var activeWindowShortcut: ShortcutConfig
@@ -578,6 +584,7 @@ final class KeyboardShortcutManager {
     cloudUploadsShortcut = .defaultCloudUploads
     shortcutListShortcut = .defaultShortcutList
     ocrShortcut = .defaultOCR
+    smartElementShortcut = .defaultSmartElement
     objectCutoutShortcut = .defaultObjectCutout
     historyShortcut = .defaultHistory
     activeWindowShortcut = .defaultActiveWindowCapture
@@ -756,11 +763,8 @@ final class KeyboardShortcutManager {
   /// Update smart element shortcut. No default is seeded; nil means "None".
   func setSmartElementShortcut(_ config: ShortcutConfig?) {
     mutateShortcutRegistration {
-      smartElementShortcut = config
-      if config == nil {
-        clearedShortcuts.insert(.smartElement)
-      } else {
-        clearedShortcuts.remove(.smartElement)
+      setShortcut(config, for: .smartElement) {
+        smartElementShortcut = $0
       }
       saveShortcuts()
       saveClearedShortcuts()
@@ -880,11 +884,8 @@ final class KeyboardShortcutManager {
     if let ocrData = try? encoder.encode(ocrShortcut) {
       UserDefaults.standard.set(ocrData, forKey: ocrShortcutKey)
     }
-    if let smartElementShortcut,
-       let smartElementData = try? encoder.encode(smartElementShortcut) {
+    if let smartElementData = try? encoder.encode(smartElementShortcut) {
       UserDefaults.standard.set(smartElementData, forKey: smartElementShortcutKey)
-    } else {
-      UserDefaults.standard.removeObject(forKey: smartElementShortcutKey)
     }
     if let objectCutoutData = try? encoder.encode(objectCutoutShortcut) {
       UserDefaults.standard.set(objectCutoutData, forKey: objectCutoutShortcutKey)
