@@ -55,6 +55,12 @@ struct ShortcutConfig: Equatable, Codable {
     modifiers: UInt32(cmdKey | shiftKey)
   )
 
+  /// Option + Shift + 4
+  static let defaultSmartElement = ShortcutConfig(
+    keyCode: UInt32(kVK_ANSI_4),
+    modifiers: UInt32(optionKey | shiftKey)
+  )
+
   /// Cmd + Shift + 1
   static let defaultObjectCutout = ShortcutConfig(
     keyCode: UInt32(kVK_ANSI_1),
@@ -410,6 +416,7 @@ enum GlobalShortcutKind: String, CaseIterable, Codable {
   case cloudUploads
   case shortcutList
   case ocr
+  case smartElement
   case objectCutout
   case history
 
@@ -448,6 +455,8 @@ extension GlobalShortcutKind {
       return L10n.Actions.showShortcutList
     case .ocr:
       return L10n.Actions.captureTextOCR
+    case .smartElement:
+      return L10n.Actions.captureSmartElement
     case .objectCutout:
       return L10n.Actions.captureSubject
     case .history:
@@ -465,6 +474,7 @@ enum ShortcutAction {
   case captureActiveWindow
   case captureScrolling
   case captureOCR
+  case captureSmartElement
   case captureObjectCutout
   case recordVideo
   case recordApplication
@@ -498,6 +508,7 @@ final class KeyboardShortcutManager {
   private(set) var cloudUploadsShortcut: ShortcutConfig
   private(set) var shortcutListShortcut: ShortcutConfig
   private(set) var ocrShortcut: ShortcutConfig
+  private(set) var smartElementShortcut: ShortcutConfig
   private(set) var objectCutoutShortcut: ShortcutConfig
   private(set) var historyShortcut: ShortcutConfig
   private(set) var activeWindowShortcut: ShortcutConfig
@@ -518,6 +529,7 @@ final class KeyboardShortcutManager {
   private var cloudUploadsHotkeyRef: EventHotKeyRef?
   private var shortcutListHotkeyRef: EventHotKeyRef?
   private var ocrHotkeyRef: EventHotKeyRef?
+  private var smartElementHotkeyRef: EventHotKeyRef?
   private var objectCutoutHotkeyRef: EventHotKeyRef?
   private var historyHotkeyRef: EventHotKeyRef?
   private var activeWindowHotkeyRef: EventHotKeyRef?
@@ -538,6 +550,7 @@ final class KeyboardShortcutManager {
   private let applicationRecordingHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4644), id: 13)  // "ZSFD"
   private let areaAnnotateHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4645), id: 14)  // "ZSFE"
   private let activeWindowHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4646), id: 15)  // "ZSFF"
+  private let smartElementHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4647), id: 16)  // "ZSFG"
 
   private var eventHandler: EventHandlerRef?
 
@@ -552,6 +565,7 @@ final class KeyboardShortcutManager {
   private let cloudUploadsShortcutKey = "cloudUploadsShortcut"
   private let shortcutListShortcutKey = PreferencesKeys.shortcutListShortcut
   private let ocrShortcutKey = "ocrShortcut"
+  private let smartElementShortcutKey = PreferencesKeys.smartElementShortcut
   private let objectCutoutShortcutKey = "objectCutoutShortcut"
   private let historyShortcutKey = "historyShortcut"
   private let activeWindowShortcutKey = "activeWindowShortcut"
@@ -570,6 +584,7 @@ final class KeyboardShortcutManager {
     cloudUploadsShortcut = .defaultCloudUploads
     shortcutListShortcut = .defaultShortcutList
     ocrShortcut = .defaultOCR
+    smartElementShortcut = .defaultSmartElement
     objectCutoutShortcut = .defaultObjectCutout
     historyShortcut = .defaultHistory
     activeWindowShortcut = .defaultActiveWindowCapture
@@ -646,6 +661,7 @@ final class KeyboardShortcutManager {
     case .cloudUploads: return cloudUploadsShortcut
     case .shortcutList: return shortcutListShortcut
     case .ocr: return ocrShortcut
+    case .smartElement: return smartElementShortcut
     case .objectCutout: return objectCutoutShortcut
     case .history: return historyShortcut
     }
@@ -738,6 +754,17 @@ final class KeyboardShortcutManager {
     mutateShortcutRegistration {
       setShortcut(config, for: .ocr) {
         ocrShortcut = $0
+      }
+      saveShortcuts()
+      saveClearedShortcuts()
+    }
+  }
+
+  /// Update smart element shortcut. No default is seeded; nil means "None".
+  func setSmartElementShortcut(_ config: ShortcutConfig?) {
+    mutateShortcutRegistration {
+      setShortcut(config, for: .smartElement) {
+        smartElementShortcut = $0
       }
       saveShortcuts()
       saveClearedShortcuts()
@@ -857,6 +884,9 @@ final class KeyboardShortcutManager {
     if let ocrData = try? encoder.encode(ocrShortcut) {
       UserDefaults.standard.set(ocrData, forKey: ocrShortcutKey)
     }
+    if let smartElementData = try? encoder.encode(smartElementShortcut) {
+      UserDefaults.standard.set(smartElementData, forKey: smartElementShortcutKey)
+    }
     if let objectCutoutData = try? encoder.encode(objectCutoutShortcut) {
       UserDefaults.standard.set(objectCutoutData, forKey: objectCutoutShortcutKey)
     }
@@ -919,6 +949,11 @@ final class KeyboardShortcutManager {
       let config = try? decoder.decode(ShortcutConfig.self, from: ocrData)
     {
       ocrShortcut = config
+    }
+    if let smartElementData = UserDefaults.standard.data(forKey: smartElementShortcutKey),
+      let config = try? decoder.decode(ShortcutConfig.self, from: smartElementData)
+    {
+      smartElementShortcut = config
     }
     if let objectCutoutData = UserDefaults.standard.data(forKey: objectCutoutShortcutKey),
       let config = try? decoder.decode(ShortcutConfig.self, from: objectCutoutData)
@@ -1052,6 +1087,9 @@ final class KeyboardShortcutManager {
     case ocrHotkeyID.id:
       actionName = "ocr"
       action = .captureOCR
+    case smartElementHotkeyID.id:
+      actionName = "smart-element"
+      action = .captureSmartElement
     case objectCutoutHotkeyID.id:
       actionName = "object-cutout"
       action = .captureObjectCutout
@@ -1142,6 +1180,12 @@ final class KeyboardShortcutManager {
       config: shortcut(for: .ocr),
       hotkeyID: ocrHotkeyID,
       ref: &ocrHotkeyRef
+    )
+    registerShortcutIfNeeded(
+      kind: .smartElement,
+      config: shortcut(for: .smartElement),
+      hotkeyID: smartElementHotkeyID,
+      ref: &smartElementHotkeyRef
     )
     registerShortcutIfNeeded(
       kind: .cloudUploads,
@@ -1272,6 +1316,10 @@ final class KeyboardShortcutManager {
     if let ref = ocrHotkeyRef {
       UnregisterEventHotKey(ref)
       ocrHotkeyRef = nil
+    }
+    if let ref = smartElementHotkeyRef {
+      UnregisterEventHotKey(ref)
+      smartElementHotkeyRef = nil
     }
     if let ref = cloudUploadsHotkeyRef {
       UnregisterEventHotKey(ref)

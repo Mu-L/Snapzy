@@ -15,6 +15,7 @@ enum PreferencesKeys {
   static let splashSkipped = "splashSkipped"
   static let splashSkipOnceAfterOnboardingRelaunch = "splash.skipOnceAfterOnboardingRelaunch"
   static let legacyLicenseCleanupCompleted = "legacyLicenseCleanupCompleted"
+  static let sandboxOffMigrationCompleted = "migration.sandboxOff.completed"
 
   // General
   static let playSounds = "playSounds"
@@ -39,6 +40,7 @@ enum PreferencesKeys {
   static let areaShortcut = "areaShortcut"
   static let areaApplicationCaptureShortcut = "shortcuts.area.applicationCapture"
   static let recordingApplicationCaptureShortcut = "shortcuts.recording.applicationCapture"
+  static let smartElementShortcut = "smartElementShortcut"
   static let shortcutListShortcut = "shortcutListShortcut"
   static let disabledGlobalShortcuts = "shortcuts.disabledGlobalActions"
   static let clearedGlobalShortcuts = "shortcuts.clearedGlobalActions"
