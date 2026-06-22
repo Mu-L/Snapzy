@@ -6,6 +6,22 @@
     <description>Snapzy application updates</description>
     <language>en</language>
     <item>
+      <title>Version 1.24.0</title>
+      <sparkle:version>124</sparkle:version>
+      <sparkle:shortVersionString>1.24.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <pubDate>Mon, 22 Jun 2026 11:00:07 +0000</pubDate>
+      <description><![CDATA[
+        <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
+        <h3>✨ Features</h3><ul><li>Introduce feature onboarding with "What's New" campaigns and localization support</li><li>Enhance Quick Access integration with video editor window management</li><li>Smart element capture</li><li>Add quick access settings for hiding cards when windows are open and animation style selection</li></ul><h3>🐛 Bug Fixes</h3><ul><li>Update app sandbox entitlement check in release publish workflow</li></ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/duongductrong/Snapzy/releases/download/v1.24.0/Snapzy-v1.24.0.dmg"
+        sparkle:edSignature="K4pMEcKXMe6VSydlxEmcflr0RgTEI8IXuEIDVO4ez2DJUKO5qd0oZjwpifzN33pv3GqwausA24LL/3BhKAPEAA=="
+        length="46066300"
+        type="application/octet-stream"/>
+    </item>
+    <item>
       <title>Version 1.23.0</title>
       <sparkle:version>123</sparkle:version>
       <sparkle:shortVersionString>1.23.0</sparkle:shortVersionString>
