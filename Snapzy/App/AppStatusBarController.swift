@@ -505,6 +505,19 @@ final class AppStatusBarController: ObservableObject {
       menu?.addItem(NSMenuItem.separator())
     }
 
+    // What's New
+    if let campaign = FeatureIntroManager.shared.getPendingCampaign() {
+      let whatsNewItem = NSMenuItem(
+        title: campaign.menuTitle ?? "What's New",
+        action: #selector(showPendingFeatureIntroAction),
+        keyEquivalent: ""
+      )
+      whatsNewItem.target = self
+      whatsNewItem.image = NSImage(systemSymbolName: "sparkles", accessibilityDescription: nil)
+      whatsNewItem.isEnabled = true
+      menu?.addItem(whatsNewItem)
+    }
+
     // Check for Updates
     let updateItem = NSMenuItem(
       title: L10n.Menu.checkForUpdates,
@@ -656,6 +669,13 @@ final class AppStatusBarController: ObservableObject {
   @objc private func checkForUpdatesAction() {
     logMenuAction("checkForUpdates")
     UpdaterManager.shared.checkForUpdates()
+  }
+
+  @objc private func showPendingFeatureIntroAction() {
+    logMenuAction("showPendingFeatureIntro")
+    if let campaign = FeatureIntroManager.shared.getPendingCampaign() {
+      FeatureIntroManager.shared.showCampaign(campaign)
+    }
   }
 
   @objc private func reportProblemAction() {

@@ -3060,7 +3060,7 @@
       "localizations": {
         "de": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Passen Sie an, wie schnell die Karte Ihrer Trackpad-Wischbewegung folgt"
           }
         },
@@ -3072,49 +3072,49 @@
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Ajusta qué tan rápido la tarjeta sigue tu gesto en el trackpad"
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Ajustez la vitesse de suivi de la carte lors du balayage sur le trackpad"
           }
         },
         "ja": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "トラックパッドのスワイプにカードが追従する速度を調整"
           }
         },
         "ko": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "트랙패드 스와이프에 카드가 따라가는 속도 조정"
           }
         },
         "ru": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Настройте скорость реакции карточки на свайп по трекпаду"
           }
         },
         "vi": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Điều chỉnh tốc độ thẻ di chuyển theo cử chỉ vuốt trên trackpad"
           }
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "调整卡片跟随触控板轻扫的速度"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "調整卡片跟隨觸控板滑動的速度"
           }
         }
@@ -3124,7 +3124,7 @@
       "localizations": {
         "de": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Wisch-Empfindlichkeit"
           }
         },
@@ -3136,49 +3136,49 @@
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Sensibilidad de deslizamiento"
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Sensibilité du balayage"
           }
         },
         "ja": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "スワイプ感度"
           }
         },
         "ko": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "스와이프 감도"
           }
         },
         "ru": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Чувствительность свайпа"
           }
         },
         "vi": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Độ nhạy vuốt"
           }
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "轻扫灵敏度"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "滑動靈敏度"
           }
         }
@@ -3318,7 +3318,7 @@
       "localizations": {
         "de": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Wähle, ob die Karte dem Finger folgt oder in die entgegengesetzte Richtung bewegt wird"
           }
         },
@@ -3330,31 +3330,31 @@
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Elige si la tarjeta sigue tu dedo o se mueve en dirección opuesta"
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Choisissez si la carte suit votre doigt ou se déplace dans la direction opposée"
           }
         },
         "ja": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "カードが指に追従するか、逆方向に移動するかを選択してください"
           }
         },
         "ko": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "카드가 손가락을 따를지 반대 방향으로 이동할지 선택하세요"
           }
         },
         "ru": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Выберите, следует ли карта за пальцем или движется в противоположном направлении"
           }
         },
@@ -3366,13 +3366,13 @@
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "选择卡片是跟随手指移动还是向相反方向移动"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "選擇卡片是跟隨手指移動還是向相反方向移動"
           }
         }
@@ -3382,7 +3382,7 @@
       "localizations": {
         "de": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Invertiert (Scrollen folgen)"
           }
         },
@@ -3394,31 +3394,31 @@
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Invertido (seguir desplazamiento)"
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Inversé (suivre le défilement)"
           }
         },
         "ja": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "反転（スクロールに追従）"
           }
         },
         "ko": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "반전 (스크롤 따라)"
           }
         },
         "ru": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Инвертированное (следовать за прокруткой)"
           }
         },
@@ -3430,13 +3430,13 @@
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "反转（跟随滚动）"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "反轉（跟隨滾動）"
           }
         }
@@ -3446,7 +3446,7 @@
       "localizations": {
         "de": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Natürlich (Finger folgen)"
           }
         },
@@ -3458,31 +3458,31 @@
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Natural (seguir dedo)"
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Naturel (suivre le doigt)"
           }
         },
         "ja": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "自然（指に追従）"
           }
         },
         "ko": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "자연스러움 (손가락 따라)"
           }
         },
         "ru": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Естественное (следовать за пальцем)"
           }
         },
@@ -3494,13 +3494,13 @@
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "自然（跟随手指）"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "自然（跟隨手指）"
           }
         }
@@ -3510,7 +3510,7 @@
       "localizations": {
         "de": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Trackpad-Wischrichtung"
           }
         },
@@ -3522,31 +3522,31 @@
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Dirección de deslizamiento del trackpad"
           }
         },
         "fr": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Direction du balayage trackpad"
           }
         },
         "ja": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "トラックパッドのスワイプ方向"
           }
         },
         "ko": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "트랙패드 스와이프 방향"
           }
         },
         "ru": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "Направление смахивания трекпада"
           }
         },
@@ -3558,13 +3558,13 @@
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "触控板滑动方向"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "needs_review",
+            "state": "translated",
             "value": "觸控板滑動方向"
           }
         }

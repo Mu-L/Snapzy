@@ -12,6 +12,7 @@ enum L10n {
     ("action.", "Common"),
     ("menu.", "Menubar"),
     ("common.", "Common"),
+    ("whats-new.", "WhatsNew"),
     ("appearance.", "Common"),
     ("splash.", "Onboarding"),
     ("app-identity.", "Common"),
@@ -692,6 +693,11 @@ enum L10n {
   }
 
   enum Common {
+    static let tryItOut = string(
+      "common.try-it-out",
+      defaultValue: "Try It Out",
+      comment: "Try it out button title"
+    )
     static let next = string(
       "common.next",
       defaultValue: "Next",
@@ -7370,6 +7376,51 @@ enum L10n {
       "history-background-style.gradient",
       defaultValue: "Gradient",
       comment: "History background style option"
+    )
+  }
+  enum WhatsNew {
+    static let title = string(
+      "whats-new.title",
+      defaultValue: "What's new in Snapzy",
+      comment: "Welcome screen title"
+    )
+    static func desc(_ version: String) -> String {
+      format(
+        "whats-new.desc",
+        defaultValue: "Discover the latest features in version %@.",
+        comment: "Welcome screen description",
+        version
+      )
+    }
+    static let smartElementTitle = string(
+      "whats-new.smart-element.title",
+      defaultValue: "Smart Element Capture",
+      comment: "Smart element capture feature title"
+    )
+    static let smartElementDesc = string(
+      "whats-new.smart-element.desc",
+      defaultValue: "Auto-detect and capture UI elements like windows and buttons.",
+      comment: "Smart element capture feature description"
+    )
+    static let shortcutTitle = string(
+      "whats-new.shortcut.title",
+      defaultValue: "Quick Shortcut",
+      comment: "Quick shortcut feature title"
+    )
+    static let shortcutDesc = string(
+      "whats-new.shortcut.desc",
+      defaultValue: "Press ⌥⇧4 anywhere to instantly activate this mode.",
+      comment: "Quick shortcut feature description"
+    )
+    static let readyTitle = string(
+      "whats-new.ready.title",
+      defaultValue: "Ready to Capture",
+      comment: "Ready to capture feature title"
+    )
+    static let readyDesc = string(
+      "whats-new.ready.desc",
+      defaultValue: "Hover over any element to highlight, then click to capture.",
+      comment: "Ready to capture feature description"
     )
   }
 }
