@@ -528,6 +528,12 @@ enum RecordingState: Equatable {
   case recording
   case paused
   case stopping
+
+  /// True when the recorder is mid-session and can be paused, resumed, or stopped.
+  /// Used by the global pause/resume shortcut to decide whether to dispatch `togglePause()`.
+  var isPauseResumeEligible: Bool {
+    self == .recording || self == .paused
+  }
 }
 
 // MARK: - Recording Error

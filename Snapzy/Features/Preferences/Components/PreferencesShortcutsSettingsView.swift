@@ -21,6 +21,10 @@ struct ShortcutsSettingsView: View {
   @State private var ocrShortcut: ShortcutConfig?
   @State private var smartElementShortcut: ShortcutConfig?
   @State private var recordingShortcut: ShortcutConfig?
+  @State private var pauseResumeRecordingShortcut: ShortcutConfig?
+  @State private var togglePenRecordingShortcut: ShortcutConfig?
+  @State private var restartRecordingShortcut: ShortcutConfig?
+  @State private var deleteRecordingShortcut: ShortcutConfig?
   @State private var annotateShortcut: ShortcutConfig?
   @State private var videoEditorShortcut: ShortcutConfig?
   @State private var cloudUploadsShortcut: ShortcutConfig?
@@ -63,6 +67,18 @@ struct ShortcutsSettingsView: View {
     _ocrShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .ocr))
     _smartElementShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .smartElement))
     _recordingShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .recording))
+    _pauseResumeRecordingShortcut = State(
+      initialValue: KeyboardShortcutManager.shared.shortcut(for: .pauseResumeRecording)
+    )
+    _togglePenRecordingShortcut = State(
+      initialValue: KeyboardShortcutManager.shared.shortcut(for: .togglePenRecording)
+    )
+    _restartRecordingShortcut = State(
+      initialValue: KeyboardShortcutManager.shared.shortcut(for: .restartRecording)
+    )
+    _deleteRecordingShortcut = State(
+      initialValue: KeyboardShortcutManager.shared.shortcut(for: .deleteRecording)
+    )
     _annotateShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .annotate))
     _videoEditorShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .videoEditor))
     _cloudUploadsShortcut = State(initialValue: KeyboardShortcutManager.shared.shortcut(for: .cloudUploads))
@@ -407,6 +423,50 @@ struct ShortcutsSettingsView: View {
             ) { newShortcut in
               handleCaptureOverlayShortcutChange(newShortcut, for: .applicationRecording)
             }
+
+            ShortcutRecorderView(
+              label: L10n.Actions.pauseResumeRecording,
+              icon: "pause.circle",
+              description: L10n.PreferencesShortcuts.pauseResumeRecordingDescription,
+              shortcut: $pauseResumeRecordingShortcut,
+              defaultShortcut: nil,
+              isEnabled: globalEnabledBinding(for: .pauseResumeRecording),
+              validationIssue: globalValidationIssues[.pauseResumeRecording],
+              onShortcutChanged: { handleGlobalShortcutChange($0, for: .pauseResumeRecording) }
+            )
+
+            ShortcutRecorderView(
+              label: L10n.Actions.togglePenRecording,
+              icon: "pencil.tip.crop.circle",
+              description: L10n.PreferencesShortcuts.togglePenRecordingDescription,
+              shortcut: $togglePenRecordingShortcut,
+              defaultShortcut: nil,
+              isEnabled: globalEnabledBinding(for: .togglePenRecording),
+              validationIssue: globalValidationIssues[.togglePenRecording],
+              onShortcutChanged: { handleGlobalShortcutChange($0, for: .togglePenRecording) }
+            )
+
+            ShortcutRecorderView(
+              label: L10n.Actions.restartRecording,
+              icon: "arrow.counterclockwise.circle",
+              description: L10n.PreferencesShortcuts.restartRecordingDescription,
+              shortcut: $restartRecordingShortcut,
+              defaultShortcut: nil,
+              isEnabled: globalEnabledBinding(for: .restartRecording),
+              validationIssue: globalValidationIssues[.restartRecording],
+              onShortcutChanged: { handleGlobalShortcutChange($0, for: .restartRecording) }
+            )
+
+            ShortcutRecorderView(
+              label: L10n.Actions.deleteRecording,
+              icon: "trash.circle",
+              description: L10n.PreferencesShortcuts.deleteRecordingDescription,
+              shortcut: $deleteRecordingShortcut,
+              defaultShortcut: nil,
+              isEnabled: globalEnabledBinding(for: .deleteRecording),
+              validationIssue: globalValidationIssues[.deleteRecording],
+              onShortcutChanged: { handleGlobalShortcutChange($0, for: .deleteRecording) }
+            )
           }
           .padding(.vertical, 2)
         } header: {
@@ -670,13 +730,35 @@ struct ShortcutsSettingsView: View {
   private func resetRecordingSection(refresh: Bool = true) {
     recordingShortcut = .defaultRecording
     recordingApplicationCaptureShortcut = CaptureOverlayShortcutSettings.defaultRecordingApplicationCaptureShortcut
+    pauseResumeRecordingShortcut = nil
+    togglePenRecordingShortcut = nil
+    restartRecordingShortcut = nil
+    deleteRecordingShortcut = nil
 
     globalShortcutEnabled[.recording] = true
+    globalShortcutEnabled[.pauseResumeRecording] = true
+    globalShortcutEnabled[.togglePenRecording] = true
+    globalShortcutEnabled[.restartRecording] = true
+    globalShortcutEnabled[.deleteRecording] = true
+
     manager.setShortcutEnabled(true, for: .recording)
+    manager.setShortcutEnabled(true, for: .pauseResumeRecording)
+    manager.setShortcutEnabled(true, for: .togglePenRecording)
+    manager.setShortcutEnabled(true, for: .restartRecording)
+    manager.setShortcutEnabled(true, for: .deleteRecording)
+
     globalValidationIssues.removeValue(forKey: .recording)
+    globalValidationIssues.removeValue(forKey: .pauseResumeRecording)
+    globalValidationIssues.removeValue(forKey: .togglePenRecording)
+    globalValidationIssues.removeValue(forKey: .restartRecording)
+    globalValidationIssues.removeValue(forKey: .deleteRecording)
     captureOverlayValidationIssues.removeValue(forKey: .applicationRecording)
 
     manager.setRecordingShortcut(.defaultRecording)
+    manager.setPauseResumeRecordingShortcut(nil)
+    manager.setTogglePenRecordingShortcut(nil)
+    manager.setRestartRecordingShortcut(nil)
+    manager.setDeleteRecordingShortcut(nil)
     CaptureOverlayShortcutSettings.resetRecordingApplicationCaptureShortcut()
 
     if refresh {
@@ -870,6 +952,18 @@ struct ShortcutsSettingsView: View {
       case .recording:
         recordingShortcut = config
         manager.setRecordingShortcut(config)
+      case .pauseResumeRecording:
+        pauseResumeRecordingShortcut = config
+        manager.setPauseResumeRecordingShortcut(config)
+      case .togglePenRecording:
+        togglePenRecordingShortcut = config
+        manager.setTogglePenRecordingShortcut(config)
+      case .restartRecording:
+        restartRecordingShortcut = config
+        manager.setRestartRecordingShortcut(config)
+      case .deleteRecording:
+        deleteRecordingShortcut = config
+        manager.setDeleteRecordingShortcut(config)
       case .annotate:
         annotateShortcut = config
         manager.setAnnotateShortcut(config)
@@ -1034,12 +1128,10 @@ private struct CaptureOverlayShortcutRecorderRow: View {
 
       shortcutRecorderButton
 
-      if let defaultShortcut {
-        ShortcutResetButton(
-          isDisabled: !isEnabled.wrappedValue || isRecording || shortcut == defaultShortcut,
-          action: resetToDefault
-        )
-      }
+      ShortcutResetButton(
+        isDisabled: !isEnabled.wrappedValue || isRecording || shortcut == defaultShortcut,
+        action: resetToDefault
+      )
 
       toggleStatus
     }
@@ -1092,7 +1184,6 @@ private struct CaptureOverlayShortcutRecorderRow: View {
   }
 
   private func resetToDefault() {
-    guard let defaultShortcut else { return }
     if onShortcutChanged(defaultShortcut) {
       shortcut = defaultShortcut
     }

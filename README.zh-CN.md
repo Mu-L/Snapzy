@@ -135,7 +135,8 @@ curl -fsSL https://raw.githubusercontent.com/duongductrong/Snapzy/master/uninsta
 | ↳ 切换手动选区/应用窗口模式（`Application Capture`） | `A`    |
 | 选区截图 + 实时标注                                  | `⇧⌘7`    |
 | 滚动截图                                             | `⇧⌘6`  |
-| 屏幕录制                                             | `⇧⌘5`  |
+| 屏幕录制（开始/停止切换）                            | `⇧⌘5`  |
+| 暂停/继续录制（可选，推荐 `⌘⇧Space`）                | _未设置_ |
 | OCR 文字识别                                         | `⇧⌘2`  |
 | 对象抠图截图                                         | `⇧⌘1`  |
 | 打开标注编辑器                                       | `⇧⌘A`  |

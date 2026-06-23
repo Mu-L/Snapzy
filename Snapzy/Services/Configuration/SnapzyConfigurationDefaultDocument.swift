@@ -238,6 +238,10 @@ enum SnapzyConfigurationDefaultDocument {
     case .activeWindow: return .defaultActiveWindowCapture
     case .scrollingCapture: return .defaultScrollingCapture
     case .recording: return .defaultRecording
+    case .pauseResumeRecording: return nil
+    case .togglePenRecording: return nil
+    case .restartRecording: return nil
+    case .deleteRecording: return nil
     case .annotate: return .defaultAnnotate
     case .videoEditor: return .defaultVideoEditor
     case .cloudUploads: return .defaultCloudUploads

@@ -613,6 +613,26 @@ enum L10n {
       defaultValue: "Record Video",
       comment: "Action title for video recording shortcut"
     )
+    static let pauseResumeRecording = string(
+      "action.pause-resume-recording",
+      defaultValue: "Pause/Resume Recording",
+      comment: "Action title for the optional pause/resume recording shortcut"
+    )
+    static let togglePenRecording = string(
+      "action.toggle-pen-recording",
+      defaultValue: "Toggle Pen/Annotations",
+      comment: "Action title for toggling drawing/annotations overlay"
+    )
+    static let restartRecording = string(
+      "action.restart-recording",
+      defaultValue: "Re-record / Restart",
+      comment: "Action title for restarting the recording session"
+    )
+    static let deleteRecording = string(
+      "action.delete-recording",
+      defaultValue: "Delete / Cancel",
+      comment: "Action title for cancelling and deleting the active recording"
+    )
     static let openAnnotate = string(
       "action.open-annotate",
       defaultValue: "Open Annotate",
@@ -2951,8 +2971,28 @@ enum L10n {
     )
     static let recordVideoDescription = string(
       "preferences-shortcuts.record-video-description",
-      defaultValue: "Start screen recording",
+      defaultValue: "Start or stop screen recording",
       comment: "Description for recording shortcut"
+    )
+    static let pauseResumeRecordingDescription = string(
+      "preferences-shortcuts.pause-resume-recording-description",
+      defaultValue: "Pause or resume an active recording. Optional. Recommended: ⌘⇧Space.",
+      comment: "Description for the optional pause/resume recording shortcut"
+    )
+    static let togglePenRecordingDescription = string(
+      "preferences-shortcuts.toggle-pen-recording-description",
+      defaultValue: "Toggle drawing toolbar and overlays. Optional.",
+      comment: "Description for the optional toggle pen recording shortcut"
+    )
+    static let restartRecordingDescription = string(
+      "preferences-shortcuts.restart-recording-description",
+      defaultValue: "Restart/Re-record from scratch. Optional.",
+      comment: "Description for the optional restart recording shortcut"
+    )
+    static let deleteRecordingDescription = string(
+      "preferences-shortcuts.delete-recording-description",
+      defaultValue: "Delete active recording and cancel. Optional.",
+      comment: "Description for the optional delete/cancel recording shortcut"
     )
     static let toolsSection = string(
       "preferences-shortcuts.tools-section",

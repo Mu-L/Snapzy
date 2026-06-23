@@ -294,6 +294,14 @@ private extension KeyboardShortcutManager {
       setScrollingCaptureShortcut(config)
     case .recording:
       setRecordingShortcut(config)
+    case .pauseResumeRecording:
+      setPauseResumeRecordingShortcut(config)
+    case .togglePenRecording:
+      setTogglePenRecordingShortcut(config)
+    case .restartRecording:
+      setRestartRecordingShortcut(config)
+    case .deleteRecording:
+      setDeleteRecordingShortcut(config)
     case .annotate:
       setAnnotateShortcut(config)
     case .videoEditor:

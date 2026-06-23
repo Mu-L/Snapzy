@@ -74,6 +74,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
   @Published var areaShortcut: ShortcutConfig
   @Published var scrollingCaptureShortcut: ShortcutConfig
   @Published var recordingShortcut: ShortcutConfig
+  @Published var pauseResumeRecordingShortcut: ShortcutConfig?
+  @Published var togglePenRecordingShortcut: ShortcutConfig?
+  @Published var restartRecordingShortcut: ShortcutConfig?
+  @Published var deleteRecordingShortcut: ShortcutConfig?
   @Published var objectCutoutShortcut: ShortcutConfig
 
   init() {
@@ -93,6 +97,10 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
     areaShortcut = KeyboardShortcutManager.shared.areaShortcut
     scrollingCaptureShortcut = KeyboardShortcutManager.shared.scrollingCaptureShortcut
     recordingShortcut = KeyboardShortcutManager.shared.recordingShortcut
+    pauseResumeRecordingShortcut = KeyboardShortcutManager.shared.shortcut(for: .pauseResumeRecording)
+    togglePenRecordingShortcut = KeyboardShortcutManager.shared.shortcut(for: .togglePenRecording)
+    restartRecordingShortcut = KeyboardShortcutManager.shared.shortcut(for: .restartRecording)
+    deleteRecordingShortcut = KeyboardShortcutManager.shared.shortcut(for: .deleteRecording)
     objectCutoutShortcut = KeyboardShortcutManager.shared.objectCutoutShortcut
 
     // Set up shortcut delegate
@@ -288,6 +296,11 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
     recordingShortcut = config
   }
 
+  func updatePauseResumeRecordingShortcut(_ config: ShortcutConfig?) {
+    shortcutManager.setPauseResumeRecordingShortcut(config)
+    pauseResumeRecordingShortcut = config
+  }
+
   func updateScrollingCaptureShortcut(_ config: ShortcutConfig) {
     shortcutManager.setScrollingCaptureShortcut(config)
     scrollingCaptureShortcut = config
@@ -321,9 +334,17 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
     case .captureObjectCutout:
       captureObjectCutout()
     case .recordVideo:
-      startRecordingFlow()
+      toggleRecordingFromShortcut(initialInteractionMode: .manualRegion)
     case .recordApplication:
-      startApplicationRecordingFlow()
+      toggleRecordingFromShortcut(initialInteractionMode: .applicationWindow)
+    case .pauseResumeRecording:
+      togglePauseFromShortcut()
+    case .togglePenRecording:
+      togglePenRecordingFromShortcut()
+    case .restartRecording:
+      restartRecordingFromShortcut()
+    case .deleteRecording:
+      deleteRecordingFromShortcut()
     case .openAnnotate:
       AnnotateManager.shared.openEmptyAnnotation()
     case .openVideoEditor:
@@ -1244,6 +1265,59 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
 
   func startApplicationRecordingFlow() {
     startRecordingFlow(initialInteractionMode: .applicationWindow)
+  }
+
+  /// Pause/resume entry from global shortcut. No-op when no active recording.
+  /// Reuses existing `ScreenRecordingManager.togglePause()` (already used by the menu bar).
+  func togglePauseFromShortcut() {
+    let state = ScreenRecordingManager.shared.state
+    guard state.isPauseResumeEligible else {
+      DiagnosticLogger.shared.log(.debug, .recording, "Pause shortcut ignored: no active recording", context: [
+        "state": "\(state)",
+      ])
+      return
+    }
+    DiagnosticLogger.shared.log(.info, .recording, "Pause shortcut: toggle", context: [
+      "fromState": "\(state)",
+    ])
+    ScreenRecordingManager.shared.togglePause()
+  }
+
+  /// Toggle pen/annotations overlay from global shortcut.
+  func togglePenRecordingFromShortcut() {
+    guard RecordingCoordinator.shared.isActive else { return }
+    RecordingCoordinator.shared.togglePenFromShortcut()
+  }
+
+  /// Restart/Re-record from global shortcut.
+  func restartRecordingFromShortcut() {
+    guard RecordingCoordinator.shared.isActive else { return }
+    RecordingCoordinator.shared.restartFromShortcut()
+  }
+
+  /// Cancel/Delete current recording from global shortcut.
+  func deleteRecordingFromShortcut() {
+    guard RecordingCoordinator.shared.isActive else { return }
+    RecordingCoordinator.shared.deleteFromShortcut()
+  }
+
+
+  /// Toggle entry from global shortcut: stop/cancel if a recording session is active, otherwise start.
+  /// Reuses `RecordingCoordinator.stopFromStatusItem()` which is state-aware
+  /// (`.recording`/`.paused` → stop, `.preparing` → cancel, `.idle`/`.stopping` → no-op).
+  func toggleRecordingFromShortcut(initialInteractionMode: AreaSelectionInteractionMode) {
+    if RecordingCoordinator.shared.isActive {
+      DiagnosticLogger.shared.log(.info, .recording, "Recording shortcut: stop", context: [
+        "recorderState": "\(ScreenRecordingManager.shared.state)",
+        "initialMode": initialInteractionMode == .applicationWindow ? "application" : "manual",
+      ])
+      RecordingCoordinator.shared.stopFromStatusItem()
+    } else {
+      DiagnosticLogger.shared.log(.info, .recording, "Recording shortcut: start", context: [
+        "initialMode": initialInteractionMode == .applicationWindow ? "application" : "manual",
+      ])
+      startRecordingFlow(initialInteractionMode: initialInteractionMode)
+    }
   }
 
   private func startRecordingFlow(initialInteractionMode: AreaSelectionInteractionMode) {

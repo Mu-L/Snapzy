@@ -135,7 +135,8 @@ Lệnh này sẽ xóa ứng dụng khỏi `/Applications`, xóa preferences và 
 | ↳ Chuyển chế độ chọn vùng/cửa sổ ứng dụng (`Application Capture`) | `A`      |
 | Chụp vùng + chú thích nhanh                                       | `⇧⌘7`    |
 | Chụp cuộn                                                         | `⇧⌘6`    |
-| Quay màn hình                                                     | `⇧⌘5`    |
+| Quay màn hình (bật/tắt)                                           | `⇧⌘5`    |
+| Tạm dừng/Tiếp tục quay (tùy chọn, gợi ý `⌘⇧Space`)               | _chưa đặt_ |
 | OCR văn bản                                                       | `⇧⌘2`    |
 | Chụp tách nền đối tượng                                           | `⇧⌘1`    |
 | Mở Annotate                                                       | `⇧⌘A`    |

@@ -82,12 +82,10 @@ struct ShortcutRecorderView: View {
       .disabled(!isInteractionEnabled)
       .help(isInteractionEnabled ? L10n.ShortcutRecorder.clickToRecord : L10n.ShortcutRecorder.turnOnToEdit)
 
-      if let defaultShortcut {
-        ShortcutResetButton(
-          isDisabled: !isInteractionEnabled || isRecording || shortcut == defaultShortcut,
-          action: resetToDefault
-        )
-      }
+      ShortcutResetButton(
+        isDisabled: !isInteractionEnabled || isRecording || shortcut == defaultShortcut,
+        action: resetToDefault
+      )
 
       if let toggleBinding {
         HStack(spacing: 6) {
@@ -130,7 +128,6 @@ struct ShortcutRecorderView: View {
   }
 
   private func resetToDefault() {
-    guard let defaultShortcut else { return }
     if onShortcutChanged(defaultShortcut) {
       shortcut = defaultShortcut
     }

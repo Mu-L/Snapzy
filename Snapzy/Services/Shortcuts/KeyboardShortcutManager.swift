@@ -43,6 +43,12 @@ struct ShortcutConfig: Equatable, Codable {
     modifiers: UInt32(cmdKey | shiftKey)
   )
 
+  /// Cmd + Shift + Space — suggested value only; the shortcut ships unbound (cleared) by default.
+  static let defaultPauseResumeRecording = ShortcutConfig(
+    keyCode: UInt32(kVK_Space),
+    modifiers: UInt32(cmdKey | shiftKey)
+  )
+
   /// Cmd + Shift + 6
   static let defaultScrollingCapture = ShortcutConfig(
     keyCode: UInt32(kVK_ANSI_6),
@@ -411,6 +417,10 @@ enum GlobalShortcutKind: String, CaseIterable, Codable {
   case activeWindow
   case scrollingCapture
   case recording
+  case pauseResumeRecording
+  case togglePenRecording
+  case restartRecording
+  case deleteRecording
   case annotate
   case videoEditor
   case cloudUploads
@@ -445,6 +455,14 @@ extension GlobalShortcutKind {
       return L10n.Actions.scrollingCapture
     case .recording:
       return L10n.Actions.recordVideo
+    case .pauseResumeRecording:
+      return L10n.Actions.pauseResumeRecording
+    case .togglePenRecording:
+      return L10n.Actions.togglePenRecording
+    case .restartRecording:
+      return L10n.Actions.restartRecording
+    case .deleteRecording:
+      return L10n.Actions.deleteRecording
     case .annotate:
       return L10n.Actions.openAnnotate
     case .videoEditor:
@@ -478,6 +496,10 @@ enum ShortcutAction {
   case captureObjectCutout
   case recordVideo
   case recordApplication
+  case pauseResumeRecording
+  case togglePenRecording
+  case restartRecording
+  case deleteRecording
   case openAnnotate
   case openVideoEditor
   case openCloudUploads
@@ -503,6 +525,11 @@ final class KeyboardShortcutManager {
   private(set) var areaAnnotateShortcut: ShortcutConfig
   private(set) var scrollingCaptureShortcut: ShortcutConfig
   private(set) var recordingShortcut: ShortcutConfig
+  /// Backing value holds the recommended `defaultPauseResumeRecording` combo even while the shortcut
+  /// is unbound. The shortcut ships cleared (in `clearedShortcuts`), so always resolve the effective
+  /// binding through `shortcut(for: .pauseResumeRecording)` — which returns nil when cleared — never
+  /// this property directly.
+  private(set) var pauseResumeRecordingShortcut: ShortcutConfig
   private(set) var annotateShortcut: ShortcutConfig
   private(set) var videoEditorShortcut: ShortcutConfig
   private(set) var cloudUploadsShortcut: ShortcutConfig
@@ -512,6 +539,9 @@ final class KeyboardShortcutManager {
   private(set) var objectCutoutShortcut: ShortcutConfig
   private(set) var historyShortcut: ShortcutConfig
   private(set) var activeWindowShortcut: ShortcutConfig
+  private(set) var togglePenRecordingShortcut: ShortcutConfig
+  private(set) var restartRecordingShortcut: ShortcutConfig
+  private(set) var deleteRecordingShortcut: ShortcutConfig
   private(set) var isEnabled: Bool = false
   private var disabledShortcuts: Set<GlobalShortcutKind> = []
   private var clearedShortcuts: Set<GlobalShortcutKind> = []
@@ -522,6 +552,7 @@ final class KeyboardShortcutManager {
   private var areaAnnotateHotkeyRef: EventHotKeyRef?
   private var scrollingCaptureHotkeyRef: EventHotKeyRef?
   private var recordingHotkeyRef: EventHotKeyRef?
+  private var pauseResumeRecordingHotkeyRef: EventHotKeyRef?
   private var applicationCaptureHotkeyRef: EventHotKeyRef?
   private var applicationRecordingHotkeyRef: EventHotKeyRef?
   private var annotateHotkeyRef: EventHotKeyRef?
@@ -533,6 +564,9 @@ final class KeyboardShortcutManager {
   private var objectCutoutHotkeyRef: EventHotKeyRef?
   private var historyHotkeyRef: EventHotKeyRef?
   private var activeWindowHotkeyRef: EventHotKeyRef?
+  private var togglePenRecordingHotkeyRef: EventHotKeyRef?
+  private var restartRecordingHotkeyRef: EventHotKeyRef?
+  private var deleteRecordingHotkeyRef: EventHotKeyRef?
 
   // Hotkey IDs
   private let fullscreenHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4631), id: 1)  // "ZSF1"
@@ -551,6 +585,10 @@ final class KeyboardShortcutManager {
   private let areaAnnotateHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4645), id: 14)  // "ZSFE"
   private let activeWindowHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4646), id: 15)  // "ZSFF"
   private let smartElementHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4647), id: 16)  // "ZSFG"
+  private let pauseResumeRecordingHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4648), id: 17)  // "ZSFH"
+  private let togglePenRecordingHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4649), id: 18)  // "ZSFI"
+  private let restartRecordingHotkeyID = EventHotKeyID(signature: OSType(0x5A53_464A), id: 19)    // "ZSFJ"
+  private let deleteRecordingHotkeyID = EventHotKeyID(signature: OSType(0x5A53_464B), id: 20)     // "ZSFK"
 
   private var eventHandler: EventHandlerRef?
 
@@ -560,6 +598,7 @@ final class KeyboardShortcutManager {
   private let areaAnnotateShortcutKey = "areaAnnotateShortcut"
   private let scrollingCaptureShortcutKey = "scrollingCaptureShortcut"
   private let recordingShortcutKey = "recordingShortcut"
+  private let pauseResumeRecordingShortcutKey = "pauseResumeRecordingShortcut"
   private let annotateShortcutKey = "annotateShortcut"
   private let videoEditorShortcutKey = "videoEditorShortcut"
   private let cloudUploadsShortcutKey = "cloudUploadsShortcut"
@@ -569,6 +608,9 @@ final class KeyboardShortcutManager {
   private let objectCutoutShortcutKey = "objectCutoutShortcut"
   private let historyShortcutKey = "historyShortcut"
   private let activeWindowShortcutKey = "activeWindowShortcut"
+  private let togglePenRecordingShortcutKey = "togglePenRecordingShortcut"
+  private let restartRecordingShortcutKey = "restartRecordingShortcut"
+  private let deleteRecordingShortcutKey = "deleteRecordingShortcut"
   private let shortcutsEnabledKey = "shortcutsEnabled"
   private let disabledShortcutsKey = PreferencesKeys.disabledGlobalShortcuts
   private let clearedShortcutsKey = PreferencesKeys.clearedGlobalShortcuts
@@ -579,6 +621,7 @@ final class KeyboardShortcutManager {
     areaAnnotateShortcut = .defaultAreaAnnotate
     scrollingCaptureShortcut = .defaultScrollingCapture
     recordingShortcut = .defaultRecording
+    pauseResumeRecordingShortcut = .defaultPauseResumeRecording
     annotateShortcut = .defaultAnnotate
     videoEditorShortcut = .defaultVideoEditor
     cloudUploadsShortcut = .defaultCloudUploads
@@ -588,9 +631,13 @@ final class KeyboardShortcutManager {
     objectCutoutShortcut = .defaultObjectCutout
     historyShortcut = .defaultHistory
     activeWindowShortcut = .defaultActiveWindowCapture
+    togglePenRecordingShortcut = ShortcutConfig(keyCode: 0, modifiers: 0)
+    restartRecordingShortcut = ShortcutConfig(keyCode: 0, modifiers: 0)
+    deleteRecordingShortcut = ShortcutConfig(keyCode: 0, modifiers: 0)
     loadShortcuts()
     loadDisabledShortcuts()
     loadClearedShortcuts()
+    seedDefaultClearedShortcutsOnFirstLaunchIfNeeded()
     setupEventHandler()
 
     // Auto-enable if previously enabled
@@ -656,6 +703,10 @@ final class KeyboardShortcutManager {
     case .activeWindow: return activeWindowShortcut
     case .scrollingCapture: return scrollingCaptureShortcut
     case .recording: return recordingShortcut
+    case .pauseResumeRecording: return pauseResumeRecordingShortcut
+    case .togglePenRecording: return togglePenRecordingShortcut
+    case .restartRecording: return restartRecordingShortcut
+    case .deleteRecording: return deleteRecordingShortcut
     case .annotate: return annotateShortcut
     case .videoEditor: return videoEditorShortcut
     case .cloudUploads: return cloudUploadsShortcut
@@ -732,6 +783,50 @@ final class KeyboardShortcutManager {
     mutateShortcutRegistration {
       setShortcut(config, for: .recording) {
         recordingShortcut = $0
+      }
+      saveShortcuts()
+      saveClearedShortcuts()
+    }
+  }
+
+  /// Update pause/resume recording shortcut. Ships unbound; nil means "None".
+  func setPauseResumeRecordingShortcut(_ config: ShortcutConfig?) {
+    mutateShortcutRegistration {
+      setShortcut(config, for: .pauseResumeRecording) {
+        pauseResumeRecordingShortcut = $0
+      }
+      saveShortcuts()
+      saveClearedShortcuts()
+    }
+  }
+
+  /// Update toggle pen recording shortcut. Ships unbound; nil means "None".
+  func setTogglePenRecordingShortcut(_ config: ShortcutConfig?) {
+    mutateShortcutRegistration {
+      setShortcut(config, for: .togglePenRecording) {
+        togglePenRecordingShortcut = $0
+      }
+      saveShortcuts()
+      saveClearedShortcuts()
+    }
+  }
+
+  /// Update restart recording shortcut. Ships unbound; nil means "None".
+  func setRestartRecordingShortcut(_ config: ShortcutConfig?) {
+    mutateShortcutRegistration {
+      setShortcut(config, for: .restartRecording) {
+        restartRecordingShortcut = $0
+      }
+      saveShortcuts()
+      saveClearedShortcuts()
+    }
+  }
+
+  /// Update delete recording shortcut. Ships unbound; nil means "None".
+  func setDeleteRecordingShortcut(_ config: ShortcutConfig?) {
+    mutateShortcutRegistration {
+      setShortcut(config, for: .deleteRecording) {
+        deleteRecordingShortcut = $0
       }
       saveShortcuts()
       saveClearedShortcuts()
@@ -869,6 +964,26 @@ final class KeyboardShortcutManager {
     if let recordingData = try? encoder.encode(recordingShortcut) {
       UserDefaults.standard.set(recordingData, forKey: recordingShortcutKey)
     }
+    if clearedShortcuts.contains(.pauseResumeRecording) {
+      UserDefaults.standard.removeObject(forKey: pauseResumeRecordingShortcutKey)
+    } else if let pauseResumeRecordingData = try? encoder.encode(pauseResumeRecordingShortcut) {
+      UserDefaults.standard.set(pauseResumeRecordingData, forKey: pauseResumeRecordingShortcutKey)
+    }
+    if clearedShortcuts.contains(.togglePenRecording) {
+      UserDefaults.standard.removeObject(forKey: togglePenRecordingShortcutKey)
+    } else if let data = try? encoder.encode(togglePenRecordingShortcut) {
+      UserDefaults.standard.set(data, forKey: togglePenRecordingShortcutKey)
+    }
+    if clearedShortcuts.contains(.restartRecording) {
+      UserDefaults.standard.removeObject(forKey: restartRecordingShortcutKey)
+    } else if let data = try? encoder.encode(restartRecordingShortcut) {
+      UserDefaults.standard.set(data, forKey: restartRecordingShortcutKey)
+    }
+    if clearedShortcuts.contains(.deleteRecording) {
+      UserDefaults.standard.removeObject(forKey: deleteRecordingShortcutKey)
+    } else if let data = try? encoder.encode(deleteRecordingShortcut) {
+      UserDefaults.standard.set(data, forKey: deleteRecordingShortcutKey)
+    }
     if let annotateData = try? encoder.encode(annotateShortcut) {
       UserDefaults.standard.set(annotateData, forKey: annotateShortcutKey)
     }
@@ -924,6 +1039,26 @@ final class KeyboardShortcutManager {
       let config = try? decoder.decode(ShortcutConfig.self, from: recordingData)
     {
       recordingShortcut = config
+    }
+    if let pauseResumeRecordingData = UserDefaults.standard.data(forKey: pauseResumeRecordingShortcutKey),
+      let config = try? decoder.decode(ShortcutConfig.self, from: pauseResumeRecordingData)
+    {
+      pauseResumeRecordingShortcut = config
+    }
+    if let togglePenRecordingData = UserDefaults.standard.data(forKey: togglePenRecordingShortcutKey),
+      let config = try? decoder.decode(ShortcutConfig.self, from: togglePenRecordingData)
+    {
+      togglePenRecordingShortcut = config
+    }
+    if let restartRecordingData = UserDefaults.standard.data(forKey: restartRecordingShortcutKey),
+      let config = try? decoder.decode(ShortcutConfig.self, from: restartRecordingData)
+    {
+      restartRecordingShortcut = config
+    }
+    if let deleteRecordingData = UserDefaults.standard.data(forKey: deleteRecordingShortcutKey),
+      let config = try? decoder.decode(ShortcutConfig.self, from: deleteRecordingData)
+    {
+      deleteRecordingShortcut = config
     }
     if let annotateData = UserDefaults.standard.data(forKey: annotateShortcutKey),
       let config = try? decoder.decode(ShortcutConfig.self, from: annotateData)
@@ -999,6 +1134,35 @@ final class KeyboardShortcutManager {
     clearedShortcuts = Set(rawValues.compactMap(GlobalShortcutKind.init(rawValue:)))
   }
 
+  /// Ensure new optional-by-default shortcuts ship as unbound on a clean install,
+  /// without overriding any user-configured value once they have been touched.
+  private func seedDefaultClearedShortcutsOnFirstLaunchIfNeeded() {
+    var didMutate = false
+    if UserDefaults.standard.data(forKey: pauseResumeRecordingShortcutKey) == nil,
+       !clearedShortcuts.contains(.pauseResumeRecording) {
+      clearedShortcuts.insert(.pauseResumeRecording)
+      didMutate = true
+    }
+    if UserDefaults.standard.data(forKey: togglePenRecordingShortcutKey) == nil,
+       !clearedShortcuts.contains(.togglePenRecording) {
+      clearedShortcuts.insert(.togglePenRecording)
+      didMutate = true
+    }
+    if UserDefaults.standard.data(forKey: restartRecordingShortcutKey) == nil,
+       !clearedShortcuts.contains(.restartRecording) {
+      clearedShortcuts.insert(.restartRecording)
+      didMutate = true
+    }
+    if UserDefaults.standard.data(forKey: deleteRecordingShortcutKey) == nil,
+       !clearedShortcuts.contains(.deleteRecording) {
+      clearedShortcuts.insert(.deleteRecording)
+      didMutate = true
+    }
+    if didMutate {
+      saveClearedShortcuts()
+    }
+  }
+
   // MARK: - Private Methods
 
   private func setupEventHandler() {
@@ -1069,6 +1233,18 @@ final class KeyboardShortcutManager {
     case recordingHotkeyID.id:
       actionName = "recording"
       action = .recordVideo
+    case pauseResumeRecordingHotkeyID.id:
+      actionName = "pause-resume-recording"
+      action = .pauseResumeRecording
+    case togglePenRecordingHotkeyID.id:
+      actionName = "toggle-pen-recording"
+      action = .togglePenRecording
+    case restartRecordingHotkeyID.id:
+      actionName = "restart-recording"
+      action = .restartRecording
+    case deleteRecordingHotkeyID.id:
+      actionName = "delete-recording"
+      action = .deleteRecording
     case applicationRecordingHotkeyID.id:
       actionName = "application-recording"
       action = .recordApplication
@@ -1148,6 +1324,30 @@ final class KeyboardShortcutManager {
       config: shortcut(for: .recording),
       hotkeyID: recordingHotkeyID,
       ref: &recordingHotkeyRef
+    )
+    registerShortcutIfNeeded(
+      kind: .pauseResumeRecording,
+      config: shortcut(for: .pauseResumeRecording),
+      hotkeyID: pauseResumeRecordingHotkeyID,
+      ref: &pauseResumeRecordingHotkeyRef
+    )
+    registerShortcutIfNeeded(
+      kind: .togglePenRecording,
+      config: shortcut(for: .togglePenRecording),
+      hotkeyID: togglePenRecordingHotkeyID,
+      ref: &togglePenRecordingHotkeyRef
+    )
+    registerShortcutIfNeeded(
+      kind: .restartRecording,
+      config: shortcut(for: .restartRecording),
+      hotkeyID: restartRecordingHotkeyID,
+      ref: &restartRecordingHotkeyRef
+    )
+    registerShortcutIfNeeded(
+      kind: .deleteRecording,
+      config: shortcut(for: .deleteRecording),
+      hotkeyID: deleteRecordingHotkeyID,
+      ref: &deleteRecordingHotkeyRef
     )
     registerOverlayShortcutIfNeeded(
       label: "application-capture",
@@ -1296,6 +1496,22 @@ final class KeyboardShortcutManager {
     if let ref = recordingHotkeyRef {
       UnregisterEventHotKey(ref)
       recordingHotkeyRef = nil
+    }
+    if let ref = pauseResumeRecordingHotkeyRef {
+      UnregisterEventHotKey(ref)
+      pauseResumeRecordingHotkeyRef = nil
+    }
+    if let ref = togglePenRecordingHotkeyRef {
+      UnregisterEventHotKey(ref)
+      togglePenRecordingHotkeyRef = nil
+    }
+    if let ref = restartRecordingHotkeyRef {
+      UnregisterEventHotKey(ref)
+      restartRecordingHotkeyRef = nil
+    }
+    if let ref = deleteRecordingHotkeyRef {
+      UnregisterEventHotKey(ref)
+      deleteRecordingHotkeyRef = nil
     }
     if let ref = applicationCaptureHotkeyRef {
       UnregisterEventHotKey(ref)

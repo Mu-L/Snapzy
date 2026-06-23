@@ -106,12 +106,10 @@ struct SingleKeyRecorderView: View {
       .disabled(!isEnabled)
       .help(isEnabled ? L10n.ShortcutRecorder.clickToRecord : L10n.ShortcutRecorder.turnOnToEdit)
 
-      if let defaultShortcut {
-        ShortcutResetButton(
-          isDisabled: !isEnabled || isRecording || shortcut == defaultShortcut,
-          action: resetToDefault
-        )
-      }
+      ShortcutResetButton(
+        isDisabled: !isEnabled || isRecording || shortcut == defaultShortcut,
+        action: resetToDefault
+      )
 
       HStack(spacing: 6) {
         Text(isEnabled ? L10n.Common.on : L10n.Common.off)
@@ -133,7 +131,6 @@ struct SingleKeyRecorderView: View {
   }
 
   private func resetToDefault() {
-    guard let defaultShortcut else { return }
     if onChanged(defaultShortcut) {
       shortcut = defaultShortcut
     }

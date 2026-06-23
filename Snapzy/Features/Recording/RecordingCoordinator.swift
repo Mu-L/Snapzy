@@ -139,6 +139,25 @@ final class RecordingCoordinator: ObservableObject {
     }
   }
 
+  /// Toggle pen/annotations overlay from global shortcut.
+  func togglePenFromShortcut() {
+    guard isActive, let toolbarWindow else { return }
+    toolbarWindow.annotationState.isAnnotationEnabled.toggle()
+  }
+
+  /// Restart/Re-record from global shortcut.
+  func restartFromShortcut() {
+    guard isActive else { return }
+    restartRecording()
+  }
+
+  /// Cancel/Delete current recording from global shortcut.
+  func deleteFromShortcut() {
+    guard isActive else { return }
+    deleteRecording()
+  }
+
+
   /// Start recording flow after area selection
   func showToolbar(
     for rect: CGRect,

@@ -48,7 +48,13 @@ final class RecordingAnnotationState: ObservableObject {
   @Published var selectedAnnotationId: UUID?
   @Published var strokeColor: Color = .red
   @Published var strokeWidth: CGFloat = 3
-  @Published var isAnnotationEnabled: Bool = false
+  @Published var isAnnotationEnabled: Bool = false {
+    didSet {
+      if !isAnnotationEnabled {
+        selectedTool = .selection
+      }
+    }
+  }
   @Published var toolClearModes: [AnnotationToolType: AnnotationClearMode] = [:]
   @Published var isShortcutModeActive: Bool = false
 
