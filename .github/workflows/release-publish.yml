@@ -24,8 +24,8 @@ jobs:
       HAS_SELF_SIGNED_CERT: ${{ secrets.SELF_SIGNED_CERT_P12 != '' && secrets.SELF_SIGNED_CERT_PASSWORD != '' && 'true' || 'false' }}
       HAS_NOTARIZATION_CREDENTIALS: ${{ secrets.APPLE_ID != '' && secrets.APPLE_ID_PASSWORD != '' && secrets.APPLE_TEAM_ID != '' && 'true' || 'false' }}
       HAS_SPARKLE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY != '' && 'true' || 'false' }}
-      ALLOW_ADHOC_RELEASE: ${{ vars.ALLOW_ADHOC_RELEASE == 'true' && 'true' || 'false' }}
-      ALLOW_SIGNING_IDENTITY_CHANGE: ${{ vars.ALLOW_SIGNING_IDENTITY_CHANGE == 'true' && 'true' || 'false' }}
+      ALLOW_ADHOC_RELEASE: ${{ (vars.ALLOW_ADHOC_RELEASE == 'true' || secrets.ALLOW_ADHOC_RELEASE == 'true') && 'true' || 'false' }}
+      ALLOW_SIGNING_IDENTITY_CHANGE: ${{ (vars.ALLOW_SIGNING_IDENTITY_CHANGE == 'true' || secrets.ALLOW_SIGNING_IDENTITY_CHANGE == 'true') && 'true' || 'false' }}
 
     steps:
       - name: Extract version
