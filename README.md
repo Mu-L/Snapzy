@@ -96,13 +96,7 @@ curl -fsSL https://raw.githubusercontent.com/duongductrong/Snapzy/v1.25.0/instal
 6. Re-launch Snapzy after granting Screen Recording if macOS asks for it
 7. Grant Microphone permission too if you want voice input in recordings
 
-**Note:** Snapzy is not notarized by Apple yet, so macOS may block it on first launch. After installing Snapzy to `/Applications`, run:
-
-```bash
-sudo xattr -rd com.apple.quarantine /Applications/Snapzy.app
-```
-
-Learn more in [Apple Support: Open a Mac app from an unidentified developer](https://support.apple.com/en-us/102445).
+> Snapzy is signed and notarized by Apple. macOS will open it without any extra steps.
 
 ## Uninstall
 

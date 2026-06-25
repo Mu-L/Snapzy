@@ -17,12 +17,18 @@ cask "snapzy" do
     "~/Library/Caches/Snapzy",
   ]
 
-  caveats <<~EOS
-    Snapzy is not signed with an Apple Developer ID certificate.
-    On first launch, macOS may block the app. To open it:
-      Right-click Snapzy.app → Open → Open
+  # NOTE (pre-notarization): Snapzy was previously unsigned — kept for reference.
+  # Uncomment if a future build ships without Developer ID notarization.
+  # caveats <<~EOS
+  #   Snapzy is not signed with an Apple Developer ID certificate.
+  #   On first launch, macOS may block the app. To open it:
+  #     Right-click Snapzy.app → Open → Open
+  #   Or run:
+  #     xattr -cr /Applications/Snapzy.app
+  # EOS
 
-    Or run:
-      xattr -cr /Applications/Snapzy.app
+  caveats <<~EOS
+    Snapzy is signed and notarized by Apple (Developer ID).
+    On first launch, grant Screen Recording permission when prompted in System Settings.
   EOS
 end

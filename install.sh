@@ -116,10 +116,17 @@ ok "Installed Snapzy.app to ${INSTALL_DIR}"
 # Post-install
 # ---------------------------------------------------------------------------
 
-info "Removing quarantine attribute…"
-xattr -cr "${INSTALL_DIR}/Snapzy.app" 2>/dev/null || true
-ok "Quarantine attribute removed"
+# ---------------------------------------------------------------------------
+# NOTE: Snapzy is now notarized by Apple (Developer ID).
+# macOS automatically verifies the notarization ticket and removes quarantine.
+# The xattr bypass below is intentionally kept commented — uncomment if a
+# future build is ad-hoc signed or unsigned (e.g., local CI test builds).
+# ---------------------------------------------------------------------------
+# info "Removing quarantine attribute…"
+# xattr -cr "${INSTALL_DIR}/Snapzy.app" 2>/dev/null || true
+# ok "Quarantine attribute removed"
 
 printf "\n${GREEN}${BOLD}Installation complete!${RESET}\n\n"
 printf "  Launch Snapzy from your Applications folder or Spotlight.\n"
+printf "  Snapzy is notarized by Apple — no quarantine bypass needed.\n"
 printf "  On first launch, grant ${BOLD}Screen Recording${RESET} permission when prompted.\n\n"
