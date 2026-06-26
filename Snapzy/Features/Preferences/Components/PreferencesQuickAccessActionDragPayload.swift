@@ -8,6 +8,11 @@
 import Foundation
 import UniformTypeIdentifiers
 
+extension UTType {
+  static let quickAccessAction = UTType("com.snapzy.quick-access-action") ?? .text
+  static let quickAccessReorder = UTType("com.snapzy.quick-access-reorder") ?? .text
+}
+
 struct QuickAccessActionDragPayload {
   enum Source: Equatable {
     case actionList
@@ -15,7 +20,7 @@ struct QuickAccessActionDragPayload {
     case swipePreview(direction: QuickAccessSwipeDirection)
   }
 
-  static let typeIdentifiers = [UTType.plainText.identifier]
+  static let typeIdentifiers = [UTType.quickAccessAction]
 
   private static let marker = "com.snapzy.quick-access-action"
 
@@ -23,23 +28,24 @@ struct QuickAccessActionDragPayload {
   let source: Source
 
   static func itemProvider(action: QuickAccessActionKind, source: Source) -> NSItemProvider {
-    NSItemProvider(object: Self(action: action, source: source).encoded as NSString)
+    let provider = NSItemProvider()
+    if let data = Self(action: action, source: source).encoded.data(using: .utf8) {
+      provider.registerDataRepresentation(forTypeIdentifier: UTType.quickAccessAction.identifier, visibility: .all) { completion in
+        completion(data, nil)
+        return nil
+      }
+    }
+    return provider
   }
 
   static func load(from providers: [NSItemProvider], completion: @escaping (QuickAccessActionDragPayload) -> Void) {
-    guard let provider = providers.first(where: { $0.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) }) else {
+    guard let provider = providers.first(where: { $0.hasItemConformingToTypeIdentifier(UTType.quickAccessAction.identifier) }) else {
       return
     }
 
-    provider.loadItem(forTypeIdentifier: UTType.plainText.identifier, options: nil) { item, _ in
-      let text: String?
-      if let data = item as? Data {
-        text = String(data: data, encoding: .utf8)
-      } else {
-        text = item as? String
-      }
-
-      guard let text,
+    _ = provider.loadDataRepresentation(forTypeIdentifier: UTType.quickAccessAction.identifier) { data, _ in
+      guard let data,
+            let text = String(data: data, encoding: .utf8),
             let payload = Self.parse(text) else {
         return
       }

@@ -13,6 +13,7 @@ struct QuickAccessActionCustomizationView: View {
   @ObservedObject private var actionStore = QuickAccessActionConfigurationStore.shared
   @ObservedObject private var swipeActionStore = QuickAccessSwipeActionStore.shared
   @State private var draggedAction: QuickAccessActionKind? = nil
+  @State private var activeDragID: UUID? = nil
   @State private var mouseUpMonitor: Any?
 
   var body: some View {
@@ -35,8 +36,9 @@ struct QuickAccessActionCustomizationView: View {
         Text(L10n.PreferencesQuickAccess.quickActionsDescription)
           .font(.caption)
           .foregroundColor(.secondary)
+          .padding(.horizontal, 10)
 
-        List {
+        VStack(spacing: 0) {
           ForEach(Array(actionStore.actionOrder.enumerated()), id: \.element.id) { index, action in
             QuickAccessActionConfigurationRow(
               action: action,
@@ -47,12 +49,15 @@ struct QuickAccessActionCustomizationView: View {
                 get: { actionStore.isEnabled(action) },
                 set: { actionStore.setEnabled(action, enabled: $0) }
               ),
-              draggedAction: $draggedAction
+              draggedAction: $draggedAction,
+              activeDragID: $activeDragID
             )
+
+            if index < actionStore.actionOrder.count - 1 {
+              Divider()
+            }
           }
         }
-        .frame(minHeight: 190)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
         .onAppear {
           // Authoritative drag-end signal: leftMouseUp always fires on the main thread
           // at the end of every drag, even when performDrop is skipped because SwiftUI
@@ -60,6 +65,9 @@ struct QuickAccessActionCustomizationView: View {
           mouseUpMonitor = NSEvent.addLocalMonitorForEvents(matching: .leftMouseUp) { event in
             if self.draggedAction != nil {
               self.draggedAction = nil
+            }
+            if self.activeDragID != nil {
+              self.activeDragID = nil
             }
             return event
           }
@@ -91,6 +99,7 @@ private struct QuickAccessActionConfigurationRow: View {
   let actionStore: QuickAccessActionConfigurationStore
   @Binding var isEnabled: Bool
   @Binding var draggedAction: QuickAccessActionKind?
+  @Binding var activeDragID: UUID?
   @State private var isHandleHovered = false
 
   var body: some View {
@@ -103,11 +112,24 @@ private struct QuickAccessActionConfigurationRow: View {
         .contentShape(Rectangle().inset(by: -4))
         .onHover { isHandleHovered = $0 }
         .onDrag {
+          let dragID = UUID()
+          self.activeDragID = dragID
           self.draggedAction = action
-          let provider = DragTrackingItemProvider(object: "com.snapzy.quick-access-reorder|\(action.rawValue)" as NSString)
-          provider.onDeinit = {
+          
+          let provider = DragTrackingItemProvider()
+          if let data = action.rawValue.data(using: .utf8) {
+            provider.registerDataRepresentation(forTypeIdentifier: UTType.quickAccessReorder.identifier, visibility: .all) { completion in
+              completion(data, nil)
+              return nil
+            }
+          }
+          
+          provider.onDeinit = { [dragID] in
             Task { @MainActor in
-              self.draggedAction = nil
+              if self.activeDragID == dragID {
+                self.activeDragID = nil
+                self.draggedAction = nil
+              }
             }
           }
           return provider
@@ -136,9 +158,11 @@ private struct QuickAccessActionConfigurationRow: View {
         QuickAccessActionDragPreview(action: action)
       }
     }
-    .padding(.vertical, 2)
+    .padding(.horizontal, 10)
+    .padding(.vertical, 6)
+    .background(draggedAction == action ? Color(NSColor.selectedControlColor).opacity(0.15) : Color.clear)
     .opacity(draggedAction == action ? 0.35 : 1.0)
-    .onDrop(of: [UTType.plainText.identifier], delegate: ReorderDropDelegate(
+    .onDrop(of: [UTType.quickAccessReorder], delegate: ReorderDropDelegate(
       targetAction: action,
       targetIndex: index,
       actionStore: actionStore,

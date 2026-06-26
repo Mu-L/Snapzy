@@ -600,7 +600,7 @@ struct QuickAccessCardView: View {
     let contextActions = orderedEnabledActions.filter {
       isActionAvailable($0, on: .contextMenu)
     }
-    let orderedContextActions = QuickAccessActionKind.contextMenuOrder(from: contextActions)
+    let orderedContextActions = contextActions
     var entries: [QuickAccessContextMenuEntry] = []
     var insertedDestructiveSeparator = false
 

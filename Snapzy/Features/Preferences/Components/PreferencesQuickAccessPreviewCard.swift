@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct QuickAccessSettingsPreviewCard: View {
   let scale: CGFloat
