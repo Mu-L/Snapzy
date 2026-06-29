@@ -6,6 +6,22 @@
     <description>Snapzy application updates</description>
     <language>en</language>
     <item>
+      <title>Version 1.27.0</title>
+      <sparkle:version>129</sparkle:version>
+      <sparkle:shortVersionString>1.27.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <pubDate>Mon, 29 Jun 2026 16:55:06 +0000</pubDate>
+      <description><![CDATA[
+        <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
+        <h3>✨ Features</h3><ul><li>Add quick access shortcut for editing the latest capture</li><li>Add a keyboard shortcut to edit the latest capture from its preview</li><li>Snap video trim handles to playhead</li><li>Add URL scheme integration toggle in advanced settings and update documentation</li></ul><h3>🐛 Bug Fixes</h3><ul><li>Implement multi-display capture functionality for area screenshots</li><li>Enhance area screenshot functionality with multi-display correctness and selection modes</li><li>Support Fn key in shortcut recording and matching</li></ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/duongductrong/Snapzy/releases/download/v1.27.0/Snapzy-v1.27.0.dmg"
+        sparkle:edSignature="rfsVrrZiuEVqR0QlD0X03ws27SiGG5AMahSdXHEPGm73fPjHvHAirBlw7CbAvvi9hTgiS1Kpy6YEBcJWpHN9AQ=="
+        length="46250794"
+        type="application/octet-stream"/>
+    </item>
+    <item>
       <title>Version 1.26.0</title>
       <sparkle:version>128</sparkle:version>
       <sparkle:shortVersionString>1.26.0</sparkle:shortVersionString>
