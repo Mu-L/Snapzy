@@ -176,7 +176,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
   private let frozenSnapshotWindowHideSettleDelay: TimeInterval = 1.0 / 60.0
 
   @MainActor
-  private final class HiddenWindowSession {
+  final class HiddenWindowSession {
     private struct Entry {
       weak var window: NSWindow?
       let windowNumber: Int

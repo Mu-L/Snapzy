@@ -71,3 +71,66 @@ final class AreaSelectionModelsTests: XCTestCase {
     XCTAssertNotEqual(a, c)
   }
 }
+
+// MARK: - Added tests for Settings Interaction fixes
+
+final class CaptureViewModelTests: XCTestCase {
+
+  func testHiddenWindowSession_restore_postsSyntheticMouseMovedEvent() {
+    let window = NSWindow(
+      contentRect: NSRect(x: 0, y: 0, width: 100, height: 100),
+      styleMask: .borderless,
+      backing: .buffered,
+      defer: false
+    )
+    window.orderFront(nil)
+    
+    let session = ScreenCaptureViewModel.HiddenWindowSession(
+      windows: [window],
+      keyWindow: nil,
+      mainWindow: nil,
+      shouldReactivateApp: false
+    )
+    
+    let expectation = XCTestExpectation(description: "Synthetic mouse event posted")
+    
+    let monitor = NSEvent.addLocalMonitorForEvents(matching: .mouseMoved) { event in
+      if event.windowNumber == 0 {
+        expectation.fulfill()
+      }
+      return event
+    }
+    
+    defer {
+      if let monitor = monitor {
+        NSEvent.removeMonitor(monitor)
+      }
+    }
+    
+    session.restore()
+    
+    wait(for: [expectation], timeout: 2.0)
+  }
+}
+
+final class AreaSelectionControllerTests: XCTestCase {
+
+  func testStartSelectionSession_whenKeyboardOwnerIsNull_registersMonitors() {
+    let controller = AreaSelectionController.shared
+    
+    // Default mode .recording doesn't own keyboard directly in this setup, so it should register the monitor
+    controller.startSelection(mode: .recording, backdrops: [:]) { _ in }
+    
+    let mirror = Mirror(reflecting: controller)
+    let localMonitor = mirror.children.first { $0.label == "localEscapeMonitor" }?.value
+    
+    if let value = localMonitor {
+      let isNil = String(describing: value) == "nil"
+      XCTAssertFalse(isNil, "localEscapeMonitor should be non-nil when keyboardOwnerDisplayID is nil")
+    } else {
+      XCTFail("localEscapeMonitor property not found")
+    }
+    
+    controller.cancelSelection()
+  }
+}
