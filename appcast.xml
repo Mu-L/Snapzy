@@ -9,7 +9,7 @@
       <title>Version 1.27.0</title>
       <sparkle:version>129</sparkle:version>
       <sparkle:shortVersionString>1.27.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 29 Jun 2026 16:55:06 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -25,7 +25,7 @@
       <title>Version 1.26.0</title>
       <sparkle:version>128</sparkle:version>
       <sparkle:shortVersionString>1.26.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 27 Jun 2026 18:51:11 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -41,7 +41,7 @@
       <title>Version 1.25.2</title>
       <sparkle:version>127</sparkle:version>
       <sparkle:shortVersionString>1.25.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 26 Jun 2026 13:56:45 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -57,7 +57,7 @@
       <title>Version 1.25.1</title>
       <sparkle:version>126</sparkle:version>
       <sparkle:shortVersionString>1.25.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Thu, 25 Jun 2026 08:51:35 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -73,7 +73,7 @@
       <title>Version 1.25.0</title>
       <sparkle:version>125</sparkle:version>
       <sparkle:shortVersionString>1.25.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Thu, 25 Jun 2026 03:58:29 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -89,7 +89,7 @@
       <title>Version 1.24.0</title>
       <sparkle:version>124</sparkle:version>
       <sparkle:shortVersionString>1.24.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 22 Jun 2026 11:00:07 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -105,7 +105,7 @@
       <title>Version 1.23.0</title>
       <sparkle:version>123</sparkle:version>
       <sparkle:shortVersionString>1.23.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 21 Jun 2026 02:29:39 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -121,7 +121,7 @@
       <title>Version 1.22.4</title>
       <sparkle:version>122</sparkle:version>
       <sparkle:shortVersionString>1.22.4</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 17 Jun 2026 17:25:16 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -137,7 +137,7 @@
       <title>Version 1.22.3</title>
       <sparkle:version>121</sparkle:version>
       <sparkle:shortVersionString>1.22.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 16 Jun 2026 17:48:22 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -153,7 +153,7 @@
       <title>Version 1.22.2</title>
       <sparkle:version>120</sparkle:version>
       <sparkle:shortVersionString>1.22.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 12 Jun 2026 15:52:24 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -169,7 +169,7 @@
       <title>Version 1.22.1</title>
       <sparkle:version>119</sparkle:version>
       <sparkle:shortVersionString>1.22.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 12 Jun 2026 11:05:11 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -185,7 +185,7 @@
       <title>Version 1.22.0</title>
       <sparkle:version>118</sparkle:version>
       <sparkle:shortVersionString>1.22.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Thu, 11 Jun 2026 17:53:39 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -201,7 +201,7 @@
       <title>Version 1.21.0</title>
       <sparkle:version>117</sparkle:version>
       <sparkle:shortVersionString>1.21.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 09 Jun 2026 18:21:01 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -217,7 +217,7 @@
       <title>Version 1.20.8</title>
       <sparkle:version>116</sparkle:version>
       <sparkle:shortVersionString>1.20.8</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 07 Jun 2026 12:37:11 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -233,7 +233,7 @@
       <title>Version 1.20.7</title>
       <sparkle:version>115</sparkle:version>
       <sparkle:shortVersionString>1.20.7</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 06 Jun 2026 12:22:10 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -249,7 +249,7 @@
       <title>Version 1.20.6</title>
       <sparkle:version>114</sparkle:version>
       <sparkle:shortVersionString>1.20.6</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 05 Jun 2026 16:26:55 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -265,7 +265,7 @@
       <title>Version 1.20.5</title>
       <sparkle:version>113</sparkle:version>
       <sparkle:shortVersionString>1.20.5</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 05 Jun 2026 02:56:12 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -281,7 +281,7 @@
       <title>Version 1.20.4</title>
       <sparkle:version>112</sparkle:version>
       <sparkle:shortVersionString>1.20.4</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 03 Jun 2026 08:05:54 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -297,7 +297,7 @@
       <title>Version 1.20.3</title>
       <sparkle:version>111</sparkle:version>
       <sparkle:shortVersionString>1.20.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 01 Jun 2026 18:08:19 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -313,7 +313,7 @@
       <title>Version 1.20.2</title>
       <sparkle:version>110</sparkle:version>
       <sparkle:shortVersionString>1.20.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 30 May 2026 10:25:22 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -329,7 +329,7 @@
       <title>Version 1.20.1</title>
       <sparkle:version>109</sparkle:version>
       <sparkle:shortVersionString>1.20.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 27 May 2026 12:24:16 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -345,7 +345,7 @@
       <title>Version 1.20.0</title>
       <sparkle:version>108</sparkle:version>
       <sparkle:shortVersionString>1.20.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 24 May 2026 11:20:39 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -361,7 +361,7 @@
       <title>Version 1.19.0</title>
       <sparkle:version>107</sparkle:version>
       <sparkle:shortVersionString>1.19.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 23 May 2026 06:45:50 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -377,7 +377,7 @@
       <title>Version 1.18.0</title>
       <sparkle:version>106</sparkle:version>
       <sparkle:shortVersionString>1.18.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 22 May 2026 19:15:02 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -393,7 +393,7 @@
       <title>Version 1.17.2</title>
       <sparkle:version>105</sparkle:version>
       <sparkle:shortVersionString>1.17.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 22 May 2026 06:54:55 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -409,7 +409,7 @@
       <title>Version 1.17.1</title>
       <sparkle:version>104</sparkle:version>
       <sparkle:shortVersionString>1.17.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Thu, 21 May 2026 02:40:26 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -425,7 +425,7 @@
       <title>Version 1.17.0</title>
       <sparkle:version>103</sparkle:version>
       <sparkle:shortVersionString>1.17.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 20 May 2026 09:23:48 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -441,7 +441,7 @@
       <title>Version 1.16.4</title>
       <sparkle:version>102</sparkle:version>
       <sparkle:shortVersionString>1.16.4</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 19 May 2026 18:48:00 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -457,7 +457,7 @@
       <title>Version 1.16.3</title>
       <sparkle:version>101</sparkle:version>
       <sparkle:shortVersionString>1.16.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 19 May 2026 03:34:30 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -473,7 +473,7 @@
       <title>Version 1.16.2</title>
       <sparkle:version>100</sparkle:version>
       <sparkle:shortVersionString>1.16.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 17 May 2026 19:23:46 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -489,7 +489,7 @@
       <title>Version 1.16.1</title>
       <sparkle:version>99</sparkle:version>
       <sparkle:shortVersionString>1.16.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 17 May 2026 08:44:55 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -505,7 +505,7 @@
       <title>Version 1.16.0</title>
       <sparkle:version>98</sparkle:version>
       <sparkle:shortVersionString>1.16.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 16 May 2026 04:12:41 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -521,7 +521,7 @@
       <title>Version 1.15.1</title>
       <sparkle:version>97</sparkle:version>
       <sparkle:shortVersionString>1.15.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 15 May 2026 08:59:48 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -537,7 +537,7 @@
       <title>Version 1.15.0</title>
       <sparkle:version>96</sparkle:version>
       <sparkle:shortVersionString>1.15.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 15 May 2026 07:27:09 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -553,7 +553,7 @@
       <title>Version 1.14.3</title>
       <sparkle:version>95</sparkle:version>
       <sparkle:shortVersionString>1.14.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 12 May 2026 17:50:20 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -569,7 +569,7 @@
       <title>Version 1.14.2</title>
       <sparkle:version>94</sparkle:version>
       <sparkle:shortVersionString>1.14.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 11 May 2026 15:17:28 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -585,7 +585,7 @@
       <title>Version 1.14.1</title>
       <sparkle:version>93</sparkle:version>
       <sparkle:shortVersionString>1.14.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 11 May 2026 10:27:53 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -601,7 +601,7 @@
       <title>Version 1.14.0</title>
       <sparkle:version>92</sparkle:version>
       <sparkle:shortVersionString>1.14.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 10 May 2026 03:58:42 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -617,7 +617,7 @@
       <title>Version 1.13.2</title>
       <sparkle:version>91</sparkle:version>
       <sparkle:shortVersionString>1.13.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 09 May 2026 15:15:51 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -633,7 +633,7 @@
       <title>Version 1.13.1</title>
       <sparkle:version>90</sparkle:version>
       <sparkle:shortVersionString>1.13.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 09 May 2026 05:08:35 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -649,7 +649,7 @@
       <title>Version 1.13.0</title>
       <sparkle:version>89</sparkle:version>
       <sparkle:shortVersionString>1.13.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 08 May 2026 18:29:05 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -665,7 +665,7 @@
       <title>Version 1.12.7</title>
       <sparkle:version>88</sparkle:version>
       <sparkle:shortVersionString>1.12.7</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 06 May 2026 17:13:17 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -681,7 +681,7 @@
       <title>Version 1.12.6</title>
       <sparkle:version>87</sparkle:version>
       <sparkle:shortVersionString>1.12.6</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 04 May 2026 17:14:44 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -697,7 +697,7 @@
       <title>Version 1.12.5</title>
       <sparkle:version>86</sparkle:version>
       <sparkle:shortVersionString>1.12.5</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 03 May 2026 11:16:14 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -713,7 +713,7 @@
       <title>Version 1.12.4</title>
       <sparkle:version>85</sparkle:version>
       <sparkle:shortVersionString>1.12.4</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 02 May 2026 16:27:46 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -729,7 +729,7 @@
       <title>Version 1.12.3</title>
       <sparkle:version>84</sparkle:version>
       <sparkle:shortVersionString>1.12.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 02 May 2026 15:54:37 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -745,7 +745,7 @@
       <title>Version 1.12.2</title>
       <sparkle:version>83</sparkle:version>
       <sparkle:shortVersionString>1.12.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Thu, 30 Apr 2026 09:08:37 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -761,7 +761,7 @@
       <title>Version 1.12.1</title>
       <sparkle:version>82</sparkle:version>
       <sparkle:shortVersionString>1.12.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 29 Apr 2026 09:40:56 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -777,7 +777,7 @@
       <title>Version 1.12.0</title>
       <sparkle:version>81</sparkle:version>
       <sparkle:shortVersionString>1.12.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 29 Apr 2026 05:42:19 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -793,7 +793,7 @@
       <title>Version 1.11.2</title>
       <sparkle:version>80</sparkle:version>
       <sparkle:shortVersionString>1.11.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 28 Apr 2026 17:49:01 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -809,7 +809,7 @@
       <title>Version 1.11.0</title>
       <sparkle:version>78</sparkle:version>
       <sparkle:shortVersionString>1.11.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 28 Apr 2026 14:06:00 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -825,7 +825,7 @@
       <title>Version 1.10.0</title>
       <sparkle:version>77</sparkle:version>
       <sparkle:shortVersionString>1.10.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 28 Apr 2026 10:18:30 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -841,7 +841,7 @@
       <title>Version 1.9.8</title>
       <sparkle:version>76</sparkle:version>
       <sparkle:shortVersionString>1.9.8</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 27 Apr 2026 16:25:55 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -857,7 +857,7 @@
       <title>Version 1.9.7</title>
       <sparkle:version>75</sparkle:version>
       <sparkle:shortVersionString>1.9.7</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 27 Apr 2026 12:50:27 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -873,7 +873,7 @@
       <title>Version 1.9.6</title>
       <sparkle:version>74</sparkle:version>
       <sparkle:shortVersionString>1.9.6</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 26 Apr 2026 09:54:03 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -889,7 +889,7 @@
       <title>Version 1.9.5</title>
       <sparkle:version>73</sparkle:version>
       <sparkle:shortVersionString>1.9.5</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 25 Apr 2026 17:40:23 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -905,7 +905,7 @@
       <title>Version 1.9.4</title>
       <sparkle:version>72</sparkle:version>
       <sparkle:shortVersionString>1.9.4</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 25 Apr 2026 05:11:48 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -921,7 +921,7 @@
       <title>Version 1.9.3</title>
       <sparkle:version>71</sparkle:version>
       <sparkle:shortVersionString>1.9.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 25 Apr 2026 02:24:38 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -937,7 +937,7 @@
       <title>Version 1.9.2</title>
       <sparkle:version>70</sparkle:version>
       <sparkle:shortVersionString>1.9.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 24 Apr 2026 16:12:18 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -953,7 +953,7 @@
       <title>Version 1.9.1</title>
       <sparkle:version>69</sparkle:version>
       <sparkle:shortVersionString>1.9.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 24 Apr 2026 15:42:23 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -969,7 +969,7 @@
       <title>Version 1.9.0</title>
       <sparkle:version>68</sparkle:version>
       <sparkle:shortVersionString>1.9.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Thu, 23 Apr 2026 08:15:53 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -985,7 +985,7 @@
       <title>Version 1.8.2</title>
       <sparkle:version>67</sparkle:version>
       <sparkle:shortVersionString>1.8.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 21 Apr 2026 10:31:54 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1001,7 +1001,7 @@
       <title>Version 1.8.1</title>
       <sparkle:version>66</sparkle:version>
       <sparkle:shortVersionString>1.8.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 19 Apr 2026 14:18:44 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1017,7 +1017,7 @@
       <title>Version 1.8.0</title>
       <sparkle:version>65</sparkle:version>
       <sparkle:shortVersionString>1.8.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 19 Apr 2026 02:48:00 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1033,7 +1033,7 @@
       <title>Version 1.7.8</title>
       <sparkle:version>64</sparkle:version>
       <sparkle:shortVersionString>1.7.8</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 18 Apr 2026 18:11:49 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1049,7 +1049,7 @@
       <title>Version 1.7.7</title>
       <sparkle:version>63</sparkle:version>
       <sparkle:shortVersionString>1.7.7</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 18 Apr 2026 15:33:52 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1065,7 +1065,7 @@
       <title>Version 1.7.6</title>
       <sparkle:version>62</sparkle:version>
       <sparkle:shortVersionString>1.7.6</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 18 Apr 2026 05:31:37 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1081,7 +1081,7 @@
       <title>Version 1.7.5</title>
       <sparkle:version>61</sparkle:version>
       <sparkle:shortVersionString>1.7.5</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 18 Apr 2026 04:18:29 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1097,7 +1097,7 @@
       <title>Version 1.7.4</title>
       <sparkle:version>60</sparkle:version>
       <sparkle:shortVersionString>1.7.4</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 17 Apr 2026 16:47:13 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1113,7 +1113,7 @@
       <title>Version 1.7.3</title>
       <sparkle:version>59</sparkle:version>
       <sparkle:shortVersionString>1.7.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Thu, 16 Apr 2026 17:32:47 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1129,7 +1129,7 @@
       <title>Version 1.7.2</title>
       <sparkle:version>58</sparkle:version>
       <sparkle:shortVersionString>1.7.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Thu, 16 Apr 2026 09:26:03 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1145,7 +1145,7 @@
       <title>Version 1.7.1</title>
       <sparkle:version>57</sparkle:version>
       <sparkle:shortVersionString>1.7.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 14 Apr 2026 06:44:34 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1161,7 +1161,7 @@
       <title>Version 1.7.0</title>
       <sparkle:version>56</sparkle:version>
       <sparkle:shortVersionString>1.7.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 14 Apr 2026 01:11:17 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1177,7 +1177,7 @@
       <title>Version 1.6.3</title>
       <sparkle:version>55</sparkle:version>
       <sparkle:shortVersionString>1.6.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 12 Apr 2026 18:54:59 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1193,7 +1193,7 @@
       <title>Version 1.6.2</title>
       <sparkle:version>54</sparkle:version>
       <sparkle:shortVersionString>1.6.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 12 Apr 2026 18:00:32 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1209,7 +1209,7 @@
       <title>Version 1.6.1</title>
       <sparkle:version>53</sparkle:version>
       <sparkle:shortVersionString>1.6.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 11 Apr 2026 18:16:06 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1225,7 +1225,7 @@
       <title>Version 1.6.0</title>
       <sparkle:version>52</sparkle:version>
       <sparkle:shortVersionString>1.6.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 11 Apr 2026 06:19:11 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1241,7 +1241,7 @@
       <title>Version 1.5.11</title>
       <sparkle:version>51</sparkle:version>
       <sparkle:shortVersionString>1.5.11</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Thu, 09 Apr 2026 06:52:15 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1257,7 +1257,7 @@
       <title>Version 1.5.10</title>
       <sparkle:version>50</sparkle:version>
       <sparkle:shortVersionString>1.5.10</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 06 Apr 2026 18:12:21 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1273,7 +1273,7 @@
       <title>Version 1.5.9</title>
       <sparkle:version>49</sparkle:version>
       <sparkle:shortVersionString>1.5.9</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 05 Apr 2026 17:33:05 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1289,7 +1289,7 @@
       <title>Version 1.5.8</title>
       <sparkle:version>48</sparkle:version>
       <sparkle:shortVersionString>1.5.8</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 05 Apr 2026 15:28:25 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1305,7 +1305,7 @@
       <title>Version 1.5.7</title>
       <sparkle:version>47</sparkle:version>
       <sparkle:shortVersionString>1.5.7</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 05 Apr 2026 06:29:33 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1321,7 +1321,7 @@
       <title>Version 1.5.6</title>
       <sparkle:version>46</sparkle:version>
       <sparkle:shortVersionString>1.5.6</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 04 Apr 2026 09:23:33 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1337,7 +1337,7 @@
       <title>Version 1.5.5</title>
       <sparkle:version>45</sparkle:version>
       <sparkle:shortVersionString>1.5.5</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 04 Apr 2026 07:51:05 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1353,7 +1353,7 @@
       <title>Version 1.5.4</title>
       <sparkle:version>44</sparkle:version>
       <sparkle:shortVersionString>1.5.4</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 04 Apr 2026 07:43:42 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1369,7 +1369,7 @@
       <title>Version 1.5.3</title>
       <sparkle:version>43</sparkle:version>
       <sparkle:shortVersionString>1.5.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 04 Apr 2026 06:00:41 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1385,7 +1385,7 @@
       <title>Version 1.5.0</title>
       <sparkle:version>40</sparkle:version>
       <sparkle:shortVersionString>1.5.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 31 Mar 2026 16:05:42 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1401,7 +1401,7 @@
       <title>Version 1.4.8</title>
       <sparkle:version>39</sparkle:version>
       <sparkle:shortVersionString>1.4.8</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 30 Mar 2026 17:37:27 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1417,7 +1417,7 @@
       <title>Version 1.4.7</title>
       <sparkle:version>38</sparkle:version>
       <sparkle:shortVersionString>1.4.7</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 27 Mar 2026 17:24:57 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1433,7 +1433,7 @@
       <title>Version 1.4.6</title>
       <sparkle:version>37</sparkle:version>
       <sparkle:shortVersionString>1.4.6</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 25 Mar 2026 17:11:51 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1449,7 +1449,7 @@
       <title>Version 1.4.5</title>
       <sparkle:version>36</sparkle:version>
       <sparkle:shortVersionString>1.4.5</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 24 Mar 2026 16:35:01 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1465,7 +1465,7 @@
       <title>Version 1.4.4</title>
       <sparkle:version>35</sparkle:version>
       <sparkle:shortVersionString>1.4.4</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 24 Mar 2026 11:47:19 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1481,7 +1481,7 @@
       <title>Version 1.4.3</title>
       <sparkle:version>34</sparkle:version>
       <sparkle:shortVersionString>1.4.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 24 Mar 2026 06:06:04 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1497,7 +1497,7 @@
       <title>Version 1.4.2</title>
       <sparkle:version>33</sparkle:version>
       <sparkle:shortVersionString>1.4.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 23 Mar 2026 17:35:29 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1513,7 +1513,7 @@
       <title>Version 1.4.1</title>
       <sparkle:version>32</sparkle:version>
       <sparkle:shortVersionString>1.4.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 23 Mar 2026 13:22:06 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1529,7 +1529,7 @@
       <title>Version 1.4.0</title>
       <sparkle:version>31</sparkle:version>
       <sparkle:shortVersionString>1.4.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 23 Mar 2026 10:28:17 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1545,7 +1545,7 @@
       <title>Version 1.3.5</title>
       <sparkle:version>30</sparkle:version>
       <sparkle:shortVersionString>1.3.5</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 21 Mar 2026 16:39:30 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1561,7 +1561,7 @@
       <title>Version 1.3.4</title>
       <sparkle:version>29</sparkle:version>
       <sparkle:shortVersionString>1.3.4</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 21 Mar 2026 08:42:03 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1577,7 +1577,7 @@
       <title>Version 1.3.3</title>
       <sparkle:version>28</sparkle:version>
       <sparkle:shortVersionString>1.3.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 21 Mar 2026 03:28:28 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1593,7 +1593,7 @@
       <title>Version 1.3.2</title>
       <sparkle:version>27</sparkle:version>
       <sparkle:shortVersionString>1.3.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 21 Mar 2026 02:55:16 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1609,7 +1609,7 @@
       <title>Version 1.3.1</title>
       <sparkle:version>26</sparkle:version>
       <sparkle:shortVersionString>1.3.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 20 Mar 2026 18:24:06 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1625,7 +1625,7 @@
       <title>Version 1.3.0</title>
       <sparkle:version>25</sparkle:version>
       <sparkle:shortVersionString>1.3.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 20 Mar 2026 15:46:35 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1641,7 +1641,7 @@
       <title>Version 1.2.6</title>
       <sparkle:version>24</sparkle:version>
       <sparkle:shortVersionString>1.2.6</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Thu, 19 Mar 2026 18:38:52 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1657,7 +1657,7 @@
       <title>Version 1.2.5</title>
       <sparkle:version>23</sparkle:version>
       <sparkle:shortVersionString>1.2.5</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 18 Mar 2026 17:39:41 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1673,7 +1673,7 @@
       <title>Version 1.2.4</title>
       <sparkle:version>22</sparkle:version>
       <sparkle:shortVersionString>1.2.4</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 17 Mar 2026 18:22:09 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1689,7 +1689,7 @@
       <title>Version 1.2.3</title>
       <sparkle:version>21</sparkle:version>
       <sparkle:shortVersionString>1.2.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 17 Mar 2026 13:52:55 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1705,7 +1705,7 @@
       <title>Version 1.2.2</title>
       <sparkle:version>20</sparkle:version>
       <sparkle:shortVersionString>1.2.2</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 16 Mar 2026 17:05:56 +0000</pubDate>
       <description><![CDATA[
         <style>:root { color-scheme: light dark; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; padding: 8px 16px; } h3 { font-size: 14px; margin: 12px 0 6px; } ul { padding-left: 20px; margin: 4px 0; } li { margin: 3px 0; }</style>
@@ -1721,7 +1721,7 @@
       <title>Version 1.2.1</title>
       <sparkle:version>19</sparkle:version>
       <sparkle:shortVersionString>1.2.1</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 16 Mar 2026 12:51:01 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -1748,7 +1748,7 @@
       <title>Version 1.2.0</title>
       <sparkle:version>18</sparkle:version>
       <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 15 Mar 2026 09:34:58 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -1781,7 +1781,7 @@
       <title>Version 1.1.0</title>
       <sparkle:version>17</sparkle:version>
       <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 14 Mar 2026 06:08:50 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -1806,7 +1806,7 @@
       <title>Version 1.0.15</title>
       <sparkle:version>16</sparkle:version>
       <sparkle:shortVersionString>1.0.15</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 14 Mar 2026 03:52:15 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -1831,7 +1831,7 @@
       <title>Version 1.0.14</title>
       <sparkle:version>15</sparkle:version>
       <sparkle:shortVersionString>1.0.14</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 14 Mar 2026 03:43:32 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -1856,7 +1856,7 @@
       <title>Version 1.0.13</title>
       <sparkle:version>14</sparkle:version>
       <sparkle:shortVersionString>1.0.13</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 14 Mar 2026 02:55:45 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -1881,7 +1881,7 @@
       <title>Version 1.0.12</title>
       <sparkle:version>13</sparkle:version>
       <sparkle:shortVersionString>1.0.12</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sat, 14 Mar 2026 02:26:03 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -1912,7 +1912,7 @@
       <title>Version 1.0.10</title>
       <sparkle:version>11</sparkle:version>
       <sparkle:shortVersionString>1.0.10</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 13 Mar 2026 19:54:56 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -1937,7 +1937,7 @@
       <title>Version 1.0.9</title>
       <sparkle:version>10</sparkle:version>
       <sparkle:shortVersionString>1.0.9</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 13 Mar 2026 19:25:52 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -1962,7 +1962,7 @@
       <title>Version 1.0.8</title>
       <sparkle:version>9</sparkle:version>
       <sparkle:shortVersionString>1.0.8</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Fri, 13 Mar 2026 17:41:25 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -1987,7 +1987,7 @@
       <title>Version 1.0.7</title>
       <sparkle:version>8</sparkle:version>
       <sparkle:shortVersionString>1.0.7</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 11 Mar 2026 18:33:22 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -2012,7 +2012,7 @@
       <title>Version 1.0.6</title>
       <sparkle:version>7</sparkle:version>
       <sparkle:shortVersionString>1.0.6</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 11 Mar 2026 18:07:55 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -2036,7 +2036,7 @@
       <title>Version 1.0.5</title>
       <sparkle:version>6</sparkle:version>
       <sparkle:shortVersionString>1.0.5</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Wed, 11 Mar 2026 17:43:00 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -2066,7 +2066,7 @@
       <title>Version 1.0.3</title>
       <sparkle:version>4</sparkle:version>
       <sparkle:shortVersionString>1.0.3</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Tue, 10 Mar 2026 19:42:59 +0000</pubDate>
       <description><![CDATA[
         <style>
@@ -2100,7 +2100,7 @@
       <title>Version 1.0.0</title>
       <sparkle:version>1</sparkle:version>
       <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <pubDate>Sun, 19 Jan 2026 00:00:00 +0000</pubDate>
       <description><![CDATA[
         <style>

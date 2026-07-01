@@ -27,6 +27,50 @@ if [ ! -f "$APPCAST_FILE" ]; then
   exit 1
 fi
 
+# Detect minimum macOS system version
+get_minimum_macos_version() {
+  local app_plist="build/Snapzy.app/Contents/Info.plist"
+  local proj_file="Snapzy.xcodeproj/project.pbxproj"
+  local resolved_version=""
+  local source=""
+
+  # 1. Try to read from compiled app bundle Info.plist (macOS only via plutil)
+  if [ -f "$app_plist" ] && command -v plutil >/dev/null 2>&1; then
+    resolved_version=$(plutil -extract LSMinimumSystemVersion raw -o - "$app_plist" 2>/dev/null || echo "")
+    source="build/Snapzy.app/Contents/Info.plist"
+  fi
+
+  # 2. Try to read from compiled app bundle Info.plist (macOS only via PlistBuddy)
+  if [ -z "$resolved_version" ] && [ -f "$app_plist" ] && [ -f "/usr/libexec/PlistBuddy" ]; then
+    resolved_version=$(/usr/libexec/PlistBuddy -c "Print :LSMinimumSystemVersion" "$app_plist" 2>/dev/null || echo "")
+    source="build/Snapzy.app/Contents/Info.plist (PlistBuddy)"
+  fi
+
+  # 3. Fallback: Parse MACOSX_DEPLOYMENT_TARGET from pbxproj file
+  if [ -z "$resolved_version" ] && [ -f "$proj_file" ]; then
+    resolved_version=$(grep -m 1 "MACOSX_DEPLOYMENT_TARGET =" "$proj_file" | cut -d'=' -f2 | tr -d ' ;"\t\r' 2>/dev/null || echo "")
+    source="Snapzy.xcodeproj/project.pbxproj"
+  fi
+
+  # 4. Final Fallback: hardcoded default
+  if [ -z "$resolved_version" ]; then
+    resolved_version="13.0"
+    source="Default Fallback"
+  fi
+
+  # Validation: must be semantic format (digits and dots only)
+  if [[ ! "$resolved_version" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+    echo "::warning::Detected invalid macOS version string: '$resolved_version' from $source. Using default '13.0'." >&2
+    resolved_version="13.0"
+    source="Default (Validation Failed)"
+  fi
+
+  echo "Detected minimum macOS version: $resolved_version (Source: $source)" >&2
+  echo "$resolved_version"
+}
+
+MIN_MACOS_VERSION=$(get_minimum_macos_version)
+
 # Get file size in bytes
 if [[ "$OSTYPE" == "darwin"* ]]; then
   FILE_SIZE=$(stat -f%z "$DMG_PATH")
@@ -50,12 +94,13 @@ STYLE_BLOCK='<style>:root { color-scheme: light dark; } body { font-family: -app
 
 # Build the new <item> block into a temp file
 ITEM_FILE="${APPCAST_FILE}.item.tmp"
+trap 'rm -f "$ITEM_FILE" "${APPCAST_FILE}.tmp"' EXIT
 cat > "$ITEM_FILE" << EOF
     <item>
       <title>Version ${VERSION}</title>
       <sparkle:version>${BUILD_NUMBER}</sparkle:version>
       <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>${MIN_MACOS_VERSION}</sparkle:minimumSystemVersion>
       <pubDate>${PUB_DATE}</pubDate>
       <description><![CDATA[
         ${STYLE_BLOCK}
@@ -71,11 +116,10 @@ EOF
 
 # Insert new item after the <language> line (before existing items)
 # Find the line number of <language> and insert after it
-LANG_LINE=$(grep -n '<language>' "$APPCAST_FILE" | head -1 | cut -d: -f1)
+LANG_LINE=$(grep -n '<language>' "$APPCAST_FILE" | head -1 | cut -d: -f1 || echo "")
 
 if [ -z "$LANG_LINE" ]; then
   echo "::error::Could not find <language> tag in $APPCAST_FILE"
-  rm -f "$ITEM_FILE"
   exit 1
 fi
 
