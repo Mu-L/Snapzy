@@ -192,4 +192,115 @@ final class AreaSelectionOverlayTests: XCTestCase {
     
     XCTAssertEqual(insideLayer.fillColor, NSColor.black.withAlphaComponent(0.12).cgColor, "Should switch back to dark overlay on light background")
   }
+
+  func testOverlayDisabled_invisibleBackdropDoesNotRenderButCachesPixels() {
+    // GIVEN: Overlay is OFF (false)
+    UserDefaults.standard.set(false, forKey: PreferencesKeys.screenshotShowSelectionAreaOverlay)
+
+    // Create dark color image (luma < 0.4)
+    let darkColor = NSColor.black
+    let darkImage = createSolidColorImage(color: darkColor, size: CGSize(width: 800, height: 600))
+
+    overlayView.setSelectionEnabled(true)
+
+    // Apply invisible backdrop
+    let backdrop = AreaSelectionBackdrop(displayID: 0, image: darkImage, scaleFactor: 1.0, isVisible: false)
+    overlayView.applyBackdrop(backdrop)
+    overlayView.resetSelection()
+
+    // THEN:
+    // - snapshotLayer must be hidden because backdrop.isVisible is false
+    XCTAssertTrue(overlayView.testSnapshotLayer.isHidden, "Snapshot layer must remain hidden when backdrop is invisible")
+
+    // - backdropPixelDataArray must be cached
+    XCTAssertNotNil(overlayView.testBackdropPixelDataArray, "Backdrop pixels must be cached even when backdrop is invisible")
+
+    // - When selection is made, it should correctly sample pixels and use light overlay
+    let selectionRect = CGRect(x: 100, y: 100, width: 200, height: 150)
+    overlayView.renderManualSelection(screenRect: selectionRect, currentScreenPoint: CGPoint(x: 300, y: 250))
+
+    guard let insideLayer = overlayView.insideSelectionOverlayLayer else {
+      XCTFail("insideSelectionOverlayLayer not found")
+      return
+    }
+
+    XCTAssertFalse(insideLayer.isHidden, "Inside overlay layer must be visible when overlay is disabled")
+    XCTAssertEqual(insideLayer.fillColor, NSColor.white.withAlphaComponent(0.15).cgColor, "Inside overlay layer must transition to light fill color on dark background")
+  }
+
+  // MARK: - Cursor re-assertion during drag (Phase 02)
+
+  func testReassertCursorDuringDrag_isNoOpWhenNotSelecting() {
+    // GIVEN: manual-region mode, selection enabled, but no drag started
+    overlayView.setSelectionEnabled(true)
+    overlayView.resetSelection()
+    XCTAssertFalse(overlayView.isManualSelectionInProgress, "No drag should be in progress after reset")
+
+    // WHEN/THEN: re-asserting the cursor is a guarded no-op (must not crash or change drag state)
+    overlayView.reassertCursorDuringDrag()
+    XCTAssertFalse(overlayView.isManualSelectionInProgress, "Re-assert must not start a selection")
+  }
+
+  func testManualMouseDown_marksSelectionInProgress() {
+    // GIVEN: manual-region mode (default) with selection enabled
+    overlayView.setSelectionEnabled(true)
+    overlayView.resetSelection()
+    XCTAssertFalse(overlayView.isManualSelectionInProgress)
+
+    // WHEN: a real left mouse-down lands inside the overlay
+    guard let mouseDown = NSEvent.mouseEvent(
+      with: .leftMouseDown,
+      location: CGPoint(x: 120, y: 120),
+      modifierFlags: [],
+      timestamp: 0,
+      windowNumber: 0,
+      context: nil,
+      eventNumber: 0,
+      clickCount: 1,
+      pressure: 1
+    ) else {
+      XCTFail("Failed to synthesize mouse-down event")
+      return
+    }
+    overlayView.mouseDown(with: mouseDown)
+
+    // THEN: a manual selection is in progress, so re-assertion during drag is active (not the no-op path)
+    XCTAssertTrue(
+      overlayView.isManualSelectionInProgress,
+      "Manual selection must be in progress after a left mouse-down in manual-region mode"
+    )
+    overlayView.reassertCursorDuringDrag()  // must run without crashing while in progress
+    XCTAssertTrue(overlayView.isManualSelectionInProgress)
+  }
+
+  func testApplicationWindowMode_hasNoManualDragInProgress() {
+    // GIVEN: application-window interaction mode
+    overlayView.setSelectionEnabled(true)
+    overlayView.setInteractionMode(.applicationWindow)
+
+    // WHEN: a left mouse-down lands inside the overlay
+    guard let mouseDown = NSEvent.mouseEvent(
+      with: .leftMouseDown,
+      location: CGPoint(x: 120, y: 120),
+      modifierFlags: [],
+      timestamp: 0,
+      windowNumber: 0,
+      context: nil,
+      eventNumber: 0,
+      clickCount: 1,
+      pressure: 1
+    ) else {
+      XCTFail("Failed to synthesize mouse-down event")
+      return
+    }
+    overlayView.mouseDown(with: mouseDown)
+
+    // THEN: window mode is not a manual drag, so re-assertion stays a no-op
+    XCTAssertFalse(
+      overlayView.isManualSelectionInProgress,
+      "Application-window mode must not report a manual drag in progress"
+    )
+    overlayView.reassertCursorDuringDrag()
+    XCTAssertFalse(overlayView.isManualSelectionInProgress)
+  }
 }

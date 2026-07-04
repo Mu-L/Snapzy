@@ -94,6 +94,9 @@ final class AreaSelectionController: NSObject {
   private var manualSelectionGlobalMonitor: Any?
   private var manualSelectionKeyLocalMonitor: Any?
   private var manualSelectionKeyGlobalMonitor: Any?
+  /// Re-asserts the crosshair if the app regains focus mid-drag (e.g. after a background capture
+  /// tool bounces focus). Installed alongside the drag monitors, torn down with them.
+  private var appActivationObserver: Any?
   private var isMovingManualSelection = false
   private var manualSelectionLastPointerLocation: CGPoint?
   private var previouslyActiveApplication: NSRunningApplication?
@@ -779,6 +782,16 @@ final class AreaSelectionController: NSObject {
 
     requestDisplayActivationForManualSelection()
     renderManualSelectionIfNeeded()
+    reassertManualSelectionCursor()
+  }
+
+  /// Keep the crosshair asserted during a drag. The drag is driven by `NSEvent` monitors (not the
+  /// overlay view's own `mouseDragged`, which the local monitor consumes), so re-assert here — the
+  /// single convergence point for both the local and global drag monitors. `NSCursor.set()` is
+  /// process-global, so asserting via the source window's overlay view covers cross-display drags.
+  private func reassertManualSelectionCursor() {
+    guard manualSelectionStartPoint != nil else { return }
+    (manualSelectionSourceWindow ?? activeWindow)?.overlayView.reassertCursorDuringDrag()
   }
 
   private func handleManualSelectionSpaceEvent(_ event: NSEvent) -> Bool {
@@ -838,6 +851,17 @@ final class AreaSelectionController: NSObject {
 
   private func installManualSelectionMonitorIfNeeded() {
     guard manualSelectionLocalMonitor == nil else { return }
+    if appActivationObserver == nil {
+      appActivationObserver = NotificationCenter.default.addObserver(
+        forName: NSApplication.didBecomeActiveNotification,
+        object: nil,
+        queue: .main
+      ) { [weak self] _ in
+        MainActor.assumeIsolated {
+          self?.reassertManualSelectionCursor()
+        }
+      }
+    }
     manualSelectionLocalMonitor = NSEvent.addLocalMonitorForEvents(
       matching: [.leftMouseDragged, .leftMouseUp]
     ) { [weak self] event in
@@ -918,6 +942,10 @@ final class AreaSelectionController: NSObject {
     if let monitor = manualSelectionKeyGlobalMonitor {
       NSEvent.removeMonitor(monitor)
       manualSelectionKeyGlobalMonitor = nil
+    }
+    if let observer = appActivationObserver {
+      NotificationCenter.default.removeObserver(observer)
+      appActivationObserver = nil
     }
     isMovingManualSelection = false
     manualSelectionLastPointerLocation = nil
@@ -1605,6 +1633,15 @@ final class AreaSelectionOverlayView: NSView {
     refreshActiveCursor()
   }
 
+  /// Re-assert the crosshair while a manual drag is in progress. On a nonactivating panel the
+  /// system can reset the cursor to the default arrow mid-drag (e.g. a background screen-composition
+  /// capture); the panel never becomes key, so AppKit's cursor-rect machinery does not self-heal it.
+  /// The selection drag monitors call this on every drag update to keep the crosshair sticky.
+  func reassertCursorDuringDrag() {
+    guard isManualSelectionInProgress else { return }
+    activeCursor.set()
+  }
+
   // MARK: - Public Methods
 
   /// Reset selection state for window pool reuse
@@ -1687,26 +1724,47 @@ final class AreaSelectionOverlayView: NSView {
     self.backdropHeight = height
     self.backdropScale = scale
 
-    let totalBytes = width * height * 4
-    var buffer = [UInt8](repeating: 0, count: totalBytes)
-
     let colorSpace = CGColorSpaceCreateDeviceRGB()
-    let context = CGContext(
-      data: &buffer,
+    guard let context = CGContext(
+      data: nil,
       width: width,
       height: height,
       bitsPerComponent: 8,
       bytesPerRow: width * 4,
       space: colorSpace,
       bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue
-    )
+    ) else {
+      self.backdropPixelDataArray = nil
+      DiagnosticLogger.shared.log(
+        .error,
+        .capture,
+        "Failed to create CGContext for backdrop pixel caching",
+        context: ["width": "\(width)", "height": "\(height)"]
+      )
+      return
+    }
 
-    if let context {
-      context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
-      self.backdropPixelDataArray = buffer
+    context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+    
+    if let dataPtr = context.data {
+      let totalBytes = width * height * 4
+      let bufferPointer = UnsafeBufferPointer(start: dataPtr.assumingMemoryBound(to: UInt8.self), count: totalBytes)
+      self.backdropPixelDataArray = Array(bufferPointer)
     } else {
       self.backdropPixelDataArray = nil
     }
+
+    DiagnosticLogger.shared.log(
+      .debug,
+      .capture,
+      "cacheBackdropPixels completed",
+      context: [
+        "width": "\(width)",
+        "height": "\(height)",
+        "scale": "\(scale)",
+        "cachedBytes": "\(self.backdropPixelDataArray?.count ?? 0)"
+      ]
+    )
   }
 
   private func calculateAverageLuminance(for rect: CGRect) -> Double? {
@@ -1735,10 +1793,11 @@ final class AreaSelectionOverlayView: NSView {
         let pctY = Double(row + 1) / Double(gridCount + 1)
 
         let sampleX = Int(pixelRect.origin.x + pixelRect.width * CGFloat(pctX))
-        let sampleY = Int(pixelRect.origin.y + pixelRect.height * CGFloat(pctY))
+        let sampleYInCocoa = Int(pixelRect.origin.y + pixelRect.height * CGFloat(pctY))
 
         let x = max(0, min(backdropWidth - 1, sampleX))
-        let y = max(0, min(backdropHeight - 1, sampleY))
+        // Invert y because Cocoa origin is bottom-left, while CGImage origin is top-left
+        let y = max(0, min(backdropHeight - 1, backdropHeight - 1 - sampleYInCocoa))
 
         let pixelOffset = (y * backdropWidth + x) * 4
         if pixelOffset + 2 < pixelData.count {
@@ -1758,6 +1817,7 @@ final class AreaSelectionOverlayView: NSView {
 
   private func updateInsideOverlayAppearance(for localRect: CGRect) {
     if let avgLuma = calculateAverageLuminance(for: localRect) {
+      let wasDark = insideOverlayIsDark
       if insideOverlayIsDark {
         if avgLuma < 0.4 {
           insideOverlayIsDark = false
@@ -1767,6 +1827,30 @@ final class AreaSelectionOverlayView: NSView {
           insideOverlayIsDark = true
         }
       }
+      
+      DiagnosticLogger.shared.log(
+        .debug,
+        .capture,
+        "updateInsideOverlayAppearance state resolved",
+        context: [
+          "rect": "\(localRect)",
+          "avgLuma": String(format: "%.3f", avgLuma),
+          "wasDark": "\(wasDark)",
+          "isDark": "\(insideOverlayIsDark)"
+        ]
+      )
+    } else {
+      DiagnosticLogger.shared.log(
+        .warning,
+        .capture,
+        "updateInsideOverlayAppearance failed to calculate average luma (no pixel dataCached)",
+        context: [
+          "rect": "\(localRect)",
+          "hasPixelData": "\(backdropPixelDataArray != nil)",
+          "width": "\(backdropWidth)",
+          "height": "\(backdropHeight)"
+        ]
+      )
     }
 
     CATransaction.begin()
@@ -1787,7 +1871,7 @@ final class AreaSelectionOverlayView: NSView {
     snapshotLayer.frame = bounds
     snapshotLayer.contents = backdrop.image
     snapshotLayer.contentsScale = backdrop.scaleFactor
-    snapshotLayer.isHidden = false
+    snapshotLayer.isHidden = !backdrop.isVisible
     CATransaction.commit()
 
     cacheBackdropPixels(from: backdrop.image, scale: backdrop.scaleFactor)
@@ -1806,6 +1890,11 @@ final class AreaSelectionOverlayView: NSView {
     backdropHeight = 0
     backdropScale = 1.0
   }
+
+#if DEBUG
+  var testSnapshotLayer: CALayer { snapshotLayer }
+  var testBackdropPixelDataArray: [UInt8]? { backdropPixelDataArray }
+#endif
 
   /// Initialize crosshair at current mouse position (called on activation)
   private func initializeCrosshairAtCurrentMousePosition() {
@@ -2319,6 +2408,7 @@ final class AreaSelectionOverlayView: NSView {
       }
       return
     }
+    activeCursor.set()
     switch interactionMode {
     case .manualRegion:
       isSelecting = true
@@ -2338,6 +2428,7 @@ final class AreaSelectionOverlayView: NSView {
       }
       return
     }
+    activeCursor.set()
     switch interactionMode {
     case .manualRegion:
       guard isSelecting else { return }
