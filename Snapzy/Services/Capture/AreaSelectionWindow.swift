@@ -1339,6 +1339,8 @@ final class AreaSelectionOverlayView: NSView {
   private var backdropHeight = 0
   private var backdropScale: CGFloat = 1.0
   private var insideOverlayIsDark = true
+  /// Throttles the "no luma pixel data" warning to once per selection (see `updateInsideOverlayAppearance`).
+  private var didLogMissingLumaData = false
 
   private lazy var reusableDimMaskLayer: CAShapeLayer = {
     let layer = CAShapeLayer()
@@ -1675,6 +1677,7 @@ final class AreaSelectionOverlayView: NSView {
     dimLayer.frame = bounds
     insideSelectionOverlayLayer.isHidden = true
     insideOverlayIsDark = true
+    didLogMissingLumaData = false
 
     CATransaction.commit()
     refreshCursor()
@@ -1775,12 +1778,19 @@ final class AreaSelectionOverlayView: NSView {
       return nil
     }
 
-    let scale = backdropScale
+    // Map the selection rect (view points) into backdrop pixels. Derive the scale from the ACTUAL
+    // cached image dimensions vs the view bounds rather than trusting `backdropScale`: the live luma
+    // backdrop is captured at `.nominalResolution` (point-sized), so a stored `backingScaleFactor`
+    // (2× on Retina) overshoots and clamps the sample grid to the screen edge — which made small /
+    // centered selections mis-detect the background. Deriving from real dims is correct for both
+    // nominal (ratio ≈ 1) and best-resolution (ratio ≈ backingScale) images.
+    let scaleX = bounds.width > 0 ? CGFloat(backdropWidth) / bounds.width : backdropScale
+    let scaleY = bounds.height > 0 ? CGFloat(backdropHeight) / bounds.height : backdropScale
     let pixelRect = CGRect(
-      x: rect.origin.x * scale,
-      y: rect.origin.y * scale,
-      width: rect.width * scale,
-      height: rect.height * scale
+      x: rect.origin.x * scaleX,
+      y: rect.origin.y * scaleY,
+      width: rect.width * scaleX,
+      height: rect.height * scaleY
     )
 
     let gridCount = 5
@@ -1817,6 +1827,7 @@ final class AreaSelectionOverlayView: NSView {
 
   private func updateInsideOverlayAppearance(for localRect: CGRect) {
     if let avgLuma = calculateAverageLuminance(for: localRect) {
+      didLogMissingLumaData = false
       let wasDark = insideOverlayIsDark
       if insideOverlayIsDark {
         if avgLuma < 0.4 {
@@ -1827,28 +1838,32 @@ final class AreaSelectionOverlayView: NSView {
           insideOverlayIsDark = true
         }
       }
-      
-      DiagnosticLogger.shared.log(
-        .debug,
-        .capture,
-        "updateInsideOverlayAppearance state resolved",
-        context: [
-          "rect": "\(localRect)",
-          "avgLuma": String(format: "%.3f", avgLuma),
-          "wasDark": "\(wasDark)",
-          "isDark": "\(insideOverlayIsDark)"
-        ]
-      )
-    } else {
+
+      // Log only on an actual light/dark flip. This runs per drag frame (60+ fps), so logging
+      // every frame would add string-building + I/O to the hot path and risk dropped frames.
+      if wasDark != insideOverlayIsDark {
+        DiagnosticLogger.shared.log(
+          .debug,
+          .capture,
+          "updateInsideOverlayAppearance flipped",
+          context: [
+            "avgLuma": String(format: "%.3f", avgLuma),
+            "isDark": "\(insideOverlayIsDark)",
+          ]
+        )
+      }
+    } else if !didLogMissingLumaData {
+      // Log the missing-data case at most once per selection: while the async luma backdrop is still
+      // being captured the user can already drag, and logging every frame would spam warnings.
+      didLogMissingLumaData = true
       DiagnosticLogger.shared.log(
         .warning,
         .capture,
-        "updateInsideOverlayAppearance failed to calculate average luma (no pixel dataCached)",
+        "updateInsideOverlayAppearance failed to calculate average luma (no pixel data cached)",
         context: [
-          "rect": "\(localRect)",
           "hasPixelData": "\(backdropPixelDataArray != nil)",
           "width": "\(backdropWidth)",
-          "height": "\(backdropHeight)"
+          "height": "\(backdropHeight)",
         ]
       )
     }
