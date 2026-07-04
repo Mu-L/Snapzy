@@ -2507,43 +2507,52 @@ private extension NSCursor {
     NSColor.clear.set()
     NSRect(origin: .zero, size: size).fill()
     
-    let baseColor = NSColor(red: 0.137, green: 0.122, blue: 0.125, alpha: 1.0)
-    
     let verticalPath = NSBezierPath()
+    // Bottom segment (y: 5 to 16)
     verticalPath.move(to: NSPoint(x: 15.5, y: 5))
+    verticalPath.line(to: NSPoint(x: 15.5, y: 16))
+    // Top segment (y: 17 to 28)
+    verticalPath.move(to: NSPoint(x: 15.5, y: 17))
     verticalPath.line(to: NSPoint(x: 15.5, y: 28))
     
     let horizontalPath = NSBezierPath()
+    // Left segment (x: 4 to 15)
     horizontalPath.move(to: NSPoint(x: 4, y: 16.5))
+    horizontalPath.line(to: NSPoint(x: 15, y: 16.5))
+    // Right segment (x: 16 to 27)
+    horizontalPath.move(to: NSPoint(x: 16, y: 16.5))
     horizontalPath.line(to: NSPoint(x: 27, y: 16.5))
     
-    let circleRect = NSRect(x: 10.0, y: 11.0, width: 11.0, height: 11.0)
+    let circleRect = NSRect(x: 9.5, y: 10.5, width: 12.0, height: 12.0)
     let circlePath = NSBezierPath(ovalIn: circleRect)
     
-    // Draw white outline first (width 3.0) for high contrast on dark backgrounds
-    NSColor.white.setStroke()
-    verticalPath.lineWidth = 3.0
-    verticalPath.stroke()
-    horizontalPath.lineWidth = 3.0
-    horizontalPath.stroke()
-    circlePath.lineWidth = 3.0
-    circlePath.stroke()
+    // Circle fill (no shadow) - black with alpha 0.15 matching native A=38
+    NSColor.black.withAlphaComponent(0.15).setFill()
+    circlePath.fill()
     
-    // Draw dark core (width 1.0) for high contrast on light backgrounds
-    baseColor.withAlphaComponent(0.85).setStroke()
+    // Configure white shadow for high contrast on dark backgrounds
+    let shadow = NSShadow()
+    shadow.shadowColor = NSColor.white.withAlphaComponent(0.65)
+    shadow.shadowOffset = .zero
+    shadow.shadowBlurRadius = 1.5
+    
+    NSGraphicsContext.current?.saveGraphicsState()
+    shadow.set()
+    
+    // Draw dark core lines (width 1.0) with shadow - white 0.20, alpha 0.85 matching native (51,51,51,217)
+    let lineColor = NSColor(white: 0.20, alpha: 0.85)
+    lineColor.setStroke()
     verticalPath.lineWidth = 1.0
     verticalPath.stroke()
     horizontalPath.lineWidth = 1.0
     horizontalPath.stroke()
     
-    // Circle fill
-    baseColor.withAlphaComponent(0.15).setFill()
-    circlePath.fill()
-    
-    // Circle dark core stroke (inner-line of circle)
-    baseColor.withAlphaComponent(0.30).setStroke()
+    // Circle dark stroke - black with alpha 0.32 matching native A=81
+    NSColor.black.withAlphaComponent(0.32).setStroke()
     circlePath.lineWidth = 1.0
     circlePath.stroke()
+    
+    NSGraphicsContext.current?.restoreGraphicsState()
     
     image.unlockFocus()
     return NSCursor(image: image, hotSpot: NSPoint(x: 15, y: 15))
@@ -2559,34 +2568,52 @@ private extension NSCursor {
     NSRect(origin: .zero, size: size).fill()
     
     let verticalPath = NSBezierPath()
+    // Bottom segment (y: 5 to 16)
     verticalPath.move(to: NSPoint(x: 15.5, y: 5))
+    verticalPath.line(to: NSPoint(x: 15.5, y: 16))
+    // Top segment (y: 17 to 28)
+    verticalPath.move(to: NSPoint(x: 15.5, y: 17))
     verticalPath.line(to: NSPoint(x: 15.5, y: 28))
     
     let horizontalPath = NSBezierPath()
+    // Left segment (x: 4 to 15)
     horizontalPath.move(to: NSPoint(x: 4, y: 16.5))
+    horizontalPath.line(to: NSPoint(x: 15, y: 16.5))
+    // Right segment (x: 16 to 27)
+    horizontalPath.move(to: NSPoint(x: 16, y: 16.5))
     horizontalPath.line(to: NSPoint(x: 27, y: 16.5))
     
-    let circleRect = NSRect(x: 10.0, y: 11.0, width: 11.0, height: 11.0)
+    let circleRect = NSRect(x: 9.5, y: 10.5, width: 12.0, height: 12.0)
     let circlePath = NSBezierPath(ovalIn: circleRect)
     
-    // Draw clean single light-colored line (no white outline)
     let lightColor = NSColor.white
-    lightColor.withAlphaComponent(0.85).setStroke()
     
-    verticalPath.lineWidth = 1.0
-    verticalPath.stroke()
-    
-    horizontalPath.lineWidth = 1.0
-    horizontalPath.stroke()
-    
-    // Circle fill
+    // Circle fill (no shadow)
     lightColor.withAlphaComponent(0.15).setFill()
     circlePath.fill()
     
-    // Circle stroke
-    lightColor.withAlphaComponent(0.65).setStroke()
+    // Configure black shadow for white lines
+    let shadow = NSShadow()
+    shadow.shadowColor = NSColor.black.withAlphaComponent(0.35)
+    shadow.shadowOffset = NSSize(width: 0, height: -1.0)
+    shadow.shadowBlurRadius = 1.0
+    
+    NSGraphicsContext.current?.saveGraphicsState()
+    shadow.set()
+    
+    // Draw clean single light-colored line with shadow
+    lightColor.withAlphaComponent(0.85).setStroke()
+    verticalPath.lineWidth = 1.0
+    verticalPath.stroke()
+    horizontalPath.lineWidth = 1.0
+    horizontalPath.stroke()
+    
+    // Circle stroke - white with alpha 0.30 matching native A=81 proportion
+    lightColor.withAlphaComponent(0.30).setStroke()
     circlePath.lineWidth = 1.0
     circlePath.stroke()
+    
+    NSGraphicsContext.current?.restoreGraphicsState()
     
     image.unlockFocus()
     return NSCursor(image: image, hotSpot: NSPoint(x: 15, y: 15))
