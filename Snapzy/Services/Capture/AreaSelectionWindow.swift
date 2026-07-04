@@ -2512,7 +2512,7 @@ final class AreaSelectionOverlayView: NSView {
 }
 
 // MARK: - Recreated macOS Crosshair Cursors
-private extension NSCursor {
+extension NSCursor {
   static var vectorScreenshotCrosshairHighContrast: NSCursor = {
     let size = NSSize(width: 32, height: 32)
     let image = NSImage(size: size)

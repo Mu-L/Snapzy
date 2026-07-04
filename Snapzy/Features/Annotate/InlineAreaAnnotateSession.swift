@@ -104,6 +104,17 @@ final class InlineAreaAnnotateSession: ObservableObject {
     }
   }
 
+  func refreshCursor() {
+    if phase == .selecting {
+      NSCursor.vectorScreenshotCrosshairLight.set()
+    }
+    for window in windows.allObjects {
+      if let hostingView = window.contentView {
+        window.invalidateCursorRects(for: hostingView)
+      }
+    }
+  }
+
   func beginSelection(at localPoint: CGPoint) {
     guard phase == .selecting else { return }
     guard selectionStartPoint == nil else { return }

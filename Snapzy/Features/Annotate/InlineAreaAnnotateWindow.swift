@@ -12,6 +12,7 @@ import SwiftUI
 final class InlineAreaAnnotateCoordinator {
   static let shared = InlineAreaAnnotateCoordinator()
   private var activeWindows: [InlineAreaAnnotatePanel] = []
+  private var previouslyActiveApplication: NSRunningApplication?
 
   func start(
     screens: [NSScreen],
@@ -33,6 +34,19 @@ final class InlineAreaAnnotateCoordinator {
       return
     }
 
+    previouslyActiveApplication = NSWorkspace.shared.frontmostApplication
+    NSApp.activate(ignoringOtherApps: true)
+
+    let wrappedOnComplete: (CaptureResult) -> Void = { [weak self] result in
+      guard let self else {
+        onComplete(result)
+        return
+      }
+      self.previouslyActiveApplication?.activate(options: [])
+      self.previouslyActiveApplication = nil
+      onComplete(result)
+    }
+
     let desktopFrame = InlineAreaAnnotateSession.desktopFrame(for: availableScreens.map(\.frame))
     let displays = availableScreens.compactMap { screen -> InlineAreaAnnotateDisplay? in
       guard let displayID = screen.displayID,
@@ -46,7 +60,7 @@ final class InlineAreaAnnotateCoordinator {
       )
     }
     guard !displays.isEmpty else {
-      onComplete(.failure(.noDisplayFound))
+      wrappedOnComplete(.failure(.noDisplayFound))
       return
     }
 
@@ -58,7 +72,7 @@ final class InlineAreaAnnotateCoordinator {
       saveDirectory: saveDirectory,
       outputFormat: outputFormat,
       context: context,
-      onComplete: onComplete
+      onComplete: wrappedOnComplete
     )
 
     let windows = displays.map { display in
@@ -88,6 +102,8 @@ final class InlineAreaAnnotateCoordinator {
     for window in windows {
       window.close()
     }
+    previouslyActiveApplication?.activate(options: [])
+    previouslyActiveApplication = nil
   }
 }
 
@@ -132,7 +148,9 @@ final class InlineAreaAnnotatePanel: NSPanel {
       display: display
     )
     .preferredColorScheme(ThemeManager.shared.systemAppearance)
-    contentView = InlineAreaHostingView(rootView: rootView)
+    let hostingView = InlineAreaHostingView(rootView: rootView)
+    hostingView.session = session
+    contentView = hostingView
   }
 
   override var canBecomeKey: Bool {
@@ -163,6 +181,8 @@ final class InlineAreaAnnotatePanel: NSPanel {
 }
 
 private final class InlineAreaHostingView: NSHostingView<AnyView> {
+  var session: InlineAreaAnnotateSession?
+
   convenience init<Content: View>(rootView: Content) {
     self.init(rootView: AnyView(rootView))
   }
@@ -178,6 +198,14 @@ private final class InlineAreaHostingView: NSHostingView<AnyView> {
 
   override func acceptsFirstMouse(for _: NSEvent?) -> Bool {
     true
+  }
+
+  override func resetCursorRects() {
+    if let session, session.phase == .selecting {
+      addCursorRect(bounds, cursor: NSCursor.vectorScreenshotCrosshairLight)
+    } else {
+      super.resetCursorRects()
+    }
   }
 }
 
@@ -198,7 +226,7 @@ private struct InlineAreaAnnotateRootView: View {
       let desktopRect = resizePreviewRect ?? movingPreviewRect ?? session.selectionRect
       let viewportRect = desktopRect.map(rectInViewport)
       let isSelectionPreviewing = resizePreviewRect != nil || movingPreviewRect != nil
-      let showsCursorIndicator = session.phase == .selecting || movingPreviewRect != nil
+      let showsCursorIndicator = movingPreviewRect != nil
 
       ZStack(alignment: .topLeading) {
         ForEach(session.displays) { backdropDisplay in
@@ -246,6 +274,17 @@ private struct InlineAreaAnnotateRootView: View {
       .inlineAreaSelectionGesture(selectionGesture, isEnabled: session.phase == .selecting)
     }
     .ignoresSafeArea()
+    .onAppear {
+      if session.phase == .selecting {
+        session.refreshCursor()
+        DispatchQueue.main.async {
+          session.refreshCursor()
+          DispatchQueue.main.async {
+            session.refreshCursor()
+          }
+        }
+      }
+    }
   }
 
   private var selectionGesture: some Gesture {
@@ -543,7 +582,9 @@ private struct InlineAreaAnnotateRootView: View {
   }
 
   private func updateNativeCursorForIndicator(_ isIndicatorVisible: Bool) {
-    if isIndicatorVisible {
+    if session.phase == .selecting {
+      NSCursor.vectorScreenshotCrosshairLight.set()
+    } else if isIndicatorVisible {
       InlineAreaNativeCursor.hide()
     } else {
       InlineAreaNativeCursor.restoreArrow()
