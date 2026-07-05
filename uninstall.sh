@@ -7,14 +7,19 @@
 #
 # What this script does:
 #   1. Kills the running app
-#   2. Removes Snapzy.app from /Applications
-#   3. Removes Application Support data (captures, preferences, caches)
-#   4. Removes user preferences (defaults)
-#   5. Removes saved application state
-#   6. Removes Sparkle update caches
-#   7. Resets ALL TCC permissions (Screen Recording, Microphone, Accessibility, etc.)
+#   2. Resets ALL TCC permissions (Screen Recording, Microphone, Accessibility, etc.)
+#   3. Removes Snapzy.app from /Applications
+#   4. Removes Application Support data (captures, preferences, caches)
+#   5. Removes user preferences (defaults)
+#   6. Removes saved application state
+#   7. Removes Sparkle update caches
 #   8. Removes login items
 #   9. Cleans temp files
+#
+# NOTE: TCC reset (step 2) runs BEFORE app removal (step 3) because tccutil
+#       validates the bundle identifier via LaunchServices at runtime. Once
+#       the .app bundle is deleted, LaunchServices can no longer resolve the
+#       bundle ID and tccutil will fail with OSStatus error -10814.
 
 set -euo pipefail
 
@@ -23,7 +28,7 @@ APP_PATH="/Applications/Snapzy.app"
 FALLBACK_BUNDLE_ID="com.trongduong.snapzy"
 
 # ─── Auto-detect bundle ID from app name ─────────────────────────
-# Must happen BEFORE the app is deleted (step 2).
+# Must happen BEFORE the app is deleted (step 3).
 # Strategy: osascript (LaunchServices) → PlistBuddy (.app bundle) → fallback
 resolve_bundle_id() {
   local detected=""
@@ -90,7 +95,68 @@ info "Stopping $APP_NAME..."
 killall "$APP_NAME" 2>/dev/null && success "App stopped" || info "App was not running"
 sleep 1
 
-# ─── 2. Remove app bundle ───────────────────────────────────────
+# ─── 2. Reset ALL TCC permissions ───────────────────────────────
+# IMPORTANT: This MUST run BEFORE removing the app bundle (step 3).
+# tccutil validates bundle identifiers via LaunchServices at runtime.
+# Once the .app is deleted, LaunchServices can no longer resolve the
+# bundle ID → tccutil fails with "No such bundle identifier" (exit 64).
+#
+# Strategy:
+#   1. Try per-app reset (tccutil reset <service> <bundle_id>)
+#   2. If that fails (app already removed or LaunchServices stale),
+#      fall back to service-wide reset (tccutil reset <service>)
+#      which resets ALL apps for that service — a trade-off, but
+#      ensures the user gets a clean TCC slate for reinstallation.
+echo ""
+echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
+echo -e "${YELLOW}  Resetting TCC Permissions                           ${NC}"
+echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
+echo ""
+
+# TCC services used by Snapzy
+# NOTE: tccutil uses SHORT names (not kTCCService* constants)
+TCC_SERVICES=(
+  "ScreenCapture"      # Screen Recording (shown as "Screen & System Audio Recording" on macOS 15+)
+  "Microphone"         # Microphone
+  "Accessibility"      # Accessibility
+  "PostEvent"          # Input Monitoring (synthetic events)
+  "ListenEvent"        # Input Monitoring (listen)
+)
+
+tcc_had_failure=false
+
+for service in "${TCC_SERVICES[@]}"; do
+  info "Resetting $service..."
+  if tccutil reset "$service" "$BUNDLE_ID" 2>/dev/null; then
+    success "Reset $service for $BUNDLE_ID"
+  else
+    # Per-app reset failed — most likely the app was already removed from
+    # LaunchServices (user manually deleted the .app before running this script).
+    # We do NOT fall back to service-wide reset because resetting services like
+    # Accessibility or ScreenCapture globally can crash/freeze other running apps.
+    warn "Could not reset $service (app may already be removed or service not granted)"
+    tcc_had_failure=true
+  fi
+done
+
+# Also reset any other TCC entries tied to this bundle as a catch-all
+info "Running catch-all TCC reset for $BUNDLE_ID..."
+if tccutil reset All "$BUNDLE_ID" 2>/dev/null; then
+  success "Reset all remaining TCC entries for $BUNDLE_ID"
+else
+  # Catch-all failed too — if the app is gone, this is expected.
+  info "No additional TCC entries to reset (or app already removed)"
+fi
+
+if $tcc_had_failure; then
+  echo ""
+  warn "Some TCC resets could not be completed automatically."
+  info "If you face permission issues after reinstalling, you can manually remove"
+  info "$APP_NAME from System Settings > Privacy & Security for the affected services."
+fi
+
+# ─── 3. Remove app bundle ───────────────────────────────────────
+echo ""
 info "Removing $APP_PATH..."
 if [ -d "$APP_PATH" ]; then
   rm -rf "$APP_PATH"
@@ -99,7 +165,7 @@ else
   info "$APP_PATH not found (already removed)"
 fi
 
-# ─── 3. Remove Application Support data ─────────────────────────
+# ─── 4. Remove Application Support data ─────────────────────────
 info "Checking Application Support data..."
 app_support="$HOME/Library/Application Support/$APP_NAME"
 if [ -d "$app_support" ]; then
@@ -122,7 +188,7 @@ else
   info "No Application Support data found"
 fi
 
-# ─── 4. Remove user preferences (defaults) ──────────────────────
+# ─── 5. Remove user preferences (defaults) ──────────────────────
 info "Removing user preferences..."
 defaults delete "$BUNDLE_ID" 2>/dev/null && success "Removed defaults for $BUNDLE_ID" || info "No defaults found"
 
@@ -133,7 +199,7 @@ if [ -f "$plist_file" ]; then
   success "Removed $plist_file"
 fi
 
-# ─── 5. Remove caches ───────────────────────────────────────────
+# ─── 6. Remove caches ───────────────────────────────────────────
 info "Removing caches..."
 for cache_dir in \
   "$HOME/Library/Caches/$BUNDLE_ID" \
@@ -145,7 +211,7 @@ for cache_dir in \
   fi
 done
 
-# ─── 6. Remove saved application state ──────────────────────────
+# ─── 7. Remove saved application state ──────────────────────────
 info "Removing saved application state..."
 saved_state="$HOME/Library/Saved Application State/${BUNDLE_ID}.savedState"
 if [ -d "$saved_state" ]; then
@@ -153,7 +219,7 @@ if [ -d "$saved_state" ]; then
   success "Removed $saved_state"
 fi
 
-# ─── 7. Remove Sparkle update data ──────────────────────────────
+# ─── 8. Remove Sparkle update data ──────────────────────────────
 info "Removing Sparkle update data..."
 for sparkle_dir in \
   "$HOME/Library/Caches/${BUNDLE_ID}.Sparkle" \
@@ -167,36 +233,12 @@ done
 # Also remove Sparkle-related defaults
 defaults delete "${BUNDLE_ID}.Sparkle" 2>/dev/null || true
 
-# ─── 8. Login items ─────────────────────────────────────────────
+# ─── 9. Login items ─────────────────────────────────────────────
 # NOTE: sfltool resetbtm resets ALL apps' login items, not just Snapzy.
 # Skipped intentionally to avoid affecting other applications.
 info "Login items: skipped (no safe per-app reset available)"
 
-# ─── 9. Reset ALL TCC permissions ───────────────────────────────
-echo ""
-echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
-echo -e "${YELLOW}  Resetting TCC Permissions                           ${NC}"
-echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
-echo ""
-
-# TCC services used by Snapzy
-# NOTE: tccutil uses SHORT names (not kTCCService* constants)
-TCC_SERVICES=(
-  "ScreenCapture"      # Screen Recording
-  "Microphone"         # Microphone
-  "Accessibility"      # Accessibility
-  "PostEvent"          # Input Monitoring (synthetic events)
-  "ListenEvent"        # Input Monitoring (listen)
-)
-
-for service in "${TCC_SERVICES[@]}"; do
-  info "Resetting $service..."
-  tccutil reset "$service" "$BUNDLE_ID" 2>/dev/null \
-    && success "Reset $service for $BUNDLE_ID" \
-    || warn "Could not reset $service (may need newer macOS or different service name)"
-done
-
-# ─── 10. Clean temp files ───────────────────────────────────────
+# ─── 10. Clean temp files ──────────────────────────────────────
 info "Cleaning temp files..."
 for tmp_dir in \
   "/tmp/test-tcc-snapzy" \
