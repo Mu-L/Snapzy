@@ -2513,18 +2513,9 @@ final class AreaSelectionOverlayView: NSView {
       return
     }
 
-    let text: String
-    if let window = self.window {
-      let screenPoint = window.convertPoint(toScreen: convert(point, to: nil))
-      if let screen = window.screen {
-        let flipY = Int(screen.frame.height - screenPoint.y)
-        text = "\(Int(screenPoint.x))\n\(flipY)"
-      } else {
-        text = "\(Int(screenPoint.x))\n\(Int(screenPoint.y))"
-      }
-    } else {
-      text = "\(Int(point.x))\n\(Int(point.y))"
-    }
+    let localX = Int(point.x)
+    let localY = Int(bounds.height - point.y)
+    let text = "\(localX)\n\(localY)"
 
     let attributes = coordinateTextAttributes
     let textSize: CGSize
