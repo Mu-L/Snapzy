@@ -44,6 +44,12 @@ extension NSScreen {
   }
 }
 
+/// Reason for triggering a backdrop recapture
+enum RecaptureReason {
+  case spaceChange
+  case appActivation
+}
+
 /// Controller for managing area selection overlay across all screens
 /// Uses window pooling for instant activation (<150ms vs 400-600ms)
 @MainActor
@@ -417,7 +423,7 @@ final class AreaSelectionController: NSObject {
       queue: .main
     ) { @MainActor [weak self] _ in
       self?.handleSessionSpaceOrActivationChange()
-      self?.recaptureBackdropsForLuma()
+      self?.recaptureBackdropsForLuma(reason: .spaceChange)
     }
 
     sessionAppActivationObserver = NotificationCenter.default.addObserver(
@@ -426,7 +432,7 @@ final class AreaSelectionController: NSObject {
       queue: .main
     ) { @MainActor [weak self] _ in
       self?.handleSessionSpaceOrActivationChange()
-      self?.recaptureBackdropsForLuma()
+      self?.recaptureBackdropsForLuma(reason: .appActivation)
     }
 
     sessionAppSwitchObserver = NSWorkspace.shared.notificationCenter.addObserver(
@@ -435,7 +441,7 @@ final class AreaSelectionController: NSObject {
       queue: .main
     ) { @MainActor [weak self] _ in
       self?.handleSessionSpaceOrActivationChange()
-      self?.recaptureBackdropsForLuma()
+      self?.recaptureBackdropsForLuma(reason: .appActivation)
     }
 
     // Ensure pool is ready (lazy initialization if not called at app launch)
@@ -787,8 +793,15 @@ final class AreaSelectionController: NSObject {
     }
   }
 
-  private func recaptureBackdropsForLuma() {
+  private func recaptureBackdropsForLuma(reason: RecaptureReason = .appActivation) {
     guard isPresenting else { return }
+
+    // For frozen sessions, we never recapture on simple app activations/switches
+    // (including the initial activation of Snapzy itself) to avoid double-captures 
+    // and losing the focused window's state. We only recapture if the Space changes.
+    if transitionRecaptureHandler != nil && reason == .appActivation {
+      return
+    }
 
     // Cancel any pending recapture to debounce rapid switches
     lumaRecapturingTask?.cancel()
