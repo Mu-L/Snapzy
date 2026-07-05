@@ -87,6 +87,18 @@ final class AreaSelectionController: NSObject {
   private(set) var isPresenting = false
   private var localEscapeMonitor: Any?
   private var globalEscapeMonitor: Any?
+  /// Drives "key-follows-pointer" for non-activated live sessions. Backdrop-less sessions (live
+  /// screenshot, recording, OCR, cutout) deliberately skip `NSApp.activate` to avoid dimming the
+  /// windows being captured, so the app stays inactive. While inactive, only the KEY overlay panel
+  /// gets mouse-moved / cursor-rect handling — that is why the crosshair shows only on the display
+  /// whose overlay was made key at session start. macOS never re-keys a nonactivating panel on
+  /// hover, and (proven empirically) neither `NSEvent` monitors nor `NSCursor.set()` reliably reach
+  /// a non-key overlay of an inactive app during idle hover. This lightweight timer polls the
+  /// pointer location (no permission required, unlike a `CGEventTap`) and moves keyboard/key
+  /// ownership to the overlay under the pointer, so that overlay's own cursor rects render the
+  /// crosshair — exactly replicating the working active-display behavior on every display. Frozen
+  /// sessions activate the app and don't need this.
+  private var pointerTrackingTimer: Timer?
   private var requestedDisplayActivationIDs = Set<CGDirectDisplayID>()
   private var deferredBackdropDisplayIDs = Set<CGDirectDisplayID>()
   private var manualSelectionStartPoint: CGPoint?
@@ -369,6 +381,7 @@ final class AreaSelectionController: NSObject {
     QuickAccessManager.shared.suspendForCapture()
     // Always clean up prior session's monitors to prevent orphaned leaks
     removeEscapeMonitors()
+    stopPointerTracking()
     clearManualSelectionTracking(render: false)
     cancelWindowSelectionTask()
     DiagnosticLogger.shared.log(
@@ -469,6 +482,10 @@ final class AreaSelectionController: NSObject {
       for (_, window) in windowPool {
         window.invalidateCursorRects(for: window.overlayView)
       }
+      // The app stays inactive here, so macOS only routes mouse-moved / cursor-rect handling to the
+      // key overlay. Track the pointer and move key ownership to whichever display it is over, so
+      // the crosshair follows across every display during the idle (pre-selection) phase.
+      startPointerTrackingIfNeeded()
     }
 
     startWindowSelectionPreparationIfNeeded()
@@ -957,8 +974,64 @@ final class AreaSelectionController: NSObject {
     }
   }
 
+  /// Start the pointer-tracking timer for non-activated live sessions so the crosshair follows the
+  /// pointer across all displays before a selection begins. Idempotent — guarded on a nil timer.
+  /// Added to `.common` run-loop modes so it keeps firing during window/event tracking. The drag
+  /// phase stays authoritative: each tick early-returns while a manual selection is in progress so
+  /// `reassertManualSelectionCursor()` owns the cursor.
+  private func startPointerTrackingIfNeeded() {
+    guard pointerTrackingTimer == nil else { return }
+    let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
+      MainActor.assumeIsolated {
+        self?.handlePointerTrackingTick()
+      }
+    }
+    RunLoop.main.add(timer, forMode: .common)
+    pointerTrackingTimer = timer
+  }
+
+  /// Move key ownership to the overlay under the pointer when the pointer crosses onto a different
+  /// display, so that overlay's cursor rects render the crosshair while the app stays inactive.
+  private func handlePointerTrackingTick() {
+    guard isPresenting else { return }
+    // A manual drag owns the cursor via the drag monitors; don't fight it.
+    guard manualSelectionStartPoint == nil else { return }
+    let location = NSEvent.mouseLocation
+    guard let window = window(containing: location),
+          let displayID = window.displayID else { return }
+    // Already the key/keyboard owner — nothing to do (also the single-display fast path).
+    guard displayID != keyboardOwnerDisplayID else { return }
+    promotePointerDisplayToKeyOwner(window, displayID: displayID)
+  }
+
+  /// Transfer keyboard + key-window ownership to `window`'s display. Reusing the existing
+  /// `receivesKeyboardInput`/`canBecomeKey` machinery keeps a single keyboard owner at a time and,
+  /// critically, keeps Escape working: `areaSelectionWindow(_:didReceiveKeyEvent:)` gates key
+  /// handling on `keyboardOwnerDisplayID`, so it must track the current key overlay.
+  private func promotePointerDisplayToKeyOwner(_ window: AreaSelectionWindow, displayID: CGDirectDisplayID) {
+    if let previousID = keyboardOwnerDisplayID, let previousWindow = windowPool[previousID] {
+      previousWindow.setReceivesKeyboardInput(false)
+    }
+    keyboardOwnerDisplayID = displayID
+    window.setReceivesKeyboardInput(true)
+    window.activateKeyboardInputIfNeeded()  // makeKey + makeFirstResponder (nonactivating; no app activation)
+    window.overlayView.refreshCursor()
+    DiagnosticLogger.shared.log(
+      .debug,
+      .capture,
+      "Pointer tracking promoted key overlay",
+      context: ["displayID": "\(displayID)"]
+    )
+  }
+
+  private func stopPointerTracking() {
+    pointerTrackingTimer?.invalidate()
+    pointerTrackingTimer = nil
+  }
+
   private func resetCallbacks() {
     isPresenting = false
+    stopPointerTracking()
     lumaRecapturingTask?.cancel()
     lumaRecapturingTask = nil
     if let observer = sessionSpaceChangeObserver {

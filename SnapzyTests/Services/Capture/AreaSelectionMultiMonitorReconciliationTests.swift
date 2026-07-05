@@ -122,4 +122,67 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
     }
     return value
   }
+
+  // MARK: - Pointer-tracking (key-follows-pointer) lifecycle
+
+  /// The cross-display crosshair fix installs a pointer-tracking `Timer` for non-activated LIVE
+  /// sessions (empty `selectionBackdrops`). It moves keyboard/key ownership to the overlay under the
+  /// pointer so that overlay's cursor rects render the crosshair while the app stays inactive. This
+  /// verifies the timer is installed for a live session and torn down on cancel (leak-free). The
+  /// actual OS-level cursor routing across displays cannot be reproduced in a unit test and requires
+  /// manual dual-display verification.
+  func testPointerTrackingTimer_installedForLiveSession_removedOnCancel() {
+    let controller = AreaSelectionController.shared
+
+    let started = XCTestExpectation(description: "Live session started")
+    controller.startSelection(mode: .recording) { _, _ in }
+    DispatchQueue.main.async { started.fulfill() }
+    wait(for: [started], timeout: 2.0)
+
+    XCTAssertNotNil(
+      pointerTrackingTimer(of: controller),
+      "A live (backdrop-less) session must install the pointer-tracking timer so the crosshair "
+        + "can follow the pointer across displays while the app is inactive"
+    )
+
+    controller.cancelSelection()
+
+    let torndown = XCTestExpectation(description: "Session cancelled")
+    DispatchQueue.main.async { torndown.fulfill() }
+    wait(for: [torndown], timeout: 2.0)
+
+    XCTAssertNil(
+      pointerTrackingTimer(of: controller),
+      "Cancelling the session must invalidate and clear the pointer-tracking timer (no leak)"
+    )
+  }
+
+  /// Frozen sessions (non-empty `selectionBackdrops`) activate the app, which already routes cursor
+  /// handling across displays, so the pointer-tracking timer must NOT be installed — avoiding
+  /// redundant key churn.
+  func testPointerTrackingTimer_notInstalledForFrozenSession() {
+    let controller = AreaSelectionController.shared
+
+    let image = createSolidColorImage(color: .white, size: CGSize(width: 400, height: 300))
+    // A synthetic display id is enough to make `selectionBackdrops` non-empty (frozen branch).
+    let backdrop = AreaSelectionBackdrop(displayID: 1, image: image, scaleFactor: 1.0)
+
+    let started = XCTestExpectation(description: "Frozen session started")
+    controller.startSelection(mode: .screenshot, backdrops: [1: backdrop]) { _ in }
+    DispatchQueue.main.async { started.fulfill() }
+    wait(for: [started], timeout: 2.0)
+
+    XCTAssertNil(
+      pointerTrackingTimer(of: controller),
+      "A frozen (backdrop) session activates the app and must not start the pointer-tracking timer"
+    )
+
+    controller.cancelSelection()
+  }
+
+  /// Reads the private `pointerTrackingTimer` off `AreaSelectionController` via reflection.
+  private func pointerTrackingTimer(of controller: AreaSelectionController) -> Timer? {
+    let mirror = Mirror(reflecting: controller)
+    return mirror.children.first(where: { $0.label == "pointerTrackingTimer" })?.value as? Timer
+  }
 }
