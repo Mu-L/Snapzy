@@ -82,7 +82,7 @@ brew install --cask snapzy
 
 ```bash
 # Install a specific version
-curl -fsSL https://raw.githubusercontent.com/duongductrong/Snapzy/v1.28.2/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/duongductrong/Snapzy/v1.29.0/install.sh | bash
 ```
 
 ### Download a release
