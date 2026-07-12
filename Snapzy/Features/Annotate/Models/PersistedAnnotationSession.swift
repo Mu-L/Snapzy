@@ -29,6 +29,19 @@ struct PersistedAnnotationSession: Codable {
   var cutoutAutoAppliedCropRect: CGRect?
   var createdAt: Date
   var updatedAt: Date
+  /// Combine/stitch session flags. Optional so pre-existing sidecars (and older app
+  /// builds) decode without it — schemaVersion stays 1, no migration needed.
+  var combineSession: PersistedCombineSession?
+}
+
+/// Persisted combine/stitch layout flags. Enum values stored as raw strings and read back
+/// with safe fallbacks so unknown future values never break decoding.
+struct PersistedCombineSession: Codable, Equatable {
+  var modeRawValue: String
+  var directionRawValue: String
+  var gap: Double
+  /// Free-canvas layer positions keyed by annotation UUID string (JSON-friendly).
+  var freeBoundsByAnnotationID: [String: CGRect]
 }
 
 struct PersistedFileSignature: Codable, Equatable {

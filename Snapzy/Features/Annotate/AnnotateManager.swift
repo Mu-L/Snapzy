@@ -29,6 +29,16 @@ struct AnnotationCanvasEffects {
 
 /// In-memory annotation session data for re-editing annotations
 /// Preserved until the Quick Access card is dismissed
+/// In-memory snapshot of an active combine (stitch) session — the layout flags that are
+/// not otherwise derivable from the annotation array. Source pixels persist via
+/// `embeddedImageAssetsData`; only these flags need explicit capture/restore.
+struct CombineSessionSnapshot: Equatable {
+  var mode: CombineImagesMode
+  var direction: CombineImagesDirection
+  var gap: CGFloat
+  var freeBoundsByAnnotationID: [UUID: CGRect]
+}
+
 struct AnnotationSessionData {
   /// Compressed PNG data of the original image (before any annotations were baked)
   let originalImageData: Data
@@ -50,6 +60,8 @@ struct AnnotationSessionData {
   var cutoutAutoAppliedCropRect: CGRect? = nil
   /// Imported image assets referenced by `.embeddedImage(assetId)` annotations.
   var embeddedImageAssetsData: [UUID: Data] = [:]
+  /// Active combine/stitch session flags, if the session was in combine mode.
+  var combineSession: CombineSessionSnapshot? = nil
 }
 
 /// Manages annotation window instances
@@ -329,7 +341,8 @@ extension AnnotationSessionData {
       cutoutImageData: cutoutSnapshot.cutoutImageData,
       didCutoutAutoApplyCrop: cutoutSnapshot.didAutoApplyCrop,
       cutoutAutoAppliedCropRect: cutoutSnapshot.autoAppliedCropRect,
-      embeddedImageAssetsData: state.embeddedImageAssetsSnapshotData()
+      embeddedImageAssetsData: state.embeddedImageAssetsSnapshotData(),
+      combineSession: state.combineSessionSnapshot()
     )
   }
 }

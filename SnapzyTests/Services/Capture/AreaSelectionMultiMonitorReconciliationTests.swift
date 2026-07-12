@@ -222,6 +222,9 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
     window.contentView = overlayView
     overlayView.setSelectionEnabled(true)
     overlayView.setInteractionMode(.manualRegion, resetSelection: false)
+    let mouseLoc = CGPoint(x: 1_000, y: 1_000)
+    overlayView.testMouseLocationOverride = mouseLoc
+    defer { overlayView.testMouseLocationOverride = nil }
     
     // GIVEN: window is not visible
     window.setIsVisible(false)
@@ -230,7 +233,6 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
     
     // GIVEN: window is visible, but positioned away from the mouse
     window.setIsVisible(true)
-    let mouseLoc = NSEvent.mouseLocation
     // Move window frame away from mouse location
     window.setFrame(CGRect(x: mouseLoc.x + 500, y: mouseLoc.y + 500, width: 200, height: 200), display: false)
     overlayView.resetSelection()

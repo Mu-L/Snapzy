@@ -53,8 +53,6 @@ struct AnnotateCombineControlsView: View {
       }
       .disabled(state.combineMode == .freeCanvas)
       .opacity(state.combineMode == .freeCanvas ? 0.45 : 1)
-
-      Divider().background(Color(nsColor: .separatorColor))
     }
   }
 

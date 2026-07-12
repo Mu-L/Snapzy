@@ -169,6 +169,13 @@ enabled = true
 retention_days = 30
 max_count = 500
 
+[annotate]
+clipboard_image_open_behavior = "ask"
+close_after_drag = true
+bring_forward_after_drag = false
+quick_properties_sync = true
+combine_save_as_edit = true
+
 [shortcuts.global.fullscreen]
 key = "3"
 modifiers = ["command", "shift"]

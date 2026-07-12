@@ -20,7 +20,7 @@ final class AnnotateExporter {
     guard state.hasImage else { return }
     let panel = NSSavePanel()
     panel.allowedContentTypes = [.png, .jpeg, .webP]
-    panel.nameFieldStringValue = generateFileName(from: state.sourceURL)
+    panel.nameFieldStringValue = generateFileName(from: state.sourceURL, isCombine: state.isCombineMode)
     panel.canCreateDirectories = true
 
     if panel.runModal() == .OK, let url = panel.url {
@@ -115,7 +115,12 @@ final class AnnotateExporter {
 
   // MARK: - Private
 
-  private static func generateFileName(from url: URL?) -> String {
+  private static func generateFileName(from url: URL?, isCombine: Bool = false) -> String {
+    if isCombine {
+      let formatter = DateFormatter()
+      formatter.dateFormat = "yyyyMMdd-HHmmss"
+      return "combined-\(formatter.string(from: Date())).png"
+    }
     guard let url = url else { return L10n.AnnotateUI.defaultAnnotatedFileName }
     let baseName = url.deletingPathExtension().lastPathComponent
     return "\(baseName)_annotated"

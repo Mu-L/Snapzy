@@ -445,6 +445,9 @@ enum SnapzyConfigurationImporter {
     collectBool(&reader, "annotate", "quick_properties_sync", mutations: &mutations) {
       defaults.set($0, forKey: PreferencesKeys.annotateQuickPropertiesSyncEnabled)
     }
+    collectBool(&reader, "annotate", "combine_save_as_edit", mutations: &mutations) {
+      defaults.set($0, forKey: PreferencesKeys.annotateCombineSaveAsEdit)
+    }
   }
 
   private static func collectAfterCapture(

@@ -2883,6 +2883,16 @@ enum L10n {
       defaultValue: "Use one set of defaults for compatible annotation tools. Turn off to keep each tool's color, stroke, radius, text size, and watermark values separate.",
       comment: "Annotate preferences setting description for synchronizing quick annotation properties"
     )
+    static let combineSaveAsEditTitle = string(
+      "preferences-capture.combine-save-as-edit-title",
+      defaultValue: "Save combined result as part of current edit",
+      comment: "Annotate preferences toggle title for saving stitched images silently into the current edit"
+    )
+    static let combineSaveAsEditDescription = string(
+      "preferences-capture.combine-save-as-edit-description",
+      defaultValue: "When stitching images in the editor, saving updates the current screenshot instead of asking to export a new combined image.",
+      comment: "Annotate preferences toggle description for combine save-as-edit behavior"
+    )
     static let clipboardTitle = string(
       "preferences-capture.annotate-clipboard-title",
       defaultValue: "Clipboard image on Open Annotate",

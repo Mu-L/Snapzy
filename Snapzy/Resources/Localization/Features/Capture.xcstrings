@@ -2667,6 +2667,138 @@
         }
       }
     },
+    "preferences-capture.combine-save-as-edit-title": {
+      "comment": "Annotate preferences toggle title for saving stitched images silently into the current edit",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save combined result as part of current edit"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lưu kết quả ghép như một phần của phiên chỉnh sửa"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将拼接结果保存为当前编辑的一部分"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將拼接結果儲存為目前編輯的一部分"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guardar el resultado combinado como parte de la edición actual"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結合結果を現在の編集の一部として保存"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "합친 결과를 현재 편집의 일부로 저장"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сохранять объединённый результат как часть текущего редактирования"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer le résultat combiné dans la modification en cours"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kombiniertes Ergebnis als Teil der aktuellen Bearbeitung speichern"
+          }
+        }
+      }
+    },
+    "preferences-capture.combine-save-as-edit-description": {
+      "comment": "Annotate preferences toggle description for combine save-as-edit behavior",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When stitching images in the editor, saving updates the current screenshot instead of asking to export a new combined image."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khi ghép ảnh trong trình chỉnh sửa, lưu sẽ cập nhật ảnh chụp hiện tại thay vì hỏi xuất ảnh ghép mới."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在编辑器中拼接图片时，保存会更新当前截图，而不是询问导出新的拼接图片。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在編輯器中拼接圖片時，儲存會更新目前截圖，而不是詢問匯出新的拼接圖片。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Al unir imágenes en el editor, guardar actualiza la captura actual en lugar de preguntar si exportar una nueva imagen combinada."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エディタで画像を結合した場合、保存すると新しい結合画像の書き出しを確認せずに現在のスクリーンショットを更新します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "편집기에서 이미지를 이어 붙일 때 저장하면 새 합성 이미지 내보내기를 묻지 않고 현재 스크린샷을 업데이트합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "При склейке изображений в редакторе сохранение обновляет текущий снимок вместо запроса на экспорт нового объединённого изображения."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lors de l'assemblage d'images dans l'éditeur, l'enregistrement met à jour la capture actuelle au lieu de proposer d'exporter une nouvelle image combinée."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beim Zusammenfügen von Bildern im Editor aktualisiert das Speichern den aktuellen Screenshot, statt den Export eines neuen kombinierten Bildes abzufragen."
+          }
+        }
+      }
+    },
     "preferences-capture.annotate-quick-properties-sync-title": {
       "comment": "Annotate preferences setting title for synchronizing quick annotation properties",
       "extractionState": "manual",

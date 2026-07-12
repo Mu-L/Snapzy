@@ -2533,15 +2533,22 @@ final class AreaSelectionOverlayView: NSView {
     magnifier.removeLayers()
   }
 
+  #if DEBUG
+  var testMouseLocationOverride: CGPoint?
+  #endif
+
   private var isMouseOver: Bool {
     #if DEBUG
     if NSClassFromString("XCTestCase") != nil, self.window == nil {
       return true
     }
+    let mouseLocation = testMouseLocationOverride ?? NSEvent.mouseLocation
+    #else
+    let mouseLocation = NSEvent.mouseLocation
     #endif
     guard let window = self.window,
           window.isVisible,
-          window.frame.contains(NSEvent.mouseLocation) else {
+          window.frame.contains(mouseLocation) else {
       return false
     }
     return true

@@ -480,6 +480,23 @@ struct AnnotateBottomBarView: View {
 
   // MARK: - Cloud Upload
 
+  /// Write a rendered image to a temporary PNG file inside the sandbox temp directory.
+  /// Used to upload manual combine sessions without overwriting the user's source file.
+  private func writeRenderedImageToTemporaryFile(_ image: NSImage) -> URL? {
+    guard let data = AnnotateExporter.imageData(from: image, for: "png") else { return nil }
+    // UUID-suffixed so concurrent uploads from multiple windows never collide on the path
+    // (the per-Task defer cleanup would otherwise delete another window's in-flight file).
+    let tempURL = FileManager.default.temporaryDirectory
+      .appendingPathComponent("combined-\(UUID().uuidString).png")
+    do {
+      try data.write(to: tempURL, options: .atomic)
+      return tempURL
+    } catch {
+      DiagnosticLogger.shared.logError(.cloud, error, "Annotate temp render write failed")
+      return nil
+    }
+  }
+
   private func handleCloudUpload() {
     guard cloudManager.isConfigured else {
       DiagnosticLogger.shared.log(.warning, .cloud, "Annotate cloud upload skipped; cloud not configured")
@@ -496,13 +513,28 @@ struct AnnotateBottomBarView: View {
     let sessionSnapshot = AnnotateManager.shared.makeSessionData(for: state)
     let renderedImage = AnnotateExporter.renderFinalImage(state: state)
 
-    // Step 2: Save rendered image to disk (so the file includes annotations)
-    if let renderedImage = renderedImage {
-      let didSave = AnnotateExporter.saveToFile(image: renderedImage, state: state)
-      if didSave,
-         let sessionSnapshot,
-         AnnotationSessionStore.shared.shouldPersist(for: sourceURL) {
-        AnnotationSessionStore.shared.persist(sessionSnapshot, for: sourceURL)
+    // Step 2: Decide the upload target. Manual combine sessions must NOT overwrite the
+    // user's picked source file with the stitched render, so upload a temporary rendered
+    // copy instead and leave the source untouched.
+    let isProtectedManualCombine = state.isCombineMode && state.isManualImportSession
+    let uploadURL: URL
+    if isProtectedManualCombine {
+      guard let renderedImage, let tempURL = writeRenderedImageToTemporaryFile(renderedImage) else {
+        DiagnosticLogger.shared.log(.error, .cloud, "Annotate cloud upload skipped; temp render failed")
+        cloudUploadError = L10n.AnnotateUI.saveFailedMessage
+        return
+      }
+      uploadURL = tempURL
+    } else {
+      uploadURL = sourceURL
+      // Save rendered image to disk (so the file includes annotations)
+      if let renderedImage = renderedImage {
+        let didSave = AnnotateExporter.saveToFile(image: renderedImage, state: state)
+        if didSave,
+           let sessionSnapshot,
+           AnnotationSessionStore.shared.shouldPersist(for: sourceURL) {
+          AnnotationSessionStore.shared.persist(sessionSnapshot, for: sourceURL)
+        }
       }
     }
 
@@ -524,12 +556,19 @@ struct AnnotateBottomBarView: View {
     let oldCloudKey = state.cloudKey  // Save old key for cleanup after successful upload
 
     Task {
+      // Remove the temporary rendered file (manual combine) once the upload finishes,
+      // whether it succeeds or fails.
+      defer {
+        if isProtectedManualCombine {
+          try? FileManager.default.removeItem(at: uploadURL)
+        }
+      }
       do {
-        let fileAccess = SandboxFileAccessManager.shared.beginAccessingURL(sourceURL)
+        let fileAccess = SandboxFileAccessManager.shared.beginAccessingURL(uploadURL)
         defer { fileAccess.stop() }
 
         // Always upload with a fresh key (new URL avoids CDN cache issues)
-        let result = try await cloudManager.upload(fileURL: sourceURL)
+        let result = try await cloudManager.upload(fileURL: uploadURL)
 
         // Delete the old cloud file in background (no garbage)
         if let oldKey = oldCloudKey {

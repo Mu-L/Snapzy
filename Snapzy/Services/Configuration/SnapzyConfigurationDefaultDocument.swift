@@ -168,6 +168,7 @@ enum SnapzyConfigurationDefaultDocument {
     writer.value("close_after_drag", true)
     writer.value("bring_forward_after_drag", false)
     writer.value("quick_properties_sync", true)
+    writer.value("combine_save_as_edit", true)
   }
 
   private static func writeShortcuts(_ writer: inout SimpleTOMLWriter) {

@@ -82,6 +82,9 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         didAutoApplyCrop: sessionData.didCutoutAutoApplyCrop,
         autoAppliedCropRect: sessionData.cutoutAutoAppliedCropRect
       )
+      if let combineSession = sessionData.combineSession {
+        self.state.restoreCombineSession(combineSession)
+      }
     } else {
       // First open: load image from disk and capture raw file bytes (fast, no re-encoding)
       let image = Self.loadImageWithCorrectScale(from: item.url) ?? item.thumbnail
@@ -118,6 +121,9 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     self.quickAccessItemId = nil
     self.originalImageData = nil
     self.state = AnnotateState()
+    // Manual session: sourceURL becomes the first user-picked file, so combine saves
+    // must not silently overwrite it. Combine-picker convenience init inherits this.
+    self.state.isManualImportSession = true
 
     // Default window size for empty canvas
     let defaultWidth: CGFloat = 1200
@@ -184,6 +190,9 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
         didAutoApplyCrop: sessionData.didCutoutAutoApplyCrop,
         autoAppliedCropRect: sessionData.cutoutAutoAppliedCropRect
       )
+      if let combineSession = sessionData.combineSession {
+        self.state.restoreCombineSession(combineSession)
+      }
     } else {
       let image = Self.loadImageWithCorrectScale(from: url)
         ?? NSImage(size: NSSize(width: 400, height: 300))
@@ -539,6 +548,13 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
   }
 
   private func performSaveAndClose() {
+    // Combine coherence: if a ⌘S would show the "Save Combined Image" dialog (pref OFF or
+    // manual session), the close-save path must show it too instead of silently overwriting.
+    if combineSaveNeedsDialog {
+      performCombineSave()
+      return
+    }
+
     // Cloud gate: if the rendered output differs from the uploaded file, require overwrite confirmation.
     if requiresCloudOverwriteConfirmation {
       showCloudOverwriteAlert { [weak self] in
@@ -750,6 +766,13 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
       return
     }
 
+    // Manual combine session: the drag already delivered the rendered payload to the target
+    // app; do not overwrite the user's picked source file with the stitched result.
+    if protectsSourceFromImplicitCombineWrite {
+      state.markAsSaved()
+      return
+    }
+
     guard let sourceURL = state.sourceURL else {
       state.markAsSaved()
       return
@@ -846,15 +869,40 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
     }
   }
 
+  /// True when an active combine session must show the "Save Combined Image" confirmation
+  /// dialog instead of saving silently as an edit of the current image.
+  ///
+  /// Dialog is required when either:
+  /// - the save-as-edit preference is OFF, or
+  /// - this is a manual import session (empty window / Combine picker), whose sourceURL is
+  ///   a user-picked file we must never silently overwrite, or
+  /// - there is no sourceURL to save into.
+  private var combineSaveNeedsDialog: Bool {
+    guard state.isCombineMode else { return false }
+    return !CombineSaveAsEditPreference.isEnabled()
+      || state.isManualImportSession
+      || state.sourceURL == nil
+  }
+
+  /// Manual combine sessions have `sourceURL` pointing at the first user-picked file.
+  /// Implicit-write paths (copy, drag-out, cloud) must never silently overwrite it with the
+  /// stitched render — they route to explicit or no-write alternatives instead. Scoped to
+  /// combine mode so ordinary single-image manual annotate saves still overwrite as expected.
+  private var protectsSourceFromImplicitCombineWrite: Bool {
+    state.isCombineMode && state.isManualImportSession
+  }
+
   /// Silent save — renders once, updates thumbnail instantly, closes window, saves in background
   /// If previously uploaded to cloud, gate behind overwrite confirmation.
   private func performSave() {
     guard state.hasImage else { return }
 
-    if state.isCombineMode {
+    if combineSaveNeedsDialog {
       performCombineSave()
       return
     }
+    // Otherwise (pref ON + capture-origin combine session, or not combine at all): fall
+    // through and save silently, exactly like a normal annotation edit.
 
     // Cloud gate: if the rendered output differs from the uploaded file, require overwrite confirmation.
     if requiresCloudOverwriteConfirmation {
@@ -926,6 +974,12 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
       if AnnotateExporter.save(state: self.state, to: url) {
         self.state.markAsSaved()
         SoundManager.play("Pop")
+        // Persist a sidecar keyed to the exported file so it stays re-editable (combine
+        // session included) when reopened. Gated by AnnotationSessionStore.shouldPersist
+        // (history enabled or an existing record) — same semantics as annotation saves.
+        if let snapshot = self.makeSessionSnapshot() {
+          Self.persistCommittedSession(snapshot, for: url)
+        }
         // Dismiss Quick Access card if present
         if let itemId = self.quickAccessItemId {
           QuickAccessManager.shared.dismissCard(id: itemId)
@@ -977,7 +1031,13 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
       case .alertFirstButtonReturn:
         self.performSaveAs()
       case .alertSecondButtonReturn:
-        self.executeCopy()
+        // "Copy to Clipboard" must copy only — the user declined "Save to File", so never
+        // write over the source. (Previously this silently overwrote the file via executeCopy.)
+        if let rendered = AnnotateExporter.renderFinalImage(state: self.state) {
+          ClipboardHelper.copyImage(rendered)
+          SoundManager.play("Pop")
+        }
+        self.forceClose()
       default:
         break
       }
@@ -988,6 +1048,14 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
   /// If previously uploaded to cloud and output changed, gate behind overwrite confirmation.
   private func performCopy() {
     guard state.hasImage else { return }
+
+    // Manual combine session: copy only. Skip the cloud-overwrite gate — its re-upload
+    // path writes the stitched render to sourceURL (the user's picked file). executeCopy()
+    // enforces the same protection (clipboard + close, no write).
+    if protectsSourceFromImplicitCombineWrite {
+      executeCopy()
+      return
+    }
 
     // Cloud gate: if the rendered output differs from the uploaded file, require overwrite confirmation.
     if requiresCloudOverwriteConfirmation {
@@ -1004,6 +1072,17 @@ final class AnnotateWindowController: NSWindowController, NSWindowDelegate {
 
     // Render once, use for everything
     let renderedImage = AnnotateExporter.renderFinalImage(state: state)
+
+    // Manual combine sessions upload a temporary render, so any existing cloud URL may
+    // point at an older stitch. Copy the current render and close without touching source.
+    if protectsSourceFromImplicitCombineWrite {
+      if let renderedImage = renderedImage {
+        ClipboardHelper.copyImage(renderedImage)
+        SoundManager.play("Pop")
+      }
+      forceClose()
+      return
+    }
 
     // Copy to clipboard — cloud link (text) if available, otherwise image
     if let cloudURL = state.cloudURL {

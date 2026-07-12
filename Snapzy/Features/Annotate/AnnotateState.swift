@@ -243,6 +243,11 @@ final class AnnotateState: ObservableObject {
   @Published var frozenCombineContentBounds: CGRect?
   let combineSnapTolerance: CGFloat = 14
 
+  /// True when this editor session was opened manually (empty window / Combine picker).
+  /// Its sourceURL points at a user-picked file, not a Snapzy capture, so combine saves
+  /// must never silently overwrite it. Set once at window init; not an image property.
+  var isManualImportSession = false
+
   private var freeCombineBoundsByAnnotationID: [UUID: CGRect] = [:]
 
   var effectiveContentBounds: CGRect {
@@ -342,6 +347,38 @@ final class AnnotateState: ObservableObject {
     } else {
       updateCombineContentBounds()
     }
+  }
+
+  /// Capture the active combine session's layout flags for persistence.
+  /// Returns nil when not in combine mode. Source pixels persist separately via
+  /// embedded image assets, so only the layout flags are captured here.
+  func combineSessionSnapshot() -> CombineSessionSnapshot? {
+    guard isCombineMode else { return nil }
+    return CombineSessionSnapshot(
+      mode: combineMode,
+      direction: combineDirection,
+      gap: combineGap,
+      freeBoundsByAnnotationID: freeCombineBoundsByAnnotationID
+    )
+  }
+
+  /// Restore a persisted combine session. Must run AFTER annotations and embedded assets
+  /// are restored. Bypasses `activateCombineMode()` on purpose — that method's side effects
+  /// (capturing current bounds, sidebar/tool changes) are for interactive activation, not
+  /// deterministic rehydration. Does not touch `hasUnsavedChanges` or the undo stack.
+  func restoreCombineSession(_ snapshot: CombineSessionSnapshot) {
+    guard hasImage else { return }
+    isCombineMode = true
+    // Surface the sidebar so the combine controls (mode/direction/gap) are visible on
+    // reopen — matches interactive activation and lets the user keep adjusting the stitch.
+    showSidebar = true
+    combineMode = snapshot.mode
+    combineDirection = snapshot.direction
+    combineGap = max(0, snapshot.gap)
+    freeCombineBoundsByAnnotationID = snapshot.freeBoundsByAnnotationID
+    // Deterministic: autoStitch recomputes layout from annotation order/direction/gap;
+    // freeCanvas derives content bounds from the restored annotation bounds.
+    refreshCombineLayout()
   }
 
   static let minimumZoomLevel: CGFloat = 0.25
@@ -1485,7 +1522,13 @@ final class AnnotateState: ObservableObject {
     embeddedImageSourceData = snapshot
     embeddedImageSnapshotCacheData = snapshot
     embeddedImageCGImageCache.removeAll()
-    pruneUnusedEmbeddedAssets()
+    // Prune only when annotations are already populated. Controllers restore assets BEFORE
+    // assigning annotations, so pruning here would key off an empty annotation list and wipe
+    // every restored asset — collapsing a stitched combine session back to the base image.
+    // The persisted snapshot only ever contains in-use assets, so skipping prune is safe.
+    if !annotations.isEmpty {
+      pruneUnusedEmbeddedAssets()
+    }
     updateImportWarningIfNeeded()
   }
 

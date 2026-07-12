@@ -15,6 +15,8 @@ struct AnnotateSettingsView: View {
   private var annotateBringForwardAfterDrag = false
   @AppStorage(PreferencesKeys.annotateQuickPropertiesSyncEnabled)
   private var annotateQuickPropertiesSyncEnabled = true
+  @AppStorage(PreferencesKeys.annotateCombineSaveAsEdit)
+  private var annotateCombineSaveAsEdit = true
 
   var body: some View {
     Form {
@@ -25,6 +27,15 @@ struct AnnotateSettingsView: View {
           description: L10n.PreferencesAnnotate.quickPropertiesSyncDescription
         ) {
           Toggle("", isOn: $annotateQuickPropertiesSyncEnabled)
+            .labelsHidden()
+        }
+
+        SettingRow(
+          icon: "rectangle.stack",
+          title: L10n.PreferencesAnnotate.combineSaveAsEditTitle,
+          description: L10n.PreferencesAnnotate.combineSaveAsEditDescription
+        ) {
+          Toggle("", isOn: $annotateCombineSaveAsEdit)
             .labelsHidden()
         }
 

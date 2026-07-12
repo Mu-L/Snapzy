@@ -317,6 +317,9 @@ final class SnapzyConfigurationImporterTests: XCTestCase {
     [recording]
     video_editor_zoom_transition_duration = 0.55
 
+    [annotate]
+    combine_save_as_edit = false
+
     [quick_access]
     trackpad_swipe_mode = "natural"
     swipe_left_action = "pinToScreen"
@@ -339,6 +342,9 @@ final class SnapzyConfigurationImporterTests: XCTestCase {
     
     // recording
     XCTAssertEqual(defaults.object(forKey: PreferencesKeys.videoEditorZoomTransitionDuration) as? Double, 0.55)
+
+    // annotate
+    XCTAssertEqual(defaults.object(forKey: PreferencesKeys.annotateCombineSaveAsEdit) as? Bool, false)
     
     // quick access
     XCTAssertEqual(QuickAccessTrackpadSwipeModeStore.shared.mode, .natural)

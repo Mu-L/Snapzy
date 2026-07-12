@@ -57,6 +57,17 @@ final class PreferencesCoreTests: XCTestCase {
     XCTAssertTrue(AnnotateQuickPropertiesSyncPreference.isEnabled(userDefaults: defaults))
   }
 
+  func testCombineSaveAsEditPreference_defaultsToEnabled() throws {
+    let defaults = try makeDefaults()
+    XCTAssertTrue(CombineSaveAsEditPreference.isEnabled(userDefaults: defaults))
+
+    defaults.set(false, forKey: PreferencesKeys.annotateCombineSaveAsEdit)
+    XCTAssertFalse(CombineSaveAsEditPreference.isEnabled(userDefaults: defaults))
+
+    defaults.set(true, forKey: PreferencesKeys.annotateCombineSaveAsEdit)
+    XCTAssertTrue(CombineSaveAsEditPreference.isEnabled(userDefaults: defaults))
+  }
+
   func testPreferencesTabsRemainUniqueAndHashable() {
     let tabs: Set<PreferencesTab> = [
       .general,

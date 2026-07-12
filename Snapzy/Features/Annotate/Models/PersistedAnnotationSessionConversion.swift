@@ -87,6 +87,16 @@ extension PersistedAnnotationSession {
       ($0.uuidString, "\($0.uuidString).bin")
     })
 
+    let persistedCombineSession = sessionData.combineSession.map { snapshot in
+      PersistedCombineSession(
+        modeRawValue: snapshot.mode.rawValue,
+        directionRawValue: snapshot.direction.rawValue,
+        gap: Double(snapshot.gap),
+        freeBoundsByAnnotationID: Dictionary(uniqueKeysWithValues:
+          snapshot.freeBoundsByAnnotationID.map { ($0.key.uuidString, $0.value) })
+      )
+    }
+
     self.init(
       schemaVersion: Self.currentSchemaVersion,
       sourceFilePath: sourceFilePath,
@@ -104,7 +114,8 @@ extension PersistedAnnotationSession {
       didCutoutAutoApplyCrop: sessionData.didCutoutAutoApplyCrop,
       cutoutAutoAppliedCropRect: sessionData.cutoutAutoAppliedCropRect,
       createdAt: createdAt,
-      updatedAt: updatedAt
+      updatedAt: updatedAt,
+      combineSession: persistedCombineSession
     )
   }
 
@@ -125,7 +136,26 @@ extension PersistedAnnotationSession {
       cutoutImageData: cutoutImageData,
       didCutoutAutoApplyCrop: didCutoutAutoApplyCrop,
       cutoutAutoAppliedCropRect: cutoutAutoAppliedCropRect,
-      embeddedImageAssetsData: embeddedImageAssetsData
+      embeddedImageAssetsData: embeddedImageAssetsData,
+      combineSession: combineSession?.toSnapshot()
+    )
+  }
+}
+
+extension PersistedCombineSession {
+  /// Convert to the in-memory snapshot with safe fallbacks for unknown raw values and
+  /// unparseable UUID keys (forward compatibility).
+  func toSnapshot() -> CombineSessionSnapshot {
+    let mode = CombineImagesMode(rawValue: modeRawValue) ?? .autoStitch
+    let direction = CombineImagesDirection(rawValue: directionRawValue) ?? .smart
+    let bounds = Dictionary(uniqueKeysWithValues: freeBoundsByAnnotationID.compactMap {
+      key, rect in UUID(uuidString: key).map { ($0, rect) }
+    })
+    return CombineSessionSnapshot(
+      mode: mode,
+      direction: direction,
+      gap: CGFloat(gap),
+      freeBoundsByAnnotationID: bounds
     )
   }
 }

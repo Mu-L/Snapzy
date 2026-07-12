@@ -70,6 +70,7 @@ enum PreferencesKeys {
   static let annotateParameterDefaults = "annotate.parameterDefaults.v1"
   static let annotateToolParameterDefaults = "annotate.toolParameterDefaults.v1"
   static let annotateQuickPropertiesSyncEnabled = "annotate.quickPropertiesSyncEnabled"
+  static let annotateCombineSaveAsEdit = "annotate.combineSaveAsEdit"
   static let annotateCustomColors = "annotate.customColors.v1"
   static let annotateFavoriteColors = "annotate.favoriteColors.v1"
   static let ocrSuccessNotificationEnabled = "ocr.successNotificationEnabled"

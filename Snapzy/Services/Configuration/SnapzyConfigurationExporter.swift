@@ -190,6 +190,7 @@ enum SnapzyConfigurationExporter {
     writer.value("close_after_drag", defaults.boolValue(PreferencesKeys.annotateCloseAfterDrag, default: true))
     writer.value("bring_forward_after_drag", defaults.boolValue(PreferencesKeys.annotateBringForwardAfterDrag, default: false))
     writer.value("quick_properties_sync", AnnotateQuickPropertiesSyncPreference.isEnabled(userDefaults: defaults))
+    writer.value("combine_save_as_edit", CombineSaveAsEditPreference.isEnabled(userDefaults: defaults))
   }
 
   private static func language(defaults: UserDefaults) -> String {

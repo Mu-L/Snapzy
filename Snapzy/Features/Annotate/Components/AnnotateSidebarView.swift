@@ -76,10 +76,6 @@ struct AnnotateSidebarView: View, Equatable {
   var body: some View {
     ScrollView(.vertical, showsIndicators: true) {
       VStack(alignment: .leading, spacing: Spacing.md) {
-        if state.isCombineMode {
-          AnnotateCombineControlsView(state: state)
-        }
-
         presetControlsSection
 
         // Compact gradient section
@@ -113,6 +109,10 @@ struct AnnotateSidebarView: View, Equatable {
         if state.editorMode == .mockup {
           Divider().background(Color(nsColor: .separatorColor))
           MockupControlsSection(state: state)
+        }
+
+        if state.isCombineMode {
+          AnnotateCombineControlsView(state: state)
         }
 
         Spacer(minLength: Spacing.lg)

@@ -80,6 +80,15 @@ enum AnnotateQuickPropertiesSyncPreference {
   }
 }
 
+/// When enabled (default), stitching extra images into a capture-origin annotate session
+/// saves the combined render as a normal edit of the current image (silent, no dialog).
+/// When disabled, the "Save Combined Image" confirmation dialog is shown instead.
+enum CombineSaveAsEditPreference {
+  static func isEnabled(userDefaults: UserDefaults = .standard) -> Bool {
+    userDefaults.object(forKey: PreferencesKeys.annotateCombineSaveAsEdit) as? Bool ?? true
+  }
+}
+
 /// Manager for complex preferences that require more than simple @AppStorage
 @MainActor
 final class PreferencesManager: ObservableObject {
