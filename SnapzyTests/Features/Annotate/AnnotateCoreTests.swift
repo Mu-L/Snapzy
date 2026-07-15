@@ -958,13 +958,13 @@ final class AnnotateCoreTests: XCTestCase {
       from: CGPoint(x: 10, y: 20),
       to: CGPoint(x: 90, y: 80),
       path: [],
-      context: makeContext(arrowStyle: .elbow)
+      context: makeContext(arrowStyle: .curvedRight)
     ))
 
     guard case .arrow(let geometry) = annotation.type else {
       return XCTFail("Expected arrow annotation, got \(annotation.type)")
     }
-    XCTAssertEqual(geometry.style, .elbow)
+    XCTAssertEqual(geometry.style, .curvedRight)
     XCTAssertEqual(annotation.bounds, geometry.bounds())
     XCTAssertGreaterThan(annotation.bounds.width, 0)
     XCTAssertGreaterThan(annotation.bounds.height, 0)
@@ -976,20 +976,20 @@ final class AnnotateCoreTests: XCTestCase {
       from: CGPoint(x: 10, y: 20),
       to: CGPoint(x: 90, y: 80),
       path: [],
-      context: makeContext(arrowStyle: .curve, arrowBendDirection: .alternate)
+      context: makeContext(arrowStyle: .curvedLeft, arrowBendDirection: .alternate)
     ))
 
     guard case .arrow(let geometry) = annotation.type else {
       return XCTFail("Expected arrow annotation, got \(annotation.type)")
     }
-    XCTAssertEqual(geometry.style, .curve)
+    XCTAssertEqual(geometry.style, .curvedRight) // alternating curvedLeft style flips it to curvedRight
     XCTAssertEqual(geometry.bendDirection, .alternate)
   }
 
   @MainActor
   func testAnnotateStateArrowBendDirectionUpdatesNextCreatedArrow() throws {
     let state = makeAnnotateState()
-    state.arrowStyle = .curve
+    state.arrowStyle = .curvedLeft
     state.setActiveArrowBendDirection(.alternate)
 
     let annotation = try XCTUnwrap(AnnotationFactory.createAnnotation(
@@ -1012,7 +1012,7 @@ final class AnnotateCoreTests: XCTestCase {
     let geometry = ArrowGeometry(
       start: CGPoint(x: 10, y: 20),
       end: CGPoint(x: 90, y: 80),
-      style: .curve
+      style: .curvedLeft
     )
     let annotation = AnnotationItem(
       type: .arrow(geometry),
@@ -1038,7 +1038,7 @@ final class AnnotateCoreTests: XCTestCase {
     let geometry = ArrowGeometry(
       start: CGPoint(x: 10, y: 20),
       end: CGPoint(x: 90, y: 80),
-      style: .curve
+      style: .curvedLeft
     )
     let annotation = AnnotationItem(
       type: .arrow(geometry),

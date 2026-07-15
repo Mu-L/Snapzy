@@ -62,7 +62,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
     guard case .arrow(let geometry) = loaded.annotations[1].type else {
       return XCTFail("Expected arrow annotation")
     }
-    XCTAssertEqual(geometry.style, .curve)
+    XCTAssertEqual(geometry.style, .curvedRight)
     XCTAssertEqual(geometry.bendDirection, .alternate)
     guard case .blur(.gaussian) = loaded.annotations[2].type else {
       return XCTFail("Expected gaussian blur annotation")
@@ -138,7 +138,7 @@ final class AnnotationSessionStoreTests: XCTestCase {
     let arrowGeometry = ArrowGeometry(
       start: CGPoint(x: 4, y: 5),
       end: CGPoint(x: 50, y: 60),
-      style: .curve,
+      style: .curvedRight,
       bendDirection: .alternate
     )
     return AnnotationSessionData(

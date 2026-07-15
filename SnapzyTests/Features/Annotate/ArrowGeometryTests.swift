@@ -23,61 +23,24 @@ final class ArrowGeometryTests: XCTestCase {
     XCTAssertEqual(geo.sampledPoints(), [CGPoint(x: 10, y: 10)])
   }
 
-  func testElbow_defaultControlPoint_horizontalDominant() {
-    let geo = ArrowGeometry(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 30), style: .elbow)
-    let points = geo.sampledPoints()
-    XCTAssertEqual(points.count, 3)
-    XCTAssertEqual(points[0], CGPoint(x: 0, y: 0))
-    XCTAssertEqual(points[1], CGPoint(x: 100, y: 0))
-    XCTAssertEqual(points[2], CGPoint(x: 100, y: 30))
-  }
-
-  func testElbow_defaultControlPoint_verticalDominant() {
-    let geo = ArrowGeometry(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 20, y: 100), style: .elbow)
-    let points = geo.sampledPoints()
-    XCTAssertEqual(points.count, 3)
-    XCTAssertEqual(points[0], CGPoint(x: 0, y: 0))
-    XCTAssertEqual(points[1], CGPoint(x: 0, y: 100))
-    XCTAssertEqual(points[2], CGPoint(x: 20, y: 100))
-  }
-
-  func testElbow_alternateControlPoint_usesOppositeCorner() {
-    let geo = ArrowGeometry(
-      start: CGPoint(x: 0, y: 0),
-      end: CGPoint(x: 100, y: 30),
-      style: .elbow,
-      bendDirection: .alternate
-    )
-    let points = geo.sampledPoints()
-    XCTAssertEqual(points.count, 3)
-    XCTAssertEqual(points[0], CGPoint(x: 0, y: 0))
-    XCTAssertEqual(points[1], CGPoint(x: 0, y: 30))
-    XCTAssertEqual(points[2], CGPoint(x: 100, y: 30))
-    XCTAssertEqual(geo.bendDirection, .alternate)
-  }
-
-  func testCurve_defaultControlPoint_offsetAboveMidpoint() {
-    let geo = ArrowGeometry(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 0), style: .curve)
-    let control = geo.resolvedControlPoint!
-    XCTAssertEqual(control.x, 50, accuracy: 0.001)
-    XCTAssertGreaterThan(control.y, 0)
-  }
-
-  func testCurve_alternateControlPoint_mirrorsBelowMidpoint() {
-    let geo = ArrowGeometry(
-      start: CGPoint(x: 0, y: 0),
-      end: CGPoint(x: 100, y: 0),
-      style: .curve,
-      bendDirection: .alternate
-    )
+  func testCurvedRight_defaultControlPoint_offsetBelowMidpoint() {
+    let geo = ArrowGeometry(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 0), style: .curvedRight)
     let control = geo.resolvedControlPoint!
     XCTAssertEqual(control.x, 50, accuracy: 0.001)
     XCTAssertLessThan(control.y, 0)
     XCTAssertEqual(geo.bendDirection, .alternate)
   }
 
-  func testCurve_sampledPoints_nonTrivial() {
-    let geo = ArrowGeometry(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 100), style: .curve)
+  func testCurvedLeft_defaultControlPoint_offsetAboveMidpoint() {
+    let geo = ArrowGeometry(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 0), style: .curvedLeft)
+    let control = geo.resolvedControlPoint!
+    XCTAssertEqual(control.x, 50, accuracy: 0.001)
+    XCTAssertGreaterThan(control.y, 0)
+    XCTAssertEqual(geo.bendDirection, .primary)
+  }
+
+  func testCurvedRight_sampledPoints_nonTrivial() {
+    let geo = ArrowGeometry(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 100), style: .curvedRight)
     let points = geo.sampledPoints()
     XCTAssertEqual(points.count, 17)
     XCTAssertEqual(points.first, geo.start)
@@ -129,7 +92,7 @@ final class ArrowGeometryTests: XCTestCase {
   // MARK: - translatedBy
 
   func testTranslatedBy() {
-    let geo = ArrowGeometry(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 100), style: .curve)
+    let geo = ArrowGeometry(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 100, y: 100), style: .curvedRight)
     let moved = geo.translatedBy(dx: 10, dy: -5)
     XCTAssertEqual(moved.start, CGPoint(x: 10, y: -5))
     XCTAssertEqual(moved.end, CGPoint(x: 110, y: 95))
@@ -148,29 +111,28 @@ final class ArrowGeometryTests: XCTestCase {
 
   func testWithStyle() {
     let geo = ArrowGeometry(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 10, y: 10), style: .straight)
-    let elbow = geo.withStyle(.elbow)
-    XCTAssertEqual(elbow.style, .elbow)
-    XCTAssertEqual(elbow.start, geo.start)
-    XCTAssertEqual(elbow.end, geo.end)
+    let curved = geo.withStyle(.curvedRight)
+    XCTAssertEqual(curved.style, .curvedRight)
+    XCTAssertEqual(curved.start, geo.start)
+    XCTAssertEqual(curved.end, geo.end)
   }
 
   func testWithStyle_preservesAlternateBendBetweenCurvedStyles() {
     let geo = ArrowGeometry(
       start: CGPoint(x: 0, y: 0),
       end: CGPoint(x: 100, y: 30),
-      style: .elbow,
-      bendDirection: .alternate
+      style: .curvedLeft
     )
-    let curve = geo.withStyle(.curve)
-    XCTAssertEqual(curve.style, .curve)
-    XCTAssertEqual(curve.bendDirection, .alternate)
+    let curvedRight = geo.withStyle(.curvedRight)
+    XCTAssertEqual(curvedRight.style, .curvedRight)
+    XCTAssertEqual(curvedRight.bendDirection, .alternate)
   }
 
   func testWithBendDirection_mirrorsRemappedCurveControlPointAcrossBaseline() throws {
     let original = ArrowGeometry(
       start: CGPoint(x: 0, y: 0),
       end: CGPoint(x: 100, y: 0),
-      style: .curve,
+      style: .curvedLeft,
       controlPoint: CGPoint(x: 30, y: 50)
     )
     let remapped = original.remapped(
@@ -183,6 +145,7 @@ final class ArrowGeometryTests: XCTestCase {
     let flippedControl = try XCTUnwrap(flipped.resolvedControlPoint)
 
     XCTAssertEqual(flipped.bendDirection, .alternate)
+    XCTAssertEqual(flipped.style, .curvedRight)
     XCTAssertEqual(
       baselineProgress(flippedControl, start: remapped.start, end: remapped.end),
       baselineProgress(control, start: remapped.start, end: remapped.end),
@@ -193,24 +156,6 @@ final class ArrowGeometryTests: XCTestCase {
       -signedPerpendicularDistance(control, start: remapped.start, end: remapped.end),
       accuracy: 0.001
     )
-  }
-
-  func testCurve_infersDirectionFromNonDefaultControlPointSide() {
-    let primary = ArrowGeometry(
-      start: CGPoint(x: 0, y: 0),
-      end: CGPoint(x: 100, y: 0),
-      style: .curve,
-      controlPoint: CGPoint(x: 80, y: 45)
-    )
-    let alternate = ArrowGeometry(
-      start: CGPoint(x: 0, y: 0),
-      end: CGPoint(x: 100, y: 0),
-      style: .curve,
-      controlPoint: CGPoint(x: 80, y: -45)
-    )
-
-    XCTAssertEqual(primary.bendDirection, .primary)
-    XCTAssertEqual(alternate.bendDirection, .alternate)
   }
 
   private func signedPerpendicularDistance(_ point: CGPoint, start: CGPoint, end: CGPoint) -> CGFloat {

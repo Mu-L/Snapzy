@@ -219,12 +219,12 @@ final class AnnotateSelectionEditingTests: XCTestCase {
   // MARK: - Arrow style switching
 
   @MainActor
-  func testUpdateArrowStyleSwitchesAcrossStraightElbowCurve() throws {
+  func testUpdateArrowStyleSwitchesAcrossStraightCurvedRightCurvedLeft() throws {
     let state = makeAnnotateState()
     let arrow = makeArrow(start: CGPoint(x: 10, y: 20), end: CGPoint(x: 90, y: 80), style: .straight)
     state.annotations = [arrow]
 
-    for style in [ArrowStyle.elbow, .curve, .straight] {
+    for style in [ArrowStyle.curvedRight, .curvedLeft, .straight] {
       state.updateArrowStyle(id: arrow.id, style: style)
       let updated = try XCTUnwrap(state.annotations.first)
       guard case .arrow(let geometry) = updated.type else {
@@ -242,8 +242,8 @@ final class AnnotateSelectionEditingTests: XCTestCase {
     let rectangle = makeRectangle(CGRect(x: 0, y: 0, width: 40, height: 40))
     state.annotations = [rectangle]
 
-    state.updateArrowStyle(id: rectangle.id, style: .elbow)
-    state.updateArrowStyle(id: UUID(), style: .curve)
+    state.updateArrowStyle(id: rectangle.id, style: .curvedRight)
+    state.updateArrowStyle(id: UUID(), style: .curvedLeft)
 
     XCTAssertEqual(state.annotations.first?.type, .rectangle)
   }

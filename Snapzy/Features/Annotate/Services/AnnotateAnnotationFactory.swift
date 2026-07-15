@@ -67,11 +67,25 @@ enum AnnotationFactory {
       type = .oval
 
     case .arrow:
+      let initialStyle = context.arrowStyle
+      let resolvedStyle: ArrowStyle
+      if context.arrowBendDirection == .alternate {
+        if initialStyle == .curvedRight {
+          resolvedStyle = .curvedLeft
+        } else if initialStyle == .curvedLeft {
+          resolvedStyle = .curvedRight
+        } else {
+          resolvedStyle = initialStyle
+        }
+      } else {
+        resolvedStyle = initialStyle
+      }
+      let resolvedDirection: ArrowBendDirection = (resolvedStyle == .curvedLeft) ? .primary : .alternate
       type = .arrow(ArrowGeometry(
         start: start,
         end: end,
-        style: context.arrowStyle,
-        bendDirection: context.arrowBendDirection
+        style: resolvedStyle,
+        bendDirection: resolvedDirection
       ))
 
     case .line:

@@ -5105,30 +5105,30 @@ enum L10n {
       defaultValue: "Straight",
       comment: "Label for the straight arrow style"
     )
-    static let elbow = string(
-      "annotate.elbow",
-      defaultValue: "Elbow",
-      comment: "Label for the elbow arrow style"
+    static let curvedRight = string(
+      "annotate.curvedRight",
+      defaultValue: "Curved Right",
+      comment: "Label for the curved right arrow style"
     )
-    static let curve = string(
-      "annotate.curve",
-      defaultValue: "Curve",
-      comment: "Label for the curve arrow style"
+    static let curvedLeft = string(
+      "annotate.curvedLeft",
+      defaultValue: "Curved Left",
+      comment: "Label for the curved left arrow style"
     )
     static let straightArrowHelp = string(
       "annotate.straight-arrow-help",
       defaultValue: "Direct line from start to end",
       comment: "Helper text for the straight arrow style"
     )
-    static let elbowArrowHelp = string(
-      "annotate.elbow-arrow-help",
-      defaultValue: "Right-angle callout arrow",
-      comment: "Helper text for the elbow arrow style"
+    static let curvedRightArrowHelp = string(
+      "annotate.curved-right-arrow-help",
+      defaultValue: "Arrow curving to the right",
+      comment: "Helper text for the curved right arrow style"
     )
-    static let curveArrowHelp = string(
-      "annotate.curve-arrow-help",
-      defaultValue: "Smooth curved callout arrow",
-      comment: "Helper text for the curve arrow style"
+    static let curvedLeftArrowHelp = string(
+      "annotate.curved-left-arrow-help",
+      defaultValue: "Arrow curving to the left",
+      comment: "Helper text for the curved left arrow style"
     )
     static let arrowBend = string(
       "annotate.arrow-bend",

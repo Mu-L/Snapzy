@@ -86,8 +86,8 @@ enum WatermarkStyle: String, CaseIterable, Identifiable, Equatable {
 
 enum ArrowStyle: String, CaseIterable, Identifiable, Equatable {
   case straight
-  case elbow
-  case curve
+  case curvedRight
+  case curvedLeft
 
   var id: String {
     rawValue
@@ -96,31 +96,41 @@ enum ArrowStyle: String, CaseIterable, Identifiable, Equatable {
   var supportsBendDirection: Bool {
     switch self {
     case .straight: false
-    case .elbow, .curve: true
+    case .curvedRight, .curvedLeft: true
     }
   }
 
   var displayName: String {
     switch self {
     case .straight: L10n.AnnotateUI.straight
-    case .elbow: L10n.AnnotateUI.elbow
-    case .curve: L10n.AnnotateUI.curve
+    case .curvedRight: L10n.AnnotateUI.curvedRight
+    case .curvedLeft: L10n.AnnotateUI.curvedLeft
     }
   }
 
   var icon: String {
     switch self {
     case .straight: "arrow.up.right"
-    case .elbow: "arrow.turn.up.right"
-    case .curve: "arrow.up.left.and.arrow.down.right"
+    case .curvedRight: "arrowshape.turn.up.right"
+    case .curvedLeft: "arrowshape.turn.up.left"
     }
   }
 
   var helperText: String {
     switch self {
     case .straight: L10n.AnnotateUI.straightArrowHelp
-    case .elbow: L10n.AnnotateUI.elbowArrowHelp
-    case .curve: L10n.AnnotateUI.curveArrowHelp
+    case .curvedRight: L10n.AnnotateUI.curvedRightArrowHelp
+    case .curvedLeft: L10n.AnnotateUI.curvedLeftArrowHelp
+    }
+  }
+
+  init?(rawValue: String) {
+    switch rawValue {
+    case "straight": self = .straight
+    case "curvedRight": self = .curvedRight
+    case "curvedLeft": self = .curvedLeft
+    case "curve", "elbow": self = .curvedRight // Legacy compatibility mapping
+    default: return nil
     }
   }
 }
@@ -171,27 +181,39 @@ struct ArrowGeometry: Equatable {
     self.start = start
     self.end = end
     self.style = style
+    
+    // Calculate resolvedDirection for normalizedControlPoint:
+    let resolvedDirection: ArrowBendDirection = (style == .curvedLeft) ? .primary : .alternate
+    
     self.controlPoint = Self.normalizedControlPoint(
       start: start,
       end: end,
       style: style,
-      bendDirection: bendDirection,
+      bendDirection: resolvedDirection,
       current: controlPoint
     )
   }
 
   var resolvedControlPoint: CGPoint? {
-    Self.normalizedControlPoint(
+    let resolvedDirection: ArrowBendDirection = (style == .curvedLeft) ? .primary : .alternate
+    return Self.normalizedControlPoint(
       start: start,
       end: end,
       style: style,
-      bendDirection: bendDirection,
+      bendDirection: resolvedDirection,
       current: controlPoint
     )
   }
 
   var bendDirection: ArrowBendDirection {
-    Self.inferredBendDirection(start: start, end: end, style: style, controlPoint: controlPoint)
+    switch style {
+    case .straight:
+      return .primary
+    case .curvedRight:
+      return .alternate
+    case .curvedLeft:
+      return .primary
+    }
   }
 
   var isRenderable: Bool {
@@ -208,19 +230,7 @@ struct ArrowGeometry: Equatable {
     case .straight:
       path.addLine(to: end)
 
-    case .elbow:
-      if let corner = resolvedControlPoint {
-        if corner != start {
-          path.addLine(to: corner)
-        }
-        if end != corner {
-          path.addLine(to: end)
-        }
-      } else {
-        path.addLine(to: end)
-      }
-
-    case .curve:
+    case .curvedRight, .curvedLeft:
       if let control = resolvedControlPoint {
         path.addQuadCurve(to: end, control: control)
       } else {
@@ -231,18 +241,158 @@ struct ArrowGeometry: Equatable {
     return path
   }
 
+  func taperedArrowPath(strokeWidth: CGFloat) -> CGPath {
+    let path = CGMutablePath()
+
+    let dx = end.x - start.x
+    let dy = end.y - start.y
+    let chordLength = hypot(dx, dy)
+    guard chordLength > 1 else { return path }
+
+    // Width and length parameters scaling with user strokeWidth and chordLength (clamped)
+    let scale = min(1.2, max(0.4, chordLength / 100.0))
+    let wStart = (3.2 + strokeWidth * 2.0) * scale
+    let wEnd = (1.0 + strokeWidth * 0.5) * scale
+    let wHead = (16.0 + strokeWidth * 5.5) * scale
+    let headLength = (12.0 + strokeWidth * 3.5) * scale
+    let resolvedHeadLength = min(headLength, chordLength * 0.8)
+
+    // Sample centerline points and tangents
+    let steps = 32
+    var points: [CGPoint] = []
+    var tangents: [CGPoint] = []
+
+    for i in 0...steps {
+      let t = CGFloat(i) / CGFloat(steps)
+      let p: CGPoint
+      let tangent: CGPoint
+
+      if style != .straight, let control = resolvedControlPoint {
+        // Quadratic Bezier
+        let oneMinusT = 1.0 - t
+        p = CGPoint(
+          x: oneMinusT * oneMinusT * start.x + 2 * oneMinusT * t * control.x + t * t * end.x,
+          y: oneMinusT * oneMinusT * start.y + 2 * oneMinusT * t * control.y + t * t * end.y
+        )
+        let tx = 2 * oneMinusT * (control.x - start.x) + 2 * t * (end.x - control.x)
+        let ty = 2 * oneMinusT * (control.y - start.y) + 2 * t * (end.y - control.y)
+        tangent = CGPoint(x: tx, y: ty)
+      } else {
+        // Straight line
+        p = CGPoint(
+          x: start.x + t * dx,
+          y: start.y + t * dy
+        )
+        tangent = CGPoint(x: dx, y: dy)
+      }
+
+      points.append(p)
+
+      let len = hypot(tangent.x, tangent.y)
+      if len > 0.0001 {
+        tangents.append(CGPoint(x: tangent.x / len, y: tangent.y / len))
+      } else {
+        if let lastTangent = tangents.last {
+          tangents.append(lastTangent)
+        } else {
+          let fallbackDx = dx / max(chordLength, 1)
+          let fallbackDy = dy / max(chordLength, 1)
+          tangents.append(CGPoint(x: fallbackDx, y: fallbackDy))
+        }
+      }
+    }
+
+    // Find neck index/parameter where arrowhead meets the shaft
+    var neckIndex = steps
+    var accumulatedDistance: CGFloat = 0
+    for i in stride(from: steps, to: 0, by: -1) {
+      let d = hypot(points[i].x - points[i-1].x, points[i].y - points[i-1].y)
+      accumulatedDistance += d
+      if accumulatedDistance >= resolvedHeadLength {
+        neckIndex = i - 1
+        break
+      }
+    }
+
+    if neckIndex < 1 {
+      neckIndex = 1
+    }
+
+    let neckPoint = points[neckIndex]
+    let neckTangent = tangents[neckIndex]
+    let neckNormal = CGPoint(x: -neckTangent.y, y: neckTangent.x)
+
+    // Sweepback for a sleeker arrowhead
+    let sweepBack = resolvedHeadLength * 0.20
+    let arrowheadBaseCenter = CGPoint(
+      x: neckPoint.x - neckTangent.x * sweepBack,
+      y: neckPoint.y - neckTangent.y * sweepBack
+    )
+
+    let headLeft = CGPoint(
+      x: arrowheadBaseCenter.x + neckNormal.x * (wHead / 2),
+      y: arrowheadBaseCenter.y + neckNormal.y * (wHead / 2)
+    )
+
+    let headRight = CGPoint(
+      x: arrowheadBaseCenter.x - neckNormal.x * (wHead / 2),
+      y: arrowheadBaseCenter.y - neckNormal.y * (wHead / 2)
+    )
+
+    // Left and right shaft points up to neckIndex
+    var leftShaftPoints: [CGPoint] = []
+    var rightShaftPoints: [CGPoint] = []
+
+    for i in 0...neckIndex {
+      let t = CGFloat(i) / CGFloat(neckIndex)
+      let w = wStart + t * (wEnd - wStart)
+      let p = points[i]
+      let norm = CGPoint(x: -tangents[i].y, y: tangents[i].x)
+
+      leftShaftPoints.append(CGPoint(x: p.x + norm.x * (w / 2), y: p.y + norm.y * (w / 2)))
+      rightShaftPoints.append(CGPoint(x: p.x - norm.x * (w / 2), y: p.y - norm.y * (w / 2)))
+    }
+
+    // Build the tapered closed path
+    path.move(to: end)
+    path.addLine(to: headLeft)
+    path.addLine(to: leftShaftPoints[neckIndex])
+
+    for i in stride(from: neckIndex - 1, through: 0, by: -1) {
+      path.addLine(to: leftShaftPoints[i])
+    }
+
+    // Rounded tail at the start
+    let tailCenter = start
+    let tailTangent = tangents[0]
+    let tailNormal = CGPoint(x: -tailTangent.y, y: tailTangent.x)
+    let startAngle = atan2(tailNormal.y, tailNormal.x)
+    let endAngle = startAngle + .pi
+
+    path.addArc(
+      center: tailCenter,
+      radius: wStart / 2,
+      startAngle: startAngle,
+      endAngle: endAngle,
+      clockwise: false
+    )
+
+    for i in 0...neckIndex {
+      path.addLine(to: rightShaftPoints[i])
+    }
+
+    path.addLine(to: headRight)
+    path.closeSubpath()
+
+    return path
+  }
+
   func sampledPoints(curveSegments: Int = 16) -> [CGPoint] {
     switch style {
     case .straight:
       return deduplicated([start, end])
 
-    case .elbow:
-      guard let corner = resolvedControlPoint else {
-        return deduplicated([start, end])
-      }
-      return deduplicated([start, corner, end])
-
-    case .curve:
+    case .curvedRight, .curvedLeft:
       guard let control = resolvedControlPoint else {
         return deduplicated([start, end])
       }
@@ -269,13 +419,7 @@ struct ArrowGeometry: Equatable {
     case .straight:
       return atan2(end.y - start.y, end.x - start.x)
 
-    case .elbow:
-      if let corner = resolvedControlPoint, corner != end {
-        return atan2(end.y - corner.y, end.x - corner.x)
-      }
-      return atan2(end.y - start.y, end.x - start.x)
-
-    case .curve:
+    case .curvedRight, .curvedLeft:
       if let control = resolvedControlPoint, control != end {
         return atan2(end.y - control.y, end.x - control.x)
       }
@@ -335,24 +479,21 @@ struct ArrowGeometry: Equatable {
 
   func withBendDirection(_ newDirection: ArrowBendDirection) -> ArrowGeometry {
     guard style.supportsBendDirection else { return self }
-    guard bendDirection != newDirection else { return self }
-
-    switch style {
-    case .straight:
-      return self
-    case .elbow:
-      return ArrowGeometry(
-        start: start,
-        end: end,
-        style: style,
-        controlPoint: Self.defaultElbowControlPoint(start: start, end: end, bendDirection: newDirection)
-      )
-    case .curve:
-      let mirroredControlPoint = resolvedControlPoint
-        .map { Self.mirroredControlPoint($0, start: start, end: end) }
-        ?? Self.defaultCurveControlPoint(start: start, end: end, bendDirection: newDirection)
-      return ArrowGeometry(start: start, end: end, style: style, controlPoint: mirroredControlPoint)
+    
+    let newStyle: ArrowStyle
+    if style == .curvedRight {
+      newStyle = .curvedLeft
+    } else if style == .curvedLeft {
+      newStyle = .curvedRight
+    } else {
+      newStyle = style
     }
+
+    let resolvedDirection: ArrowBendDirection = (newStyle == .curvedLeft) ? .primary : .alternate
+    let newControlPoint = resolvedControlPoint
+      .map { Self.mirroredControlPoint($0, start: start, end: end) }
+      ?? Self.defaultCurveControlPoint(start: start, end: end, bendDirection: resolvedDirection)
+    return ArrowGeometry(start: start, end: end, style: newStyle, bendDirection: resolvedDirection, controlPoint: newControlPoint)
   }
 
   private static func normalizedControlPoint(
@@ -364,11 +505,9 @@ struct ArrowGeometry: Equatable {
   ) -> CGPoint? {
     switch style {
     case .straight:
-      nil
-    case .elbow:
-      current ?? defaultElbowControlPoint(start: start, end: end, bendDirection: bendDirection)
-    case .curve:
-      current ?? defaultCurveControlPoint(start: start, end: end, bendDirection: bendDirection)
+      return nil
+    case .curvedRight, .curvedLeft:
+      return current ?? defaultCurveControlPoint(start: start, end: end, bendDirection: bendDirection)
     }
   }
 
@@ -387,14 +526,7 @@ struct ArrowGeometry: Equatable {
     case .straight:
       return .primary
 
-    case .elbow:
-      let primary = defaultElbowControlPoint(start: start, end: end, bendDirection: .primary)
-      let alternate = defaultElbowControlPoint(start: start, end: end, bendDirection: .alternate)
-      return distanceSquared(from: controlPoint, to: alternate) < distanceSquared(from: controlPoint, to: primary)
-        ? .alternate
-        : .primary
-
-    case .curve:
+    case .curvedRight, .curvedLeft:
       let dx = end.x - start.x
       let dy = end.y - start.y
       let length = hypot(dx, dy)
@@ -405,28 +537,6 @@ struct ArrowGeometry: Equatable {
       let offsetFromMidpoint = CGPoint(x: controlPoint.x - mid.x, y: controlPoint.y - mid.y)
       let side = offsetFromMidpoint.x * normal.x + offsetFromMidpoint.y * normal.y
       return side < 0 ? .alternate : .primary
-    }
-  }
-
-  private static func defaultElbowControlPoint(
-    start: CGPoint,
-    end: CGPoint,
-    bendDirection: ArrowBendDirection
-  ) -> CGPoint {
-    let dx = abs(end.x - start.x)
-    let dy = abs(end.y - start.y)
-
-    switch bendDirection {
-    case .primary:
-      if dx >= dy {
-        return CGPoint(x: end.x, y: start.y)
-      }
-      return CGPoint(x: start.x, y: end.y)
-    case .alternate:
-      if dx >= dy {
-        return CGPoint(x: start.x, y: end.y)
-      }
-      return CGPoint(x: end.x, y: start.y)
     }
   }
 
@@ -726,7 +836,12 @@ extension AnnotationItem {
       return selectionDecorationBounds
     }
 
-    let padding = max(6, properties.strokeWidth / 2)
+    let padding: CGFloat
+    if case .arrow = type {
+      padding = max(16, properties.strokeWidth * 3)
+    } else {
+      padding = max(6, properties.strokeWidth / 2)
+    }
     return resizeBounds.insetBy(dx: -padding, dy: -padding)
   }
 
@@ -755,7 +870,9 @@ extension AnnotationItem {
       return pointInEllipse(point, in: bounds)
 
     case .arrow(let geometry):
-      return distanceToPolyline(point, points: geometry.sampledPoints()) <= tolerance
+      let maxArrowWidth = (3.2 + properties.strokeWidth * 2.0) * 1.2
+      let arrowTolerance = baseTolerance + maxArrowWidth / 2
+      return distanceToPolyline(point, points: geometry.sampledPoints()) <= arrowTolerance
 
     case .line(let start, let end):
       return distanceToSegment(point, from: start, to: end) <= tolerance

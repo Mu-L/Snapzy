@@ -75,7 +75,7 @@ struct AnnotationRenderer {
       context.strokeEllipse(in: annotation.bounds)
 
     case .arrow(let geometry):
-      drawArrow(geometry, strokeWidth: annotation.properties.strokeWidth)
+      drawArrow(geometry, strokeWidth: annotation.properties.strokeWidth, strokeColor: annotation.properties.strokeColor)
 
     case .line(let start, let end):
       context.move(to: start)
@@ -177,14 +177,29 @@ struct AnnotationRenderer {
 
     case .arrow:
       let currentPoint = currentPath.last ?? start
+      let initialStyle = arrowStyle
+      let resolvedStyle: ArrowStyle
+      if arrowBendDirection == .alternate {
+        if initialStyle == .curvedRight {
+          resolvedStyle = .curvedLeft
+        } else if initialStyle == .curvedLeft {
+          resolvedStyle = .curvedRight
+        } else {
+          resolvedStyle = initialStyle
+        }
+      } else {
+        resolvedStyle = initialStyle
+      }
+      let resolvedDirection: ArrowBendDirection = (resolvedStyle == .curvedLeft) ? .primary : .alternate
       drawArrow(
         ArrowGeometry(
           start: start,
           end: currentPoint,
-          style: arrowStyle,
-          bendDirection: arrowBendDirection
+          style: resolvedStyle,
+          bendDirection: resolvedDirection
         ),
-        strokeWidth: strokeWidth
+        strokeWidth: strokeWidth,
+        strokeColor: strokeColor
       )
 
     case .watermark:
@@ -241,31 +256,28 @@ struct AnnotationRenderer {
     )
   }
 
-  private func drawArrow(_ geometry: ArrowGeometry, strokeWidth: CGFloat) {
-    context.addPath(geometry.path())
-    context.strokePath()
-
+  private func drawArrow(_ geometry: ArrowGeometry, strokeWidth: CGFloat, strokeColor: Color) {
     guard geometry.isRenderable else { return }
 
-    let angle = geometry.tangentAngleAtEnd()
-    let arrowLength = min(max(strokeWidth * 3.5, 12), 24)
-    let arrowAngle: CGFloat = .pi / 6
-    let end = geometry.end
+    let arrowPath = geometry.taperedArrowPath(strokeWidth: strokeWidth)
 
-    let point1 = CGPoint(
-      x: end.x - arrowLength * cos(angle - arrowAngle),
-      y: end.y - arrowLength * sin(angle - arrowAngle)
-    )
-    let point2 = CGPoint(
-      x: end.x - arrowLength * cos(angle + arrowAngle),
-      y: end.y - arrowLength * sin(angle + arrowAngle)
+    context.saveGState()
+
+    // 1. Set up a subtle drop shadow
+    context.setShadow(
+      offset: CGSize(width: 0, height: -2.0), // negative height because of macOS coordinate system (Y goes up, so shadow Y offset negative goes down)
+      blur: 4.5,
+      color: NSColor.black.withAlphaComponent(0.30).cgColor
     )
 
-    context.move(to: end)
-    context.addLine(to: point1)
-    context.move(to: end)
-    context.addLine(to: point2)
-    context.strokePath()
+
+
+    // 3. Draw the solid body filled with the arrow's main color
+    context.addPath(arrowPath)
+    context.setFillColor(NSColor(strokeColor).cgColor)
+    context.fillPath()
+
+    context.restoreGState()
   }
 
   private func drawCounter(value: Int, in bounds: CGRect, properties: AnnotationProperties) {
