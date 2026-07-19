@@ -5,6 +5,7 @@ Floating post-capture card stack: appears after every screenshot/video/GIF when 
 ## Panel
 
 - `QuickAccessPanel` — borderless `.nonactivatingPanel` NSPanel at `.floating` level; mouse-passthrough outside the card region (`updatePassthroughRegion`, `ignoresMouseEvents` toggled by hit-test).
+- Show/hide transitions (`QuickAccessPanelController`) cannot wedge: a `show()`/`hide()` landing mid-transition force-closes the superseded panel instead of being dropped, and a watchdog force-completes any transition whose `NSAnimationContext` completion handler is dropped by AppKit (token-guarded, first finish wins). `QuickAccessManager` re-ensures the panel on every added card (`showPanelIfNeeded`), so a desynced panel self-heals on the next capture.
 - `QuickAccessManager` — singleton stack state; `maxVisibleItems = 5`, newest at top; oldest evicted when full.
 - Mouse monitors suspended during area capture (`suspendForCapture()` → panel + pin windows). Self-heal: `setWindowOpen(isOpen: false)` (editor window closed) reinstalls the panel's monitors — macOS can silently disable the global event tap after a runloop stall, which otherwise leaves hover dead.
 - Slide-in animation: spring 0.4s (`QuickAccessAnimations.panelEnter`, damping 0.75); falls back to fade under reduceMotion. Appear sound via `QuickAccessSound`.

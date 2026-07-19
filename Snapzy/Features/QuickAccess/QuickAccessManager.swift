@@ -262,7 +262,6 @@ final class QuickAccessManager: ObservableObject {
     let item = QuickAccessItem(url: url, thumbnail: thumbnail)
 
     // Animate insertion explicitly — no implicit .animation on the stack
-    let wasEmpty = items.isEmpty
     withAnimation(QuickAccessAnimations.cardInsert) {
       if items.count >= maxVisibleItems, let oldestId = items.last?.id {
         cancelDismissTimer(for: oldestId)
@@ -284,10 +283,9 @@ final class QuickAccessManager: ObservableObject {
       context: ["fileName": url.lastPathComponent, "itemCount": "\(items.count)"]
     )
 
-    // Show panel if this is first item
-    if wasEmpty {
-      showPanel()
-    }
+    // Ensure the panel window exists — heals any state where items outlived
+    // the panel (e.g. a previously interrupted show/hide transition).
+    showPanelIfNeeded()
 
     // Start auto-dismiss timer
     if autoDismissEnabled {
@@ -340,7 +338,6 @@ final class QuickAccessManager: ObservableObject {
     let item = QuickAccessItem(url: url, thumbnail: thumbnail, duration: result.duration ?? 0)
 
     // Animate insertion explicitly — no implicit .animation on the stack
-    let wasEmpty = items.isEmpty
     withAnimation(QuickAccessAnimations.cardInsert) {
       if items.count >= maxVisibleItems, let oldestId = items.last?.id {
         cancelDismissTimer(for: oldestId)
@@ -356,9 +353,9 @@ final class QuickAccessManager: ObservableObject {
       items.insert(item, at: 0)
     }
 
-    if wasEmpty {
-      showPanel()
-    }
+    // Ensure the panel window exists — heals any state where items outlived
+    // the panel (e.g. a previously interrupted show/hide transition).
+    showPanelIfNeeded()
 
     if autoDismissEnabled {
       startDismissTimer(for: item.id)

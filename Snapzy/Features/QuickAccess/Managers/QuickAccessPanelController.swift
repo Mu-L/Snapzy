@@ -14,20 +14,36 @@ import SwiftUI
 @MainActor
 final class QuickAccessPanelController {
 
+  private enum PanelTransition {
+    case entering
+    case exiting
+  }
+
   private var panel: QuickAccessPanel?
   var window: NSWindow? { panel }
   private var position: QuickAccessPosition = .bottomRight
   private let padding: CGFloat = 20
-  private var isAnimating = false
+  /// Non-nil while an enter/exit animation is running. Cleared by the guarded
+  /// transition finish — never trusted to clear on its own (see `runTransition`).
+  private var activeTransition: PanelTransition?
+  /// Monotonic token invalidating stale transition finishes (animation completion
+  /// handler or watchdog) once a newer transition or close supersedes them.
+  private var transitionToken: UInt64 = 0
   private var visibleItemCount = 0
   private var overlayScale: CGFloat = 1
+  private var isAnimating: Bool { activeTransition != nil }
   private var reduceMotion: Bool {
     NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
   }
 
   /// Show SwiftUI content in floating panel with slide-in animation
   func show<Content: View>(_ content: Content, size: CGSize, itemCount: Int, scale: CGFloat) {
-    guard !isAnimating else { return }
+    // Never drop a show request. A stale panel or an in-flight/wedged transition
+    // must not swallow it — force-close and start clean instead.
+    if panel != nil || activeTransition != nil {
+      forceClosePanel(reason: "show superseded existing panel or transition")
+    }
+
     visibleItemCount = itemCount
     overlayScale = scale
 
@@ -61,19 +77,22 @@ final class QuickAccessPanelController {
       panel.alphaValue = 1
       panel.orderFrontRegardless()
 
-      isAnimating = true
-      NSAnimationContext.runAnimationGroup({ context in
-        context.duration = QuickAccessAnimations.panelEnterDuration
-        context.timingFunction = CAMediaTimingFunction(
-          controlPoints: 0.22, 1.0, 0.36, 1.0  // Custom spring-like curve
-        )
-        panel.animator().setFrame(targetFrame, display: true)
-      }, completionHandler: { [weak self] in
-        MainActor.assumeIsolated {
-          panel.updatePassthroughRegion(itemCount: self?.visibleItemCount ?? 0, scale: self?.overlayScale ?? 1)
-          self?.isAnimating = false
+      runTransition(
+        .entering,
+        duration: QuickAccessAnimations.panelEnterDuration,
+        animations: { context in
+          context.timingFunction = CAMediaTimingFunction(
+            controlPoints: 0.22, 1.0, 0.36, 1.0  // Custom spring-like curve
+          )
+          panel.animator().setFrame(targetFrame, display: true)
+        },
+        completion: { [weak self] in
+          panel.updatePassthroughRegion(
+            itemCount: self?.visibleItemCount ?? 0,
+            scale: self?.overlayScale ?? 1
+          )
         }
-      })
+      )
     }
 
     QuickAccessSound.appear.play(reduceMotion: reduceMotion)
@@ -112,7 +131,24 @@ final class QuickAccessPanelController {
 
   /// Hide panel with slide-out animation
   func hide() {
-    guard let panel = panel, !isAnimating else { return }
+    guard let panel = panel else {
+      // Defensive: never let a wedged transition block future show/hide calls.
+      activeTransition = nil
+      return
+    }
+
+    switch activeTransition {
+    case .exiting:
+      // Already sliding out — let it finish.
+      return
+    case .entering:
+      // Enter interrupted: close instantly instead of dropping the hide,
+      // so the panel can never get stuck on screen with an empty stack.
+      forceClosePanel(reason: "hide interrupted enter transition")
+      return
+    case nil:
+      break
+    }
 
     if reduceMotion {
       // Simple fade-out for reduced motion
@@ -123,7 +159,7 @@ final class QuickAccessPanelController {
       }, completionHandler: { [weak self] in
         MainActor.assumeIsolated {
           panel.close()
-          self?.panel = nil
+          if self?.panel === panel { self?.panel = nil }
         }
       })
     } else {
@@ -133,19 +169,19 @@ final class QuickAccessPanelController {
       let offscreenOrigin = position.offscreenOrigin(for: size, on: screen, padding: padding)
       let offscreenFrame = NSRect(origin: offscreenOrigin, size: size)
 
-      isAnimating = true
-      NSAnimationContext.runAnimationGroup({ context in
-        context.duration = QuickAccessAnimations.panelExitDuration
-        context.timingFunction = CAMediaTimingFunction(name: .easeIn)
-        panel.animator().setFrame(offscreenFrame, display: true)
-        panel.animator().alphaValue = 0.5
-      }, completionHandler: { [weak self] in
-        MainActor.assumeIsolated {
+      runTransition(
+        .exiting,
+        duration: QuickAccessAnimations.panelExitDuration,
+        animations: { context in
+          context.timingFunction = CAMediaTimingFunction(name: .easeIn)
+          panel.animator().setFrame(offscreenFrame, display: true)
+          panel.animator().alphaValue = 0.5
+        },
+        completion: { [weak self] in
           panel.close()
-          self?.panel = nil
-          self?.isAnimating = false
+          if self?.panel === panel { self?.panel = nil }
         }
-      })
+      )
     }
   }
 
@@ -189,5 +225,57 @@ final class QuickAccessPanelController {
         }
       })
     }
+  }
+
+  /// Runs a panel transition and guarantees the transition state always clears.
+  /// AppKit can drop `NSAnimationContext` completion handlers (window ordered out
+  /// mid-animation, runloop stall), which previously wedged `isAnimating` forever
+  /// and silently swallowed every later show/hide. A watchdog fires shortly after
+  /// the expected duration and force-completes the transition; the token guard
+  /// makes whichever finish arrives second a no-op.
+  private func runTransition(
+    _ kind: PanelTransition,
+    duration: TimeInterval,
+    animations: @escaping (NSAnimationContext) -> Void,
+    completion: @escaping () -> Void
+  ) {
+    activeTransition = kind
+    transitionToken &+= 1
+    let token = transitionToken
+
+    let finish = { [weak self] in
+      MainActor.assumeIsolated {
+        guard let self, self.transitionToken == token else { return }
+        self.transitionToken &+= 1
+        self.activeTransition = nil
+        completion()
+      }
+    }
+
+    NSAnimationContext.runAnimationGroup(animations, completionHandler: finish)
+
+    Task { @MainActor [weak self] in
+      let watchdogSlack: TimeInterval = 0.5
+      try? await Task.sleep(nanoseconds: UInt64((duration + watchdogSlack) * 1_000_000_000))
+      guard !Task.isCancelled else { return }
+      finish()
+    }
+  }
+
+  /// Immediately closes the current panel and clears any in-flight transition.
+  /// Used when a new show/hide supersedes an unfinished (or wedged) transition.
+  private func forceClosePanel(reason: String) {
+    transitionToken &+= 1  // invalidate pending animation completion + watchdog
+    activeTransition = nil
+    if let panel {
+      panel.close()
+      self.panel = nil
+    }
+    DiagnosticLogger.shared.log(
+      .warning,
+      .ui,
+      "Quick access panel force-closed",
+      context: ["reason": reason]
+    )
   }
 }
