@@ -200,6 +200,73 @@ final class AreaSelectionMultiMonitorReconciliationTests: AreaSelectionOverlayTe
     )
   }
 
+  /// Regression for the stationary-hold cursor reset: in a live (non-activated) session the
+  /// WindowServer can reset the crosshair to the arrow right after mouseDown — the click itself
+  /// triggers an activation handoff/backdrop work that lets the system reclaim the cursor. The
+  /// drag monitors only re-assert the crosshair on pointer movement, so with the button held and
+  /// the pointer stationary the arrow would stick until the first drag event. The pointer-tracking
+  /// tick now re-asserts the crosshair for the whole drag. This drives the tick synchronously via
+  /// `timer.fire()` after forcing the arrow, and expects the crosshair to be back without any
+  /// mouse movement.
+  func testPointerTrackingTick_reassertsCrosshairDuringStationaryManualSelection() throws {
+    let controller = AreaSelectionController.shared
+    controller.startSelection(mode: .scrollingCapture) { _, _ in }
+    defer { controller.cancelSelection() }
+
+    let timer = try XCTUnwrap(pointerTrackingTimer(of: controller))
+    timer.fire()
+
+    let windowPool = try XCTUnwrap(
+      Mirror(reflecting: controller).children
+        .first(where: { $0.label == "windowPool" })?.value
+        as? [CGDirectDisplayID: AreaSelectionWindow]
+    )
+    let mouseLocation = NSEvent.mouseLocation
+    let pointerWindow = try XCTUnwrap(
+      windowPool.values.first(where: { $0.frame.contains(mouseLocation) })
+    )
+    let overlayView = pointerWindow.overlayView
+    overlayView.setSelectionEnabled(true)
+    overlayView.setInteractionMode(.manualRegion, resetSelection: false)
+    overlayView.resetSelection()
+
+    let mouseDown = try XCTUnwrap(
+      NSEvent.mouseEvent(
+        with: .leftMouseDown,
+        location: CGPoint(x: 120, y: 120),
+        modifierFlags: [],
+        timestamp: ProcessInfo.processInfo.systemUptime,
+        windowNumber: pointerWindow.windowNumber,
+        context: nil,
+        eventNumber: 1,
+        clickCount: 1,
+        pressure: 1
+      )
+    )
+    overlayView.mouseDown(with: mouseDown)
+
+    // Sanity: the controller tracks the drag (start point non-nil) and the view is selecting.
+    let startPoint = Mirror(reflecting: controller).children
+      .first(where: { $0.label == "manualSelectionStartPoint" })?.value as? CGPoint
+    XCTAssertNotNil(startPoint, "mouseDown must begin a controller-tracked manual selection")
+    XCTAssertTrue(overlayView.isManualSelectionInProgress)
+
+    // Simulate the WindowServer reclaiming the cursor during the post-mouseDown activation
+    // handoff — the exact external reset the bug report describes.
+    NSCursor.arrow.set()
+    XCTAssertTrue(NSCursor.current === NSCursor.arrow, "Precondition: cursor was reset to the arrow")
+
+    // WHEN: a pointer-tracking tick fires while the button is held and the pointer never moved
+    timer.fire()
+
+    // THEN: the tick re-asserts the crosshair instead of leaving the arrow stuck until mouseMoved
+    XCTAssertTrue(
+      NSCursor.current === NSCursor.vectorScreenshotCrosshairLight
+        || NSCursor.current === NSCursor.vectorScreenshotCrosshairHighContrast,
+      "Pointer-tracking tick must re-assert the crosshair during a stationary manual selection"
+    )
+  }
+
   /// Frozen sessions (non-empty `selectionBackdrops`) activate the app, which already routes cursor
   /// handling across displays, so the pointer-tracking timer must NOT be installed — avoiding
   /// redundant key churn.

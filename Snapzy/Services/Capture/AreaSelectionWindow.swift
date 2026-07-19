@@ -989,9 +989,10 @@ final class AreaSelectionController: NSObject {
 
   /// Start the pointer-tracking timer for non-activated live sessions so the crosshair follows the
   /// pointer across all displays before a selection begins. Idempotent — guarded on a nil timer.
-  /// Added to `.common` run-loop modes so it keeps firing during window/event tracking. The drag
-  /// phase stays authoritative: each tick early-returns while a manual selection is in progress so
-  /// `reassertManualSelectionCursor()` owns the cursor.
+  /// Added to `.common` run-loop modes so it keeps firing during window/event tracking. Once a
+  /// manual selection starts, each tick re-asserts the crosshair through
+  /// `reassertManualSelectionCursor()` instead — covering the stationary-hold gap between
+  /// mouseDown and the first drag event that the drag monitors cannot reach.
   private func startPointerTrackingIfNeeded() {
     guard pointerTrackingTimer == nil else { return }
     let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
@@ -1007,8 +1008,17 @@ final class AreaSelectionController: NSObject {
   /// display, so that overlay's cursor rects render the crosshair while the app stays inactive.
   private func handlePointerTrackingTick() {
     guard isPresenting else { return }
-    // A manual drag owns the cursor via the drag monitors; don't fight it.
-    guard manualSelectionStartPoint == nil else { return }
+    // A manual drag owns the cursor, but the drag monitors only re-assert it on pointer
+    // movement — and the WindowServer can reset the crosshair to the arrow right after
+    // mouseDown (the activation handoff the click itself triggered, a backdrop recapture
+    // blocking the run loop). With the button held and the pointer stationary, no drag event
+    // ever fires, so the arrow would stick until the user moves. Re-assert on every tick for
+    // the whole drag instead. Key ownership below must still not move mid-drag — the source
+    // window owns the gesture — so the early return stays.
+    if manualSelectionStartPoint != nil {
+      reassertManualSelectionCursor()
+      return
+    }
     let location = NSEvent.mouseLocation
     guard let window = window(containing: location),
           let displayID = window.displayID else { return }
@@ -1131,7 +1141,8 @@ final class AreaSelectionController: NSObject {
 
   /// Keep the crosshair asserted during a drag. The drag is driven by `NSEvent` monitors (not the
   /// overlay view's own `mouseDragged`, which the local monitor consumes), so re-assert here — the
-  /// single convergence point for both the local and global drag monitors. `NSCursor.set()` is
+  /// single convergence point for the local/global drag monitors and the pointer-tracking tick,
+  /// which covers stationary holds between mouseDown and the first drag event. `NSCursor.set()` is
   /// process-global, so asserting via the source window's overlay view covers cross-display drags.
   private func reassertManualSelectionCursor() {
     guard manualSelectionStartPoint != nil else { return }
@@ -1692,6 +1703,10 @@ final class AreaSelectionOverlayView: NSView {
   // MARK: - Selection State
 
   private var isSelecting = false
+  /// True while a non-empty selection rect is on screen (drag in progress with visible area).
+  /// The coordinate label stays visible until this flips true, then the dimensions label
+  /// owns the size indicator layers — mirroring native macOS / CleanShot X behavior.
+  private var hasVisibleSelectionRect = false
   private var pendingSelectionStartPoint: CGPoint?
   private var currentMousePosition: CGPoint = .zero
   private var windowSelectionSnapshot: WindowSelectionSnapshot?
@@ -1988,6 +2003,7 @@ final class AreaSelectionOverlayView: NSView {
   /// Reset selection state for window pool reuse
   func resetSelection() {
     isSelecting = false
+    hasVisibleSelectionRect = false
     pendingSelectionStartPoint = nil
     hoveredWindowCandidate = nil
 
@@ -2369,15 +2385,11 @@ final class AreaSelectionOverlayView: NSView {
 
   /// Re-evaluates the coordinate indicator after a non-mouse event (layout pass, bounds
   /// change, selection re-render). `updateCoordinateIndicator(at:)` applies its own guards
-  /// (mouse-over, interaction mode, selection in progress), so this only restores the label
-  /// where it belongs on screen and keeps it hidden everywhere else. During a drag the size
-  /// label is owned by the drag render loop, so it is hidden here exactly as before.
+  /// (mouse-over, interaction mode, visible selection rect), so this only restores the label
+  /// where it belongs on screen and keeps it hidden everywhere else — including during a
+  /// drag, where the dimensions label owns the size indicator layers.
   private func refreshCoordinateIndicatorAfterPassiveUpdate() {
-    if isSelecting {
-      hideSizeIndicator()
-    } else {
-      updateCoordinateIndicator(at: currentLocalMousePoint())
-    }
+    updateCoordinateIndicator(at: currentLocalMousePoint())
   }
 
   /// Update bounds when screen configuration changes
@@ -2597,7 +2609,7 @@ final class AreaSelectionOverlayView: NSView {
   }
 
   private func updateCoordinateIndicator(at point: CGPoint) {
-    guard isMouseOver, interactionMode == .manualRegion, !isSelecting else {
+    guard isMouseOver, interactionMode == .manualRegion, !hasVisibleSelectionRect else {
       hideSizeIndicator()
       return
     }
@@ -2726,6 +2738,7 @@ final class AreaSelectionOverlayView: NSView {
 
       CATransaction.begin()
       CATransaction.setDisableActions(true)
+      hasVisibleSelectionRect = false
       selectionBorderLayer.isHidden = true
       dimLayer.mask = nil
       insideSelectionOverlayLayer.isHidden = true
@@ -2733,7 +2746,8 @@ final class AreaSelectionOverlayView: NSView {
       if selectionEnabled {
         // No drag point: fall back to the fresh mouse location so the coordinate
         // indicator survives re-renders triggered before the first mouse move
-        // (e.g. an async backdrop landing right after the session starts).
+        // (e.g. an async backdrop landing right after the session starts, or the
+        // mouseDown that begins a selection before the first drag movement).
         updateCoordinateIndicator(at: localCurrentPoint ?? currentLocalMousePoint())
       } else {
         hideSizeIndicator()
@@ -2747,6 +2761,7 @@ final class AreaSelectionOverlayView: NSView {
 
     CATransaction.begin()
     CATransaction.setDisableActions(true)
+    hasVisibleSelectionRect = !localRect.isEmpty
     horizontalCrosshairLayer.isHidden = true
     verticalCrosshairLayer.isHidden = true
     crosshairIndicatorLayer.isHidden = true

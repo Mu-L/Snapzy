@@ -62,6 +62,60 @@ final class AreaSelectionOverlayTests: AreaSelectionOverlayTestCase {
     XCTAssertFalse(overlayView.testSizeIndicatorBackgroundLayer.isHidden)
   }
 
+  /// Regression: pressing the mouse button starts a selection with a zero-size rect, which
+  /// routes through the empty-rect branch of `renderManualSelection`. The coordinate
+  /// indicator must stay visible until the drag produces a non-empty rect — the user
+  /// should never see the crosshair label vanish between mouseDown and the first movement.
+  func testCoordinatesIndicator_survivesMouseDownBeforeFirstDrag() {
+    // GIVEN: indicator shown at session start
+    overlayView.setSelectionEnabled(true)
+    overlayView.setInteractionMode(.manualRegion, resetSelection: false)
+    overlayView.resetSelection()
+    XCTAssertFalse(overlayView.testSizeIndicatorTextLayer.isHidden)
+
+    // WHEN: the user presses the mouse button (selection begins, rect still zero-size)
+    guard let mouseDown = NSEvent.mouseEvent(
+      with: .leftMouseDown,
+      location: CGPoint(x: 120, y: 120),
+      modifierFlags: [],
+      timestamp: 0,
+      windowNumber: 0,
+      context: nil,
+      eventNumber: 0,
+      clickCount: 1,
+      pressure: 1
+    ) else {
+      XCTFail("Failed to synthesize mouse-down event")
+      return
+    }
+    overlayView.mouseDown(with: mouseDown)
+    overlayView.renderManualSelection(screenRect: .zero, currentScreenPoint: nil)
+
+    // THEN: the coordinate indicator stays visible
+    XCTAssertFalse(overlayView.testSizeIndicatorTextLayer.isHidden, "Coordinate indicator must stay visible between mouseDown and first drag")
+    XCTAssertFalse(overlayView.testSizeIndicatorBackgroundLayer.isHidden, "Background layer must stay visible between mouseDown and first drag")
+  }
+
+  /// Once the drag produces a non-empty selection rect, the dimensions label owns the size
+  /// indicator layers — a passive refresh (e.g. layout pass) must not bring the coordinate
+  /// label back over it.
+  func testCoordinateIndicator_staysHiddenWhileSelectionRectVisible() {
+    // GIVEN: an in-progress drag with a non-empty selection rect
+    overlayView.setSelectionEnabled(true)
+    overlayView.setInteractionMode(.manualRegion, resetSelection: false)
+    overlayView.resetSelection()
+    overlayView.renderManualSelection(
+      screenRect: CGRect(x: 10, y: 10, width: 200, height: 100),
+      currentScreenPoint: nil
+    )
+
+    // WHEN: a passive re-evaluation happens (layout pass on the overlay)
+    overlayView.layout()
+
+    // THEN: the coordinate indicator is not restored over the active selection
+    XCTAssertTrue(overlayView.testSizeIndicatorTextLayer.isHidden, "Coordinate indicator must not reappear while a sized selection rect is visible")
+  }
+
   func testApplicationWindowMode_hasNoManualDragInProgress() {
     // GIVEN: application-window interaction mode
     overlayView.setSelectionEnabled(true)
