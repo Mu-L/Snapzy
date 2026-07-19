@@ -25,6 +25,43 @@ final class AreaSelectionOverlayTests: AreaSelectionOverlayTestCase {
     XCTAssertFalse(overlayView.testSizeIndicatorBackgroundLayer.isHidden)
   }
 
+  /// Regression: AppKit runs a layout pass when the freshly ordered-in overlay window is
+  /// displayed — after the session-start indicator was already shown. The layout pass must
+  /// re-evaluate the indicator, not hide it, so it stays visible without a mouse move.
+  func testCoordinatesIndicator_survivesLayoutPassWithoutMouseMove() {
+    // GIVEN: indicator shown at session start (no mouse movement yet)
+    overlayView.setSelectionEnabled(true)
+    overlayView.setInteractionMode(.manualRegion, resetSelection: false)
+    overlayView.resetSelection()
+    XCTAssertFalse(overlayView.testSizeIndicatorTextLayer.isHidden)
+
+    // WHEN: AppKit performs a layout pass on the overlay
+    overlayView.layout()
+
+    // THEN: the coordinate indicator stays visible
+    XCTAssertFalse(overlayView.testSizeIndicatorTextLayer.isHidden)
+    XCTAssertFalse(overlayView.testSizeIndicatorBackgroundLayer.isHidden)
+  }
+
+  /// Regression: right after a live (backdrop-less) session starts, the async background
+  /// snapshot lands and the controller re-renders the (empty) manual selection via
+  /// `renderManualSelection(screenRect: nil, currentScreenPoint: nil)`. That re-render must
+  /// not hide the coordinate indicator that was shown at session start.
+  func testCoordinatesIndicator_survivesEmptySelectionReRenderWithoutMouseMove() {
+    // GIVEN: indicator shown at session start (no mouse movement yet)
+    overlayView.setSelectionEnabled(true)
+    overlayView.setInteractionMode(.manualRegion, resetSelection: false)
+    overlayView.resetSelection()
+    XCTAssertFalse(overlayView.testSizeIndicatorTextLayer.isHidden)
+
+    // WHEN: the controller re-renders the empty selection (async backdrop applied)
+    overlayView.renderManualSelection(screenRect: nil, currentScreenPoint: nil)
+
+    // THEN: the coordinate indicator stays visible
+    XCTAssertFalse(overlayView.testSizeIndicatorTextLayer.isHidden)
+    XCTAssertFalse(overlayView.testSizeIndicatorBackgroundLayer.isHidden)
+  }
+
   func testApplicationWindowMode_hasNoManualDragInProgress() {
     // GIVEN: application-window interaction mode
     overlayView.setSelectionEnabled(true)

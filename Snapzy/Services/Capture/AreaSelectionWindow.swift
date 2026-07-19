@@ -2358,6 +2358,28 @@ final class AreaSelectionOverlayView: NSView {
     }
   }
 
+  /// Current mouse location converted to view coordinates, falling back to the last
+  /// tracked position when the view has no window (e.g. unit tests).
+  private func currentLocalMousePoint() -> CGPoint {
+    if let window = self.window {
+      return convert(window.convertPoint(fromScreen: NSEvent.mouseLocation), from: nil)
+    }
+    return currentMousePosition
+  }
+
+  /// Re-evaluates the coordinate indicator after a non-mouse event (layout pass, bounds
+  /// change, selection re-render). `updateCoordinateIndicator(at:)` applies its own guards
+  /// (mouse-over, interaction mode, selection in progress), so this only restores the label
+  /// where it belongs on screen and keeps it hidden everywhere else. During a drag the size
+  /// label is owned by the drag render loop, so it is hidden here exactly as before.
+  private func refreshCoordinateIndicatorAfterPassiveUpdate() {
+    if isSelecting {
+      hideSizeIndicator()
+    } else {
+      updateCoordinateIndicator(at: currentLocalMousePoint())
+    }
+  }
+
   /// Update bounds when screen configuration changes
   func updateBounds(_ newFrame: CGRect) {
     frame = CGRect(origin: .zero, size: newFrame.size)
@@ -2366,7 +2388,7 @@ final class AreaSelectionOverlayView: NSView {
     CATransaction.setDisableActions(true)
     snapshotLayer.frame = bounds
     dimLayer.frame = bounds
-    hideSizeIndicator()
+    refreshCoordinateIndicatorAfterPassiveUpdate()
     CATransaction.commit()
 
     // Rebuild tracking areas for new bounds
@@ -2401,7 +2423,7 @@ final class AreaSelectionOverlayView: NSView {
     snapshotLayer.frame = bounds
     dimLayer.frame = bounds
     insideSelectionOverlayLayer.frame = bounds
-    hideSizeIndicator()
+    refreshCoordinateIndicatorAfterPassiveUpdate()
     CATransaction.commit()
     updateModeHint()
   }
@@ -2708,8 +2730,11 @@ final class AreaSelectionOverlayView: NSView {
       dimLayer.mask = nil
       insideSelectionOverlayLayer.isHidden = true
       crosshairIndicatorLayer.isHidden = true
-      if let localCurrentPoint, bounds.contains(localCurrentPoint), selectionEnabled {
-        updateCoordinateIndicator(at: localCurrentPoint)
+      if selectionEnabled {
+        // No drag point: fall back to the fresh mouse location so the coordinate
+        // indicator survives re-renders triggered before the first mouse move
+        // (e.g. an async backdrop landing right after the session starts).
+        updateCoordinateIndicator(at: localCurrentPoint ?? currentLocalMousePoint())
       } else {
         hideSizeIndicator()
       }
