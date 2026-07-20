@@ -1496,6 +1496,71 @@
         }
       }
     },
+    "preferences-shortcuts.fn-accessibility-hint": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kurzbefehle mit der Fn-Taste benötigen die Bedienungshilfen-Berechtigung, um aus anderen Apps zu funktionieren."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shortcuts that use the Fn key need Accessibility permission to work from other apps."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los atajos que usan la tecla Fn necesitan el permiso de Accesibilidad para funcionar desde otras apps."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les raccourcis utilisant la touche Fn nécessitent l'autorisation Accessibilité pour fonctionner depuis d'autres apps."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fnキーを使うショートカットを他のアプリから利用するには、アクセシビリティの許可が必要です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fn 키를 사용하는 단축키가 다른 앱에서 작동하려면 손쉬운 사용 권한이 필요합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Для работы сочетаний с клавишей Fn из других приложений требуется разрешение «Универсальный доступ»."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phím tắt dùng phím Fn cần quyền Trợ năng để hoạt động từ ứng dụng khác."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用 Fn 键的快捷键需要“辅助功能”权限才能在其他 App 中生效。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用 Fn 鍵的快速鍵需要「輔助使用」權限才能在其他 App 中生效。"
+          }
+        }
+      }
+    },
     "preferences-shortcuts.global-section": {
       "extractionState": "stale",
       "localizations": {

@@ -161,6 +161,24 @@ struct ShortcutConfig: Equatable, Codable {
     self.modifiers = carbonModifiers
   }
 
+  /// Modifier flags that participate in shortcut matching (excludes capsLock, numericPad, etc.).
+  private static let matchableEventModifiers: NSEvent.ModifierFlags = [
+    .command, .shift, .option, .control, .function,
+  ]
+
+  /// Whether a key event exactly matches this shortcut (keyCode + full modifier set, incl. Fn).
+  func matches(event: NSEvent) -> Bool {
+    guard UInt32(event.keyCode) == keyCode else { return false }
+    let flags = event.modifierFlags.intersection(Self.matchableEventModifiers)
+    var expected: NSEvent.ModifierFlags = []
+    if modifiers & UInt32(cmdKey) != 0 { expected.insert(.command) }
+    if modifiers & UInt32(shiftKey) != 0 { expected.insert(.shift) }
+    if modifiers & UInt32(optionKey) != 0 { expected.insert(.option) }
+    if modifiers & UInt32(controlKey) != 0 { expected.insert(.control) }
+    if modifiers & Self.functionCarbonModifier != 0 { expected.insert(.function) }
+    return flags == expected
+  }
+
   /// Map key code to display character
   static func keyCodeToString(_ keyCode: UInt32) -> String {
     switch Int(keyCode) {
@@ -212,6 +230,14 @@ struct ShortcutConfig: Equatable, Codable {
     case kVK_F10: return "F10"
     case kVK_F11: return "F11"
     case kVK_F12: return "F12"
+    case kVK_F13: return "F13"
+    case kVK_F14: return "F14"
+    case kVK_F15: return "F15"
+    case kVK_F16: return "F16"
+    case kVK_F17: return "F17"
+    case kVK_F18: return "F18"
+    case kVK_F19: return "F19"
+    case kVK_F20: return "F20"
     case kVK_Space: return "Space"
     case kVK_Return: return "↩"
     case kVK_Tab: return "⇥"
@@ -319,6 +345,22 @@ extension ShortcutConfig {
       return Self.unicodeScalarString(Int(NSF11FunctionKey))
     case kVK_F12:
       return Self.unicodeScalarString(Int(NSF12FunctionKey))
+    case kVK_F13:
+      return Self.unicodeScalarString(Int(NSF13FunctionKey))
+    case kVK_F14:
+      return Self.unicodeScalarString(Int(NSF14FunctionKey))
+    case kVK_F15:
+      return Self.unicodeScalarString(Int(NSF15FunctionKey))
+    case kVK_F16:
+      return Self.unicodeScalarString(Int(NSF16FunctionKey))
+    case kVK_F17:
+      return Self.unicodeScalarString(Int(NSF17FunctionKey))
+    case kVK_F18:
+      return Self.unicodeScalarString(Int(NSF18FunctionKey))
+    case kVK_F19:
+      return Self.unicodeScalarString(Int(NSF19FunctionKey))
+    case kVK_F20:
+      return Self.unicodeScalarString(Int(NSF20FunctionKey))
     case kVK_ForwardDelete:
       return Self.unicodeScalarString(Int(NSDeleteFunctionKey))
     case kVK_Home:
@@ -578,6 +620,12 @@ final class KeyboardShortcutManager {
   private var restartRecordingHotkeyRef: EventHotKeyRef?
   private var deleteRecordingHotkeyRef: EventHotKeyRef?
 
+  /// Fn-containing bindings can't be expressed via Carbon `RegisterEventHotKey`;
+  /// they are dispatched through key event monitors instead.
+  private var fnBindings: [(id: UInt32, config: ShortcutConfig)] = []
+  private var fnGlobalMonitor: Any?
+  private var fnLocalMonitor: Any?
+
   // Hotkey IDs
   private let fullscreenHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4631), id: 1)  // "ZSF1"
   private let areaHotkeyID = EventHotKeyID(signature: OSType(0x5A53_4632), id: 2)  // "ZSF2"
@@ -697,9 +745,21 @@ final class KeyboardShortcutManager {
 
   func refreshShortcutRegistration() {
     unregisterAllShortcuts()
+    fnBindings.removeAll()
 
     if shouldRegisterShortcuts {
       registerShortcuts()
+    }
+
+    updateFnMonitors()
+  }
+
+  /// Exposed for the shortcuts settings UI: true when at least one enabled binding
+  /// relies on the Fn modifier (and therefore on Accessibility permission).
+  var hasFnBoundShortcuts: Bool {
+    GlobalShortcutKind.allCases.contains { kind in
+      guard isShortcutEnabled(for: kind), let config = shortcut(for: kind) else { return false }
+      return config.modifiers & ShortcutConfig.functionCarbonModifier != 0
     }
   }
 
@@ -1431,15 +1491,19 @@ final class KeyboardShortcutManager {
   ) {
     guard isShortcutEnabled(for: kind), let config else { return }
 
-    // Carbon does not support the Fn modifier, so strip it.
-    // If Fn was the only modifier, skip registration entirely since
-    // a modifier-less hotkey would fire on every key press.
-    let cleanModifiers = config.modifiers & ~ShortcutConfig.functionCarbonModifier
-    guard cleanModifiers != 0 else { return }
+    // Carbon cannot express the Fn modifier. Fn bindings are dispatched through
+    // key event monitors (see updateFnMonitors) instead of RegisterEventHotKey,
+    // so the non-Fn combo keeps working and Fn-only combos actually fire.
+    guard config.modifiers & ShortcutConfig.functionCarbonModifier == 0 else {
+      fnBindings.append((id: hotkeyID.id, config: config))
+      return
+    }
+
+    guard config.modifiers != 0 else { return }
 
     let status = RegisterEventHotKey(
       config.keyCode,
-      cleanModifiers,
+      config.modifiers,
       hotkeyID,
       GetApplicationEventTarget(),
       0,
@@ -1467,14 +1531,17 @@ final class KeyboardShortcutManager {
   ) {
     guard isShortcutEnabled(for: parentKind), let config else { return }
 
-    // Carbon does not support the Fn modifier, so strip it.
-    // If Fn was the only modifier, skip registration entirely.
-    let cleanModifiers = config.modifiers & ~ShortcutConfig.functionCarbonModifier
-    guard cleanModifiers != 0 else { return }
+    // Same Fn handling as registerShortcutIfNeeded: dispatch via key event monitors.
+    guard config.modifiers & ShortcutConfig.functionCarbonModifier == 0 else {
+      fnBindings.append((id: hotkeyID.id, config: config))
+      return
+    }
+
+    guard config.modifiers != 0 else { return }
 
     let status = RegisterEventHotKey(
       config.keyCode,
-      cleanModifiers,
+      config.modifiers,
       hotkeyID,
       GetApplicationEventTarget(),
       0,
@@ -1491,6 +1558,57 @@ final class KeyboardShortcutManager {
       ref = nil
       return
     }
+  }
+
+  // MARK: - Fn Shortcut Dispatch
+
+  /// Installs/removes the key event monitors used to dispatch Fn-containing
+  /// shortcuts, based on the current registration state.
+  private func updateFnMonitors() {
+    guard shouldRegisterShortcuts, !fnBindings.isEmpty else {
+      removeFnMonitors()
+      return
+    }
+    installFnMonitorsIfNeeded()
+  }
+
+  private func installFnMonitorsIfNeeded() {
+    if fnGlobalMonitor == nil {
+      fnGlobalMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
+        MainActor.assumeIsolated {
+          self?.handleFnKeyDown(event)
+        }
+      }
+    }
+
+    if fnLocalMonitor == nil {
+      fnLocalMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+        MainActor.assumeIsolated {
+          self?.handleFnKeyDown(event)
+        }
+        // Passive: never consume the event, unlike Carbon hotkeys.
+        return event
+      }
+    }
+  }
+
+  private func removeFnMonitors() {
+    if let monitor = fnGlobalMonitor {
+      NSEvent.removeMonitor(monitor)
+      fnGlobalMonitor = nil
+    }
+    if let monitor = fnLocalMonitor {
+      NSEvent.removeMonitor(monitor)
+      fnLocalMonitor = nil
+    }
+  }
+
+  private func handleFnKeyDown(_ event: NSEvent) {
+    guard !event.isARepeat else { return }
+    guard let binding = fnBindings.first(where: { $0.config.matches(event: event) }) else {
+      return
+    }
+    handleHotkey(id: binding.id)
   }
 
   private func unregisterAllShortcuts() {

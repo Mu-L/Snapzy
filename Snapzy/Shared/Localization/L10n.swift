@@ -3031,6 +3031,11 @@ nonisolated enum L10n {
       defaultValue: "Use keyboard shortcuts to capture from anywhere.",
       comment: "Shortcuts preferences section description"
     )
+    static let fnAccessibilityHint = string(
+      "preferences-shortcuts.fn-accessibility-hint",
+      defaultValue: "Shortcuts that use the Fn key need Accessibility permission to work from other apps.",
+      comment: "Warning shown when an Fn-based shortcut is configured but Accessibility permission is missing"
+    )
     static let enableShortcutsTitle = string(
       "preferences-shortcuts.enable-shortcuts-title",
       defaultValue: "Enable Shortcuts",

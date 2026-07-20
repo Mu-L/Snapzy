@@ -302,4 +302,48 @@ final class CaptureOverlayShortcutSettingsTests: XCTestCase {
     XCTAssertEqual(loaded.modifiers, 0)
   }
 
+  // MARK: - Fn Modifier Support (issue #305)
+
+  private func makeKeyEvent(
+    keyCode: UInt16,
+    modifierFlags: NSEvent.ModifierFlags,
+    characters: String = "a"
+  ) -> NSEvent? {
+    NSEvent.keyEvent(
+      with: .keyDown,
+      location: .zero,
+      modifierFlags: modifierFlags,
+      timestamp: 0,
+      windowNumber: 0,
+      context: nil,
+      characters: characters,
+      charactersIgnoringModifiers: characters,
+      isARepeat: false,
+      keyCode: keyCode
+    )
+  }
+
+  func testInitFromEvent_fnModifier_capturesFnBit() throws {
+    let event = try XCTUnwrap(
+      makeKeyEvent(keyCode: UInt16(kVK_ANSI_A), modifierFlags: [.function])
+    )
+
+    let shortcut = try XCTUnwrap(CaptureOverlayShortcut(from: event))
+    XCTAssertEqual(shortcut.keyCode, UInt32(kVK_ANSI_A))
+    XCTAssertEqual(shortcut.modifiers, ShortcutConfig.functionCarbonModifier)
+  }
+
+  func testMatches_fnModifier_requiresFn() throws {
+    let shortcut = CaptureOverlayShortcut(
+      keyCode: UInt32(kVK_ANSI_A),
+      modifiers: ShortcutConfig.functionCarbonModifier
+    )
+
+    let withFn = try XCTUnwrap(makeKeyEvent(keyCode: UInt16(kVK_ANSI_A), modifierFlags: [.function]))
+    XCTAssertTrue(shortcut.matches(withFn))
+
+    let withoutFn = try XCTUnwrap(makeKeyEvent(keyCode: UInt16(kVK_ANSI_A), modifierFlags: []))
+    XCTAssertFalse(shortcut.matches(withoutFn), "Fn-modified shortcut must not match the plain key")
+  }
+
 }

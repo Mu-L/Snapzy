@@ -9,7 +9,9 @@ Verified against `Snapzy/Services/Shortcuts/`, `Snapzy/Features/Shortcuts/`, `Sn
 ```mermaid
 flowchart TD
     A["User presses hotkey"] --> B["Carbon RegisterEventHotKey<br/>event handler (app event target)"]
+    A2["User presses Fn combo"] --> B2["NSEvent global+local keyDown monitors<br/>(fnBindings)"]
     B --> C["KeyboardShortcutManager.handleHotkey(id:)<br/>maps EventHotKeyID → ShortcutAction"]
+    B2 --> C
     C --> D{"delegate set?"}
     D -- no --> E["log warning, ignore"]
     D -- yes --> F["ScreenCaptureViewModel.shortcutTriggered(action)"]
@@ -18,7 +20,10 @@ flowchart TD
 
 - Engine: `KeyboardShortcutManager.shared` (`Snapzy/Services/Shortcuts/KeyboardShortcutManager.swift`) — Carbon `RegisterEventHotKey` / `UnregisterEventHotKey`; hotkey IDs use signatures `ZSF1`…`ZSFK` (`0x5A53_46xx`).
 - Config model: `ShortcutConfig { keyCode: UInt32, modifiers: UInt32 }` (Carbon modifiers), persisted as JSON in UserDefaults under per-shortcut keys (`fullscreenShortcut`, `areaShortcut`, `recordingShortcut`, …).
-- Fn modifier: custom bit `ShortcutConfig.functionCarbonModifier = 0x2000` — stripped before Carbon registration; Fn-only combos are never registered.
+- Fn modifier: custom bit `ShortcutConfig.functionCarbonModifier = 0x2000`. Carbon `RegisterEventHotKey` cannot express Fn, so Fn-containing configs are **not** Carbon-registered — they are collected into `fnBindings` and dispatched via global+local `NSEvent` keyDown monitors (`updateFnMonitors()` / `handleFnKeyDown`), matched exactly (keyCode + full modifier set incl. Fn) by `ShortcutConfig.matches(event:)`. Fn-only combos (e.g. `fn+F3`) and Fn+modifier combos (e.g. `fn+⌘+F3`) both fire; the non-Fn sibling combo is never hijacked.
+  - Requires Accessibility permission (global key monitors silently deliver nothing without it) — the Shortcuts settings tab shows a hint row when an Fn binding exists but `AXIsProcessTrusted()` is false (`KeyboardShortcutManager.hasFnBoundShortcuts`).
+  - Monitors are passive: unlike Carbon hotkeys, the frontmost app still receives the keystroke.
+  - Monitors are installed only while `shouldRegisterShortcuts` holds and at least one Fn binding exists; temporary suppression (shortcut recording) removes them.
 - Delegate: `KeyboardShortcutDelegate.shortcutTriggered(ShortcutAction)` — implemented by `ScreenCaptureViewModel` (`Snapzy/Features/Capture/CaptureViewModel.swift`).
 - Global enable: `shortcutsEnabled` UserDefaults flag; `enable()` / `disable()` re-register everything. Restored at init if previously enabled.
 - Temporary suspension: `beginTemporaryShortcutSuppression()` / `endTemporaryShortcutSuppression()` — refcounted, unregisters hotkeys without touching the persisted enabled flag (used while recording shortcut input).

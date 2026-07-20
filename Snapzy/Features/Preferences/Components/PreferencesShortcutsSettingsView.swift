@@ -48,6 +48,7 @@ struct ShortcutsSettingsView: View {
   @State private var isConfirmedDisable: Bool = false
   @State private var hasSystemConflict: Bool = false
   @State private var isRefreshingConflict: Bool = false
+  @State private var accessibilityGranted: Bool = AXIsProcessTrusted()
 
   private let manager = KeyboardShortcutManager.shared
   private let validator = ShortcutValidationService.shared
@@ -291,6 +292,30 @@ struct ShortcutsSettingsView: View {
           }
         } message: {
           Text(L10n.PreferencesShortcuts.disableShortcutsMessage)
+        }
+
+        if showsFnAccessibilityHint {
+          HStack(spacing: 10) {
+            Image(systemName: "exclamationmark.triangle.fill")
+              .font(.system(size: 14))
+              .foregroundColor(.orange)
+
+            Text(L10n.PreferencesShortcuts.fnAccessibilityHint)
+              .font(.system(size: 11))
+              .foregroundColor(.secondary)
+              .fixedSize(horizontal: false, vertical: true)
+
+            Spacer()
+
+            Button(L10n.Common.openSettings) {
+              if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
+                NSWorkspace.shared.open(url)
+              }
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+          }
+          .padding(.vertical, 2)
         }
       }
 
@@ -762,6 +787,12 @@ struct ShortcutsSettingsView: View {
       }
     }
     .formStyle(.grouped)
+    .onAppear {
+      accessibilityGranted = AXIsProcessTrusted()
+    }
+    .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in
+      accessibilityGranted = AXIsProcessTrusted()
+    }
     .safeAreaInset(edge: .bottom) {
       HStack {
         Spacer()
@@ -776,6 +807,12 @@ struct ShortcutsSettingsView: View {
   }
 
   // MARK: - Actions
+
+  /// Show the Accessibility hint only when an Fn-based binding exists and the
+  /// permission the Fn key monitors rely on is missing.
+  private var showsFnAccessibilityHint: Bool {
+    shortcutsEnabled && manager.hasFnBoundShortcuts && !accessibilityGranted
+  }
 
   private func resetCaptureSection(refresh: Bool = true) {
     fullscreenShortcut = .defaultFullscreen

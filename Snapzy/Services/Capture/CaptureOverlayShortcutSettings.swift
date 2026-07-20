@@ -71,6 +71,9 @@ struct CaptureOverlayShortcut: Equatable, Codable {
     if event.modifierFlags.contains(.shift) { carbonModifiers |= UInt32(shiftKey) }
     if event.modifierFlags.contains(.option) { carbonModifiers |= UInt32(optionKey) }
     if event.modifierFlags.contains(.control) { carbonModifiers |= UInt32(controlKey) }
+    if event.modifierFlags.contains(.function) {
+      carbonModifiers |= ShortcutConfig.functionCarbonModifier
+    }
     return carbonModifiers
   }
 

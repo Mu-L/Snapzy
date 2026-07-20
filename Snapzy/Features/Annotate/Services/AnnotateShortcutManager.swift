@@ -340,14 +340,6 @@ final class AnnotateShortcutManager: ObservableObject {
 
   /// Check if an NSEvent matches a given ShortcutConfig
   private func matchesShortcut(_ config: ShortcutConfig, event: NSEvent) -> Bool {
-    guard UInt32(event.keyCode) == config.keyCode else { return false }
-    let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-    var expected: NSEvent.ModifierFlags = []
-    if config.modifiers & UInt32(cmdKey) != 0 { expected.insert(.command) }
-    if config.modifiers & UInt32(shiftKey) != 0 { expected.insert(.shift) }
-    if config.modifiers & UInt32(optionKey) != 0 { expected.insert(.option) }
-    if config.modifiers & UInt32(controlKey) != 0 { expected.insert(.control) }
-    if config.modifiers & ShortcutConfig.functionCarbonModifier != 0 { expected.insert(.function) }
-    return flags == expected
+    config.matches(event: event)
   }
 }
