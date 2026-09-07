@@ -1032,6 +1032,98 @@ final class AnnotateCoreTests: XCTestCase {
   }
 
   @MainActor
+  func testCanvasSelectionToolKeepsMovingSelectedAnnotationAcrossRepeatedDrags() async {
+    let state = makeAnnotateState()
+    let existing = AnnotationItem(
+      type: .rectangle,
+      bounds: CGRect(x: 10, y: 10, width: 80, height: 80),
+      properties: AnnotationProperties()
+    )
+    state.annotations = [existing]
+    state.selectedTool = .selection
+
+    let canvas = DrawingCanvasNSView(state: state)
+    canvas.frame = CGRect(x: 0, y: 0, width: 400, height: 300)
+    canvas.displayScale = 1
+    canvas.canvasBounds = CGRect(x: 0, y: 0, width: 400, height: 300)
+
+    func drag(from start: CGPoint, to end: CGPoint) {
+      canvas.mouseDown(with: makeMouseEvent(type: .leftMouseDown, location: start))
+      canvas.mouseDragged(with: makeMouseEvent(type: .leftMouseDragged, location: end))
+      canvas.mouseUp(with: makeMouseEvent(type: .leftMouseUp, location: end))
+    }
+
+    drag(from: CGPoint(x: 30, y: 30), to: CGPoint(x: 160, y: 120))
+    await Task.yield()
+
+    XCTAssertEqual(state.selectedTool, .selection)
+    XCTAssertEqual(state.selectedAnnotationIds, [existing.id])
+    XCTAssertEqual(state.annotations.count, 1)
+    XCTAssertEqual(
+      state.annotations[0].bounds,
+      CGRect(x: 140, y: 100, width: 80, height: 80)
+    )
+
+    drag(from: CGPoint(x: 160, y: 120), to: CGPoint(x: 210, y: 150))
+    drag(from: CGPoint(x: 210, y: 150), to: CGPoint(x: 250, y: 180))
+
+    XCTAssertEqual(state.selectedTool, .selection)
+    XCTAssertEqual(state.selectedAnnotationIds, [existing.id])
+    XCTAssertEqual(state.annotations.count, 1)
+    XCTAssertEqual(
+      state.annotations[0].bounds,
+      CGRect(x: 230, y: 160, width: 80, height: 80)
+    )
+  }
+
+  @MainActor
+  func testCanvasMarqueeSelectionKeepsSelectionToolActiveForFollowUpMove() {
+    let state = makeAnnotateState()
+    let existing = AnnotationItem(
+      type: .oval,
+      bounds: CGRect(x: 40, y: 40, width: 80, height: 80),
+      properties: AnnotationProperties()
+    )
+    state.annotations = [existing]
+    state.selectedTool = .selection
+
+    let canvas = DrawingCanvasNSView(state: state)
+    canvas.frame = CGRect(x: 0, y: 0, width: 400, height: 300)
+    canvas.displayScale = 1
+    canvas.canvasBounds = CGRect(x: 0, y: 0, width: 400, height: 300)
+
+    canvas.mouseDown(with: makeMouseEvent(type: .leftMouseDown, location: CGPoint(x: 20, y: 20)))
+    canvas.mouseDragged(with: makeMouseEvent(type: .leftMouseDragged, location: CGPoint(x: 140, y: 140)))
+    canvas.mouseUp(with: makeMouseEvent(type: .leftMouseUp, location: CGPoint(x: 140, y: 140)))
+
+    XCTAssertEqual(state.selectedTool, .selection)
+    XCTAssertEqual(state.selectedAnnotationIds, [existing.id])
+
+    canvas.mouseDown(with: makeMouseEvent(type: .leftMouseDown, location: CGPoint(x: 60, y: 60)))
+    canvas.mouseDragged(with: makeMouseEvent(type: .leftMouseDragged, location: CGPoint(x: 150, y: 110)))
+    canvas.mouseUp(with: makeMouseEvent(type: .leftMouseUp, location: CGPoint(x: 150, y: 110)))
+
+    XCTAssertEqual(state.annotations.count, 1)
+    XCTAssertEqual(state.annotations[0].id, existing.id)
+    XCTAssertEqual(
+      state.annotations[0].bounds,
+      CGRect(x: 130, y: 90, width: 80, height: 80)
+    )
+
+    canvas.mouseDown(with: makeMouseEvent(type: .leftMouseDown, location: CGPoint(x: 150, y: 110)))
+    canvas.mouseDragged(with: makeMouseEvent(type: .leftMouseDragged, location: CGPoint(x: 180, y: 140)))
+    canvas.mouseUp(with: makeMouseEvent(type: .leftMouseUp, location: CGPoint(x: 180, y: 140)))
+
+    XCTAssertEqual(state.annotations.count, 1)
+    XCTAssertEqual(state.annotations[0].id, existing.id)
+    XCTAssertEqual(
+      state.annotations[0].bounds,
+      CGRect(x: 160, y: 120, width: 80, height: 80)
+    )
+    XCTAssertEqual(state.selectedTool, .selection)
+  }
+
+  @MainActor
   func testCanvasResizeHandleTakesPriorityOverDrawingTool() throws {
     let state = makeAnnotateState()
     let existing = AnnotationItem(

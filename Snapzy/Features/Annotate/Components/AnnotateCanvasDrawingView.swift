@@ -663,10 +663,6 @@ final class DrawingCanvasNSView: NSView {
       if let annotation = hitTestAnnotation(at: imagePoint) {
         if !state.isAnnotationSelected(annotation.id) {
           _ = state.selectAnnotation(at: imagePoint)
-          // Reflect clicked annotation's tool type in toolbar
-          Task { @MainActor in
-            state.selectedTool = annotation.type.toolType
-          }
         }
         beginAnnotationDrag(anchor: annotation, at: imagePoint)
         return
@@ -685,10 +681,9 @@ final class DrawingCanvasNSView: NSView {
        !Self.shouldPrioritizeCanvasMarkup(over: annotation, selectedTool: state.selectedTool) {
       // Set local tracking synchronously to avoid race condition with mouseDragged
       beginAnnotationDrag(anchor: annotation, at: imagePoint)
-      // Update state asynchronously (for UI reflection)
+      // Update selection state asynchronously (for UI reflection)
       Task { @MainActor in
         state.selectedAnnotationId = annotation.id
-        state.selectedTool = annotation.type.toolType
       }
       return
     }
@@ -802,12 +797,11 @@ final class DrawingCanvasNSView: NSView {
       return
     }
 
-    let selected = state.selectAnnotations(in: selectionRect)
-    if selected.count == 1, let annotation = selected.first {
-      state.selectedTool = annotation.type.toolType
-    } else if selected.count > 1 {
-      state.selectedTool = .selection
-    }
+    state.selectAnnotations(in: selectionRect)
+    // Selection owns the interaction for the whole selection lifecycle. The
+    // selected annotation type is already available to quick properties, so
+    // do not switch the active tool away from Selection after a marquee.
+    state.selectedTool = .selection
   }
 
   override func mouseDragged(with event: NSEvent) {
