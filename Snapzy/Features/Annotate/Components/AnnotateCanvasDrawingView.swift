@@ -47,6 +47,11 @@ enum ResizeHandle: Equatable {
   case textCalloutTail
 }
 
+private enum ResizeHandleCoordinateSpace {
+  case image
+  case canvas
+}
+
 /// Transparent drawing layer of the annotate canvas. Renders via `drawBody`
 /// only when invalidated; CoreAnimation composites the existing backing store
 /// otherwise. All mouse/key events fall through to the container view.
@@ -124,8 +129,6 @@ final class DrawingCanvasNSView: NSView {
   private var activeCropHandle: CropHandle?
   private var originalCropRect: CGRect = .zero
 
-  private let handleSize: CGFloat = 8
-
   // Blur cache manager for performance optimization
   private let blurCacheManager = BlurCacheManager()
   private var lastSourceImageIdentifier: ObjectIdentifier?
@@ -144,20 +147,31 @@ final class DrawingCanvasNSView: NSView {
   // only redraws when invalidated), so per-frame cost stays flat without any
   // manual bitmap or color-space management — rendering always goes through the
   // standard AppKit pipeline in the window's own color space.
-  // Order (back → front): overlay → static-below → dragged → static-above → preview.
+  // Order (back → front): overlay → selection-underlay → static-below → dragged
+  // → static-above → preview → selection-chrome.
   private let overlayLayerView = CanvasLayerView()
+  private let selectionUnderlayLayerView = CanvasLayerView()
   private let staticBelowLayerView = CanvasLayerView()
   private let draggedLayerView = CanvasLayerView()
   private let staticAboveLayerView = CanvasLayerView()
   private let previewLayerView = CanvasLayerView()
+  private let selectionChromeLayerView = CanvasLayerView()
 
   private var layerViews: [CanvasLayerView] {
-    [overlayLayerView, staticBelowLayerView, draggedLayerView, staticAboveLayerView, previewLayerView]
+    [
+      overlayLayerView,
+      selectionUnderlayLayerView,
+      staticBelowLayerView,
+      draggedLayerView,
+      staticAboveLayerView,
+      previewLayerView,
+      selectionChromeLayerView,
+    ]
   }
 
   /// Views redrawn per frame while a gesture runs (cheap content only).
   private var liveLayerViews: [CanvasLayerView] {
-    [overlayLayerView, draggedLayerView, previewLayerView]
+    [overlayLayerView, selectionUnderlayLayerView, draggedLayerView, previewLayerView, selectionChromeLayerView]
   }
 
   private var stateObservers = Set<AnyCancellable>()
@@ -194,10 +208,12 @@ final class DrawingCanvasNSView: NSView {
       addSubview(layerView)
     }
     overlayLayerView.drawBody = { [weak self] dirtyRect in self?.drawSpotlightOverlay(dirtyRect: dirtyRect) }
+    selectionUnderlayLayerView.drawBody = { [weak self] dirtyRect in self?.drawSelectionUnderlays(dirtyRect: dirtyRect) }
     staticBelowLayerView.drawBody = { [weak self] dirtyRect in self?.drawStaticBelow(dirtyRect: dirtyRect) }
     draggedLayerView.drawBody = { [weak self] dirtyRect in self?.drawDraggedItems(dirtyRect: dirtyRect) }
     staticAboveLayerView.drawBody = { [weak self] dirtyRect in self?.drawStaticAbove(dirtyRect: dirtyRect) }
     previewLayerView.drawBody = { [weak self] dirtyRect in self?.drawGesturePreview(dirtyRect: dirtyRect) }
+    selectionChromeLayerView.drawBody = { [weak self] dirtyRect in self?.drawSelectionChrome(dirtyRect: dirtyRect) }
 
     // Enable mouse tracking for cursor updates
     let trackingArea = NSTrackingArea(
@@ -216,10 +232,10 @@ final class DrawingCanvasNSView: NSView {
       .sink { [weak self] _ in self?.scheduleAnnotationsInvalidation() }
       .store(in: &stateObservers)
     state.$selectedAnnotationIds
-      .sink { [weak self] _ in self?.invalidateDrawing() }
+      .sink { [weak self] _ in self?.invalidateSelectionChrome() }
       .store(in: &stateObservers)
     state.$selectedAnnotationId
-      .sink { [weak self] _ in self?.invalidateDrawing() }
+      .sink { [weak self] _ in self?.invalidateSelectionChrome() }
       .store(in: &stateObservers)
     state.$editingTextAnnotationId
       .sink { [weak self] _ in self?.invalidateDrawing() }
@@ -251,17 +267,23 @@ final class DrawingCanvasNSView: NSView {
   /// Redraw only the per-frame layers (overlay/dragged/preview) — the static
   /// layers keep compositing their existing backing store.
   private func invalidateLiveLayers() {
-    // When the manipulated items can't be split into the dragged layer
-    // (multi-select drag, or a selected item outside the gesture), their
-    // gesture-local copies live in the static layers, so everything must
-    // redraw per frame for the gesture to be visible.
-    if isDraggingAnnotation || isResizingAnnotation, !usesDragLayerSplit {
+    // When the manipulated items can't be split into the dragged layer (a
+    // multi-select drag), their gesture-local copies live in the static layers,
+    // so everything must redraw per frame for the gesture to be visible.
+    if (isDraggingAnnotation || isResizingAnnotation), !usesDragLayerSplit {
       invalidateDrawing()
       return
     }
     for layerView in liveLayerViews {
       layerView.needsDisplay = true
     }
+  }
+
+  /// Redraw only the editor-only selection layers. This keeps zooming smooth by
+  /// retaining the static annotation backing stores.
+  private func invalidateSelectionChrome() {
+    selectionUnderlayLayerView.needsDisplay = true
+    selectionChromeLayerView.needsDisplay = true
   }
 
   private func invalidateDisplay(forImageRect imageRect: CGRect) {
@@ -457,9 +479,9 @@ final class DrawingCanvasNSView: NSView {
   private func hitTestHandle(
     at point: CGPoint,
     for annotation: AnnotationItem,
-    inDisplayCoordinates: Bool
+    in coordinateSpace: ResizeHandleCoordinateSpace
   ) -> ResizeHandle? {
-    for (handle, rect) in resizeHandleRects(for: annotation, inDisplayCoordinates: inDisplayCoordinates) {
+    for (handle, rect) in resizeHandleRects(for: annotation, in: coordinateSpace) {
       if rect.contains(point) {
         return handle
       }
@@ -469,60 +491,65 @@ final class DrawingCanvasNSView: NSView {
 
   private func resizeHandleRects(
     for annotation: AnnotationItem,
-    inDisplayCoordinates: Bool
+    in coordinateSpace: ResizeHandleCoordinateSpace
   ) -> [(ResizeHandle, CGRect)] {
     switch annotation.type {
     case .line(let start, let end):
-      let startPoint = inDisplayCoordinates ? imageToDisplay(start) : start
-      let endPoint = inDisplayCoordinates ? imageToDisplay(end) : end
+      let startPoint = coordinateSpace == .canvas ? imageToDisplay(start) : start
+      let endPoint = coordinateSpace == .canvas ? imageToDisplay(end) : end
       return [
-        (.lineStart, handleRect(at: startPoint)),
-        (.lineEnd, handleRect(at: endPoint)),
+        (.lineStart, handleRect(at: startPoint, in: coordinateSpace)),
+        (.lineEnd, handleRect(at: endPoint, in: coordinateSpace)),
       ]
 
     case .text:
-      let bounds = inDisplayCoordinates ? imageToDisplay(annotation.resizeBounds) : annotation.resizeBounds
+      let bounds = coordinateSpace == .canvas ? imageToDisplay(annotation.resizeBounds) : annotation.resizeBounds
       var handles: [(ResizeHandle, CGRect)] = [
-        (.topLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.maxY))),
-        (.topRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.maxY))),
-        (.bottomLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.minY))),
-        (.bottomRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.minY))),
+        (.topLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.maxY), in: coordinateSpace)),
+        (.topRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.maxY), in: coordinateSpace)),
+        (.bottomLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.minY), in: coordinateSpace)),
+        (.bottomRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.minY), in: coordinateSpace)),
       ]
       if annotation.properties.textPresentation == .callout,
          let tailTarget = annotation.properties.calloutTailTarget {
-        let point = inDisplayCoordinates ? imageToDisplay(tailTarget) : tailTarget
-        handles.append((.textCalloutTail, handleRect(at: point)))
+        let point = coordinateSpace == .canvas ? imageToDisplay(tailTarget) : tailTarget
+        handles.append((.textCalloutTail, handleRect(at: point, in: coordinateSpace)))
       }
       return handles
 
     case .arrow(let geometry):
       // Figma-style endpoint editing: two draggable endpoints instead of a bounding box.
-      let startPoint = inDisplayCoordinates ? imageToDisplay(geometry.start) : geometry.start
-      let endPoint = inDisplayCoordinates ? imageToDisplay(geometry.end) : geometry.end
+      let startPoint = coordinateSpace == .canvas ? imageToDisplay(geometry.start) : geometry.start
+      let endPoint = coordinateSpace == .canvas ? imageToDisplay(geometry.end) : geometry.end
       return [
-        (.lineStart, handleRect(at: startPoint)),
-        (.lineEnd, handleRect(at: endPoint)),
+        (.lineStart, handleRect(at: startPoint, in: coordinateSpace)),
+        (.lineEnd, handleRect(at: endPoint, in: coordinateSpace)),
       ]
 
     default:
-      let bounds = inDisplayCoordinates ? imageToDisplay(annotation.resizeBounds) : annotation.resizeBounds
+      let bounds = coordinateSpace == .canvas ? imageToDisplay(annotation.resizeBounds) : annotation.resizeBounds
       return [
-        (.topLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.maxY))),
-        (.topRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.maxY))),
-        (.bottomLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.minY))),
-        (.bottomRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.minY))),
+        (.topLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.maxY), in: coordinateSpace)),
+        (.topRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.maxY), in: coordinateSpace)),
+        (.bottomLeft, handleRect(at: CGPoint(x: bounds.minX, y: bounds.minY), in: coordinateSpace)),
+        (.bottomRight, handleRect(at: CGPoint(x: bounds.maxX, y: bounds.minY), in: coordinateSpace)),
       ]
     }
   }
 
-  private func handleRect(at center: CGPoint) -> CGRect {
-    // Handle size in display coordinates (constant visual size)
-    let displayHandleSize = handleSize / displayScale
+  private func handleRect(at center: CGPoint, in coordinateSpace: ResizeHandleCoordinateSpace) -> CGRect {
+    let size: CGFloat
+    switch coordinateSpace {
+    case .image:
+      size = selectionChromeMetrics.imageLength(forScreenPoints: AnnotateSelectionChromeMetrics.handleSize)
+    case .canvas:
+      size = selectionChromeMetrics.canvasLength(forScreenPoints: AnnotateSelectionChromeMetrics.handleSize)
+    }
     return CGRect(
-      x: center.x - displayHandleSize / 2,
-      y: center.y - displayHandleSize / 2,
-      width: displayHandleSize,
-      height: displayHandleSize
+      x: center.x - size / 2,
+      y: center.y - size / 2,
+      width: size,
+      height: size
     )
   }
 
@@ -571,6 +598,10 @@ final class DrawingCanvasNSView: NSView {
       return state.sourceImageBounds
     }
     return canvasBounds.standardized
+  }
+
+  private var selectionChromeMetrics: AnnotateSelectionChromeMetrics {
+    AnnotateSelectionChromeMetrics(fitScale: displayScale, zoomScale: state.zoomLevel)
   }
 
   private var activeDrawingBounds: CGRect {
@@ -634,7 +665,7 @@ final class DrawingCanvasNSView: NSView {
        let annotation = state.annotations.first(where: { $0.id == selectedId }),
        annotation.supportsResize,
        canResizeAnnotation(annotation) {
-      if let handle = hitTestHandle(at: displayPoint, for: annotation, inDisplayCoordinates: true) {
+      if let handle = hitTestHandle(at: displayPoint, for: annotation, in: .canvas) {
         isResizingAnnotation = true
         resizingAnnotationId = selectedId
         activeResizeHandle = handle
@@ -1404,11 +1435,8 @@ final class DrawingCanvasNSView: NSView {
   private var usesDragLayerSplit: Bool {
     guard isResizingAnnotation || isDraggingAnnotation else { return false }
     if isDraggingAnnotation, gestureExcludedIds.isEmpty { return false } // multi-item drag
-    let excluded = gestureExcludedIds
-    // A selected item outside the gesture would keep stale selection visuals in
-    // the static layers — keep everything static instead (exact same output).
-    guard state.selectedAnnotationIds.allSatisfy({ excluded.contains($0) }),
-          state.selectedAnnotationId.map({ excluded.contains($0) }) ?? true else { return false }
+    // Selection chrome is rendered in dedicated live layers, so it does not
+    // require invalidating static annotation layers during the gesture.
     return true
   }
 
@@ -1471,8 +1499,8 @@ final class DrawingCanvasNSView: NSView {
     drawAnnotationItems(partitionedDisplayItems().above, dirtyRect: dirtyRect)
   }
 
-  /// Draws annotations with selection visuals. Skips items that cannot
-  /// intersect the dirty rect — AppKit clips to it anyway, output is identical.
+  /// Draws annotation content. Selection chrome is composited in dedicated
+  /// layers so zooming does not invalidate these static backing stores.
   private func drawAnnotationItems(_ items: [AnnotationItem], dirtyRect: NSRect) {
     guard !items.isEmpty,
           let context = NSGraphicsContext.current?.cgContext else { return }
@@ -1488,23 +1516,7 @@ final class DrawingCanvasNSView: NSView {
 
     for annotation in items {
       guard annotation.selectionBounds.intersects(imageDirtyRect) else { continue }
-
-      // Freeform strokes show selection as a soft glow painted *beneath* the body,
-      // so the highlight frames the ink without a line or box crossing over it.
-      if state.isAnnotationSelected(annotation.id) {
-        drawSelectionUnderlay(for: annotation, in: context)
-      }
-
       renderer.draw(annotation)
-
-      // Draw selection affordance if selected. Single selections can also show resize handles.
-      if state.isAnnotationSelected(annotation.id) {
-        drawSelectionAffordance(
-          for: annotation,
-          in: context,
-          showsHandles: state.selectedAnnotationIds.count == 1 && annotation.supportsResize
-        )
-      }
     }
 
     context.restoreGState()
@@ -1557,6 +1569,44 @@ final class DrawingCanvasNSView: NSView {
     context.translateBy(x: -effectiveCanvasBounds.minX, y: -effectiveCanvasBounds.minY)
     drawCurrentStrokePreview(sourceImage: sourceImage, sourceCGImage: sourceCGImage, in: context)
     drawAreaSelectionPreview(in: context)
+    context.restoreGState()
+  }
+
+  private func drawSelectionUnderlays(dirtyRect: NSRect) {
+    drawSelectionItems(dirtyRect: dirtyRect) { annotation, context in
+      drawSelectionUnderlay(for: annotation, in: context)
+    }
+  }
+
+  private func drawSelectionChrome(dirtyRect: NSRect) {
+    drawSelectionItems(dirtyRect: dirtyRect) { [self] annotation, context in
+      drawSelectionAffordance(
+        for: annotation,
+        in: context,
+        showsHandles: state.selectedAnnotationIds.count == 1 && annotation.supportsResize
+      )
+    }
+  }
+
+  private func drawSelectionItems(
+    dirtyRect: NSRect,
+    draw: (AnnotationItem, CGContext) -> Void
+  ) {
+    guard let context = NSGraphicsContext.current?.cgContext else { return }
+
+    context.saveGState()
+    context.scaleBy(x: displayScale, y: displayScale)
+    context.translateBy(x: -effectiveCanvasBounds.minX, y: -effectiveCanvasBounds.minY)
+
+    let chromePadding = selectionChromeMetrics.imageLength(
+      forScreenPoints: AnnotateSelectionChromeMetrics.handleSize
+    )
+    let imageDirtyRect = displayToImage(dirtyRect).insetBy(dx: -chromePadding, dy: -chromePadding)
+    for annotation in currentDisplayItems()
+    where state.isAnnotationSelected(annotation.id) && annotation.selectionBounds.intersects(imageDirtyRect) {
+      draw(annotation, context)
+    }
+
     context.restoreGState()
   }
 
@@ -1667,8 +1717,13 @@ final class DrawingCanvasNSView: NSView {
 
   private func drawSelectionBounds(_ bounds: CGRect, in context: CGContext) {
     context.setStrokeColor(NSColor.systemBlue.cgColor)
-    context.setLineWidth(1)
-    context.setLineDash(phase: 0, lengths: [4, 4])
+    context.setLineWidth(selectionChromeMetrics.imageLength(
+      forScreenPoints: AnnotateSelectionChromeMetrics.selectionLineWidth
+    ))
+    let dashLength = selectionChromeMetrics.imageLength(
+      forScreenPoints: AnnotateSelectionChromeMetrics.selectionDashLength
+    )
+    context.setLineDash(phase: 0, lengths: [dashLength, dashLength])
     context.stroke(bounds)
     context.setLineDash(phase: 0, lengths: [])
   }
@@ -1692,8 +1747,9 @@ final class DrawingCanvasNSView: NSView {
   private func drawSelectionGlow(points: [CGPoint], bodyWidth: CGFloat, in context: CGContext) {
     guard points.count > 1 else { return }
 
-    // Constant ~4pt halo ring in screen space regardless of zoom.
-    let haloRing = 4 / max(displayScale, 0.0001)
+    let haloRing = selectionChromeMetrics.imageLength(
+      forScreenPoints: AnnotateSelectionChromeMetrics.selectionHaloWidth
+    )
 
     context.saveGState()
     context.setLineCap(.round)
@@ -1718,9 +1774,11 @@ final class DrawingCanvasNSView: NSView {
   private func drawResizeHandles(for annotation: AnnotationItem, in context: CGContext) {
     context.setFillColor(NSColor.white.cgColor)
     context.setStrokeColor(NSColor.systemBlue.cgColor)
-    context.setLineWidth(1)
+    context.setLineWidth(selectionChromeMetrics.imageLength(
+      forScreenPoints: AnnotateSelectionChromeMetrics.selectionLineWidth
+    ))
 
-    for (handle, rect) in resizeHandleRects(for: annotation, inDisplayCoordinates: false) {
+    for (handle, rect) in resizeHandleRects(for: annotation, in: .image) {
       switch handle {
       case .lineStart, .lineEnd:
         // Circular endpoint grips for line/arrow endpoint editing.
@@ -1787,7 +1845,7 @@ final class DrawingCanvasNSView: NSView {
        let selectedId = state.selectedAnnotationIds.first,
        let annotation = state.annotations.first(where: { $0.id == selectedId }) {
       if annotation.supportsResize,
-         let handle = hitTestHandle(at: displayPoint, for: annotation, inDisplayCoordinates: true) {
+         let handle = hitTestHandle(at: displayPoint, for: annotation, in: .canvas) {
         setCursorForHandle(handle)
         return
       }

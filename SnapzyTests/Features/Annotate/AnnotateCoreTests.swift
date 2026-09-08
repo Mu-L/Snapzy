@@ -1154,6 +1154,37 @@ final class AnnotateCoreTests: XCTestCase {
   }
 
   @MainActor
+  func testCanvasTinyFitScaleDoesNotTreatFarCanvasPointAsResizeHandle() {
+    let state = makeAnnotateState()
+    state.loadImage(NSImage(size: CGSize(width: 4_000, height: 4_000)))
+    let existing = AnnotationItem(
+      type: .rectangle,
+      bounds: CGRect(x: 1_000, y: 1_000, width: 100, height: 100),
+      properties: AnnotationProperties()
+    )
+    state.annotations = [existing]
+    state.selectedAnnotationId = existing.id
+    state.selectedTool = .rectangle
+
+    let canvas = DrawingCanvasNSView(state: state)
+    canvas.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+    canvas.displayScale = 0.05
+    canvas.canvasBounds = CGRect(x: 0, y: 0, width: 4_000, height: 4_000)
+
+    // The selected item's visible corner is at (55, 55). Before this fix, the
+    // image-space handle size was reused here and a 160pt hit rect swallowed
+    // this distant point instead of starting the requested rectangle.
+    let start = CGPoint(x: 120, y: 120)
+    let end = CGPoint(x: 140, y: 140)
+    canvas.mouseDown(with: makeMouseEvent(type: .leftMouseDown, location: start))
+    canvas.mouseDragged(with: makeMouseEvent(type: .leftMouseDragged, location: end))
+    canvas.mouseUp(with: makeMouseEvent(type: .leftMouseUp, location: end))
+
+    XCTAssertEqual(state.annotations.count, 2)
+    XCTAssertEqual(state.annotations[0].bounds, existing.bounds)
+  }
+
+  @MainActor
   func testCanvasShiftRectangleDragCommitsConstrainedPreviewEndpoint() throws {
     let state = makeAnnotateState()
     state.selectedTool = .rectangle
