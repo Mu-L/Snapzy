@@ -73,6 +73,75 @@ final class QuickAccessCoreTests: XCTestCase {
     XCTAssertEqual(policy.intent(forHorizontalTranslation: 31), .dragToApp)
   }
 
+  func testQuickAccessCardDragPolicy_directDragUsesTwoDimensionalThreshold() {
+    XCTAssertFalse(
+      QuickAccessCardDragPolicy.shouldBeginDirectDrag(
+        horizontalTranslation: 4,
+        verticalTranslation: 4
+      )
+    )
+    XCTAssertTrue(
+      QuickAccessCardDragPolicy.shouldBeginDirectDrag(
+        horizontalTranslation: 6,
+        verticalTranslation: 0
+      )
+    )
+    XCTAssertTrue(
+      QuickAccessCardDragPolicy.shouldBeginDirectDrag(
+        horizontalTranslation: 0,
+        verticalTranslation: -6
+      )
+    )
+    XCTAssertFalse(
+      QuickAccessCardDragPolicy.shouldBeginDirectDrag(
+        horizontalTranslation: .nan,
+        verticalTranslation: 10
+      )
+    )
+    XCTAssertFalse(
+      QuickAccessCardDragPolicy.shouldBeginDirectDrag(
+        horizontalTranslation: 12,
+        verticalTranslation: 2,
+        reservedScrollAxis: .horizontal
+      )
+    )
+    XCTAssertTrue(
+      QuickAccessCardDragPolicy.shouldBeginDirectDrag(
+        horizontalTranslation: 6,
+        verticalTranslation: 8,
+        reservedScrollAxis: .horizontal
+      )
+    )
+    XCTAssertFalse(
+      QuickAccessCardDragPolicy.shouldBeginDirectDrag(
+        horizontalTranslation: 2,
+        verticalTranslation: 12,
+        reservedScrollAxis: .vertical
+      )
+    )
+    XCTAssertTrue(
+      QuickAccessCardDragPolicy.shouldBeginDirectDrag(
+        horizontalTranslation: 8,
+        verticalTranslation: 6,
+        reservedScrollAxis: .vertical
+      )
+    )
+    XCTAssertTrue(
+      QuickAccessCardDragPolicy.isPrimaryScrollGesture(
+        horizontalTranslation: 12,
+        verticalTranslation: 2,
+        reservedScrollAxis: .horizontal
+      )
+    )
+    XCTAssertFalse(
+      QuickAccessCardDragPolicy.isPrimaryScrollGesture(
+        horizontalTranslation: 6,
+        verticalTranslation: 8,
+        reservedScrollAxis: .horizontal
+      )
+    )
+  }
+
   func testQuickAccessCardDragPolicy_dismissesByDistanceOrVelocity() {
     let policy = QuickAccessCardDragPolicy(dismissDirection: 1)
 

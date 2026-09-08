@@ -27,7 +27,8 @@ struct HistoryGridView: View {
             backgroundStyle: backgroundStyle,
             onTap: {
               handleTap(record: record)
-            }
+            },
+            reservedScrollAxis: records.count > 4 ? .vertical : nil
           )
           .equatable()
           .contextMenu {

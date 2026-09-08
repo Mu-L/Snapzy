@@ -284,7 +284,9 @@ struct QuickAccessCardView: View {
 
         handleSwipeEnded(translation: finalTranslation, velocity: finalVelocity)
       },
-      swipeSensitivity: CGFloat(manager.swipeSensitivity)
+      swipeSensitivity: CGFloat(manager.swipeSensitivity),
+      dragOnly: false,
+      reservedScrollAxis: nil
     )
   }
 

@@ -240,6 +240,7 @@ SnapzyUITests/
 | `Features/Capture/` | High-level screenshot, OCR, cutout, scrolling-capture, and recording entry actions |
 | `Features/Recording/` | Recording toolbar, overlays, live annotation, stop/GIF handoff |
 | `Features/QuickAccess/` | Floating post-capture stack, temp-file persistence UX, drag-to-app, pinned screenshot windows |
+| `Features/History/` | Floating capture history panel, compact/expanded cards, restore flow, and direct file drag-out |
 | `Features/Annotate/` | Image editor, export, crop, blur, mockup, cutout-aware editing, inline area annotate |
 | `Features/VideoEditor/` | Trim, zoom, speed (timelapse) segments, background, Smart Camera, GIF/video export |
 | `Features/Preferences/` | General, Capture, Quick Access, Shortcuts, Permissions, History storage/retention, Cloud, Advanced, About tabs |
@@ -323,7 +324,7 @@ SnapzyUITests/
 - `TempCaptureManager` is where the `Save` after-capture toggle becomes real behavior. Recording uses an internal per-session processing directory first, then moves the final video to export or the temp capture root after AVAssetWriter finishes.
 - `DatabaseManager` is initialized before launch cleanup and schedulers run. If `snapzy.db` cannot open or migrate, `AppDelegate` presents repair/reset/quit recovery UI; reset archives existing DB files into `DatabaseRecovery-<yyyyMMdd-HHmmss>[-N]/` before creating a fresh database.
 - `QuickAccessActionConfigurationStore` owns user-configurable Quick Access action visibility, context-menu order, and card slot assignments. Settings → Quick Access lets users reorder the context menu from the list, then drag actions onto explicit preview slots for the live hover card layout.
-- `QuickAccessDraggableView` owns Quick Access card gestures: mouse swipe-to-dismiss, drag-to-app, and optional two-finger horizontal swipe-to-dismiss on the preview card.
+- `QuickAccessDraggableView` owns the shared AppKit file-drag bridge. Quick Access cards add side-aware mouse swipe-to-dismiss and optional two-finger horizontal swipe-to-dismiss; History cards use its drag-only mode with primary-axis scroll arbitration so direct file drag does not affect selection, editor gestures, or unambiguous list scrolling.
 - `RecordingCoordinator` owns the toolbar/overlay UX. `ScreenRecordingManager` owns the media pipeline.
 - `ScrollingCaptureCoordinator` is its own subsystem. Treat `Services/Capture/ScrollingCapture/*` as a unit.
 - `ScrollingCaptureFrameSource` publishes timestamped region frames into `ScrollingCaptureFrameRing`, so live preview and commit/stitch decisions share one bounded frame timeline before falling back to still area capture.

@@ -436,7 +436,8 @@ struct HistoryFloatingContentView: View {
             backgroundStyle: backgroundStyle,
             onTap: {
               selectExpandedRecord(record)
-            }
+            },
+            reservedScrollAxis: expandedRecords.count > expandedColumns.count ? .vertical : nil
           )
           .equatable()
           .contextMenu {

@@ -12,10 +12,12 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
   let isSelected: Bool
   let backgroundStyle: HistoryBackgroundStyle
   let onTap: () -> Void
+  let reservedScrollAxis: QuickAccessDragScrollAxis?
 
   static func == (lhs: HistoryExpandedCaptureCardView, rhs: HistoryExpandedCaptureCardView) -> Bool {
     lhs.record == rhs.record &&
     lhs.isSelected == rhs.isSelected &&
+    lhs.reservedScrollAxis == rhs.reservedScrollAxis &&
     lhs.backgroundStyle == rhs.backgroundStyle &&
     HistoryFloatingManager.shared.cloudUploadState(for: lhs.record) == HistoryFloatingManager.shared.cloudUploadState(for: rhs.record)
   }
@@ -51,6 +53,7 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
       RoundedRectangle(cornerRadius: 20, style: .continuous)
         .stroke(cardBorderColor, lineWidth: isSelected ? 1.8 : 1)
     )
+    .overlay(historyDragInteractionBridge)
     .shadow(color: cardShadowColor, radius: isSelected ? 14 : 3, x: 0, y: isSelected ? 8 : 2)
     .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
     .scaleEffect(isSelected ? 1.01 : (isHovering ? 1.005 : 1))
@@ -143,6 +146,15 @@ struct HistoryExpandedCaptureCardView: View, Equatable {
       )
     }
     .aspectRatio(16 / 10, contentMode: .fit)
+  }
+
+  private var historyDragInteractionBridge: some View {
+    HistoryCardDragInteractionView(
+      record: record,
+      thumbnail: thumbnailImage,
+      isEnabled: fileExists,
+      reservedScrollAxis: reservedScrollAxis
+    )
   }
 
   private var cardBackground: AnyShapeStyle {

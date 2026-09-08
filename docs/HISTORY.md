@@ -19,6 +19,8 @@ Persistent history of screenshots, videos, and GIFs backed by GRDB SQLite, surfa
 
 - Context menu (`HistoryContextMenu`): Open in Finder, Copy, Edit, Upload to Cloud (only when `CloudManager.isConfigured`; live overlay states via `HistoryCloudUploadOverlayView`), Delete — destructive last.
 - Double-click opens the editor; cards expose a Restore pill.
+- Compact-carousel and expanded-grid cards also support native file drag-out. Dragging a card carries its existing screenshot, video, or GIF file directly to Finder, Messages, Mail, Notes, Slack, Discord, browser file-upload controls, editors, and other compatible drop targets. Single-click selection and double-click editor opening remain unchanged. When a scrollable list receives an unambiguous primary-axis mouse drag, the list keeps scrolling; cross-axis or diagonal card movement starts the file drag.
+- History drag is file-centric: apps that only accept inline pixel data may reject it, and cards whose source file is missing do not start a drag. History records and files remain in place after a successful drop.
 - Cloud upload here is manual; commit `dd4ccd5` removed only the after-capture auto-upload preference option, not this surface.
 
 ## Restore Flow

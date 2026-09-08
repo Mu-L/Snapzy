@@ -5,18 +5,21 @@
 //  Refined preview card for the floating history panel
 //
 
+import AppKit
 import SwiftUI
 
 struct HistoryCardView: View, Equatable {
   let record: CaptureHistoryRecord
   let isSelected: Bool
   let onTap: () -> Void
+  let reservedScrollAxis: QuickAccessDragScrollAxis?
 
   let backgroundStyle: HistoryBackgroundStyle
 
   static func == (lhs: HistoryCardView, rhs: HistoryCardView) -> Bool {
     lhs.record == rhs.record &&
     lhs.isSelected == rhs.isSelected &&
+    lhs.reservedScrollAxis == rhs.reservedScrollAxis &&
     lhs.backgroundStyle == rhs.backgroundStyle &&
     HistoryFloatingManager.shared.cloudUploadState(for: lhs.record) == HistoryFloatingManager.shared.cloudUploadState(for: rhs.record)
   }
@@ -44,6 +47,7 @@ struct HistoryCardView: View, Equatable {
         .frame(maxWidth: .infinity, alignment: .center)
     }
     .contentShape(Rectangle())
+    .overlay(historyDragInteractionBridge)
     .scaleEffect(isSelected ? 1.02 : (isHovering ? 1.01 : 1))
     .animation(.spring(response: 0.24, dampingFraction: 0.88), value: isSelected)
     .animation(.easeOut(duration: 0.18), value: isHovering)
@@ -136,6 +140,15 @@ struct HistoryCardView: View, Equatable {
       .shadow(color: cardShadowColor, radius: isSelected ? 18 : 3, x: 0, y: isSelected ? 8 : 2)
     }
     .aspectRatio(16.0 / 10.0, contentMode: .fit)
+  }
+
+  private var historyDragInteractionBridge: some View {
+    HistoryCardDragInteractionView(
+      record: record,
+      thumbnail: thumbnailImage,
+      isEnabled: fileExists,
+      reservedScrollAxis: reservedScrollAxis
+    )
   }
 
   private var restoreButton: some View {
@@ -272,5 +285,40 @@ struct HistoryCardView: View, Equatable {
   private func openDefaultEditor() {
     guard fileExists else { return }
     HistoryWindowController.shared.openItem(record)
+  }
+}
+
+/// Adds the shared AppKit file-drag behavior to a history card without taking
+/// ownership of SwiftUI's tap, selection, or double-click gestures.
+struct HistoryCardDragInteractionView: View {
+  let record: CaptureHistoryRecord
+  let thumbnail: NSImage?
+  let isEnabled: Bool
+  let reservedScrollAxis: QuickAccessDragScrollAxis?
+
+  var body: some View {
+    QuickAccessDraggableView(
+      fileURL: record.fileURL,
+      thumbnail: thumbnail ?? fallbackThumbnail,
+      dismissDirection: 0,
+      dragDropEnabled: isEnabled,
+      twoFingerSwipeToDismissEnabled: false,
+      swipeMode: .natural,
+      onDragStarted: {},
+      onDragEnded: { _ in },
+      onSwipeChanged: { _ in },
+      onSwipeEnded: { _, _ in },
+      swipeSensitivity: 1,
+      dragOnly: true,
+      reservedScrollAxis: reservedScrollAxis
+    )
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+  }
+
+  private var fallbackThumbnail: NSImage {
+    NSImage(
+      systemSymbolName: record.captureType.systemIconName,
+      accessibilityDescription: nil
+    ) ?? NSImage(size: CGSize(width: 120, height: 75))
   }
 }
