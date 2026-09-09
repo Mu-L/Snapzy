@@ -15,11 +15,14 @@ struct CanvasDrawingView: NSViewRepresentable {
   var displayScale: CGFloat = 1.0
   var canvasBounds: CGRect
   var acceptsFirstMouse = false
+  var interactionBridge: CanvasInteractionBridge?
 
   func makeNSView(context _: Context) -> DrawingCanvasNSView {
     let view = DrawingCanvasNSView(state: state, acceptsFirstMouse: acceptsFirstMouse)
     view.displayScale = displayScale
     view.canvasBounds = canvasBounds
+    view.interactionBridge = interactionBridge
+    interactionBridge?.drawingCanvas = view
     return view
   }
 
@@ -36,6 +39,160 @@ struct CanvasDrawingView: NSViewRepresentable {
       nsView.invalidateDrawing()
     }
     nsView.acceptsInactiveWindowMouse = acceptsFirstMouse
+    nsView.interactionBridge = interactionBridge
+    interactionBridge?.drawingCanvas = nsView
+  }
+
+  static func dismantleNSView(_ nsView: DrawingCanvasNSView, coordinator _: ()) {
+    if nsView.interactionBridge?.drawingCanvas === nsView {
+      nsView.interactionBridge?.drawingCanvas = nil
+    }
+    nsView.interactionBridge = nil
+  }
+}
+
+/// Keeps the visual SwiftUI canvas and the AppKit drawing view connected without
+/// changing either view's layout ownership. The drawing view remains fit-sized
+/// for memory-efficient rendering of large captures; a sibling proxy uses this
+/// bridge to route events from the zoomed visual footprint back to it.
+final class CanvasInteractionBridge: ObservableObject {
+  weak var drawingCanvas: DrawingCanvasNSView?
+  weak var textEditor: NSView?
+}
+
+/// AppKit hit-testing does not expand an `NSViewRepresentable`'s interactive
+/// frame for SwiftUI's outer `scaleEffect`. This proxy fills the untransformed
+/// viewport and forwards only events whose window point falls inside the
+/// drawing canvas' transformed visual bounds. `DrawingCanvasNSView` then uses
+/// its normal `convert(_:from:)` path, which correctly inverts that transform.
+struct CanvasInteractionProxy: NSViewRepresentable {
+  let bridge: CanvasInteractionBridge
+
+  func makeNSView(context _: Context) -> CanvasInteractionProxyNSView {
+    CanvasInteractionProxyNSView(bridge: bridge)
+  }
+
+  func updateNSView(_ nsView: CanvasInteractionProxyNSView, context _: Context) {
+    nsView.bridge = bridge
+  }
+}
+
+final class CanvasInteractionProxyNSView: NSView {
+  weak var bridge: CanvasInteractionBridge?
+  private var trackingArea: NSTrackingArea?
+  private weak var hoveredView: NSView?
+  private weak var dragTarget: NSView?
+
+  init(bridge: CanvasInteractionBridge) {
+    self.bridge = bridge
+    super.init(frame: .zero)
+  }
+
+  @available(*, unavailable)
+  required init?(coder _: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  override func hitTest(_ point: NSPoint) -> NSView? {
+    interactionTarget(at: point) == nil ? nil : self
+  }
+
+  override func updateTrackingAreas() {
+    if let trackingArea {
+      removeTrackingArea(trackingArea)
+    }
+    let trackingArea = NSTrackingArea(
+      rect: .zero,
+      options: [.activeInKeyWindow, .inVisibleRect, .mouseMoved, .mouseEnteredAndExited],
+      owner: self,
+      userInfo: nil
+    )
+    addTrackingArea(trackingArea)
+    self.trackingArea = trackingArea
+    super.updateTrackingAreas()
+  }
+
+  override func mouseDown(with event: NSEvent) {
+    guard let target = interactionTarget(at: convert(event.locationInWindow, from: nil)) else {
+      return
+    }
+    dragTarget = target
+    target.mouseDown(with: event)
+  }
+
+  override func mouseDragged(with event: NSEvent) {
+    dragTarget?.mouseDragged(with: event)
+  }
+
+  override func mouseUp(with event: NSEvent) {
+    defer { dragTarget = nil }
+    dragTarget?.mouseUp(with: event)
+  }
+
+  override func menu(for event: NSEvent) -> NSMenu? {
+    // The proxy becomes the AppKit hit view, but the SwiftUI context menu is
+    // installed on an ancestor. Preserve the normal responder-chain lookup
+    // instead of silently swallowing right-clicks on zoomed canvas content.
+    var ancestor = superview
+    while let view = ancestor {
+      if let menu = view.menu(for: event) {
+        return menu
+      }
+      ancestor = view.superview
+    }
+    return nil
+  }
+
+  override func mouseEntered(with event: NSEvent) {
+    updateHover(for: event)
+  }
+
+  override func mouseMoved(with event: NSEvent) {
+    updateHover(for: event)
+  }
+
+  override func mouseExited(with event: NSEvent) {
+    hoveredView?.mouseExited(with: event)
+    hoveredView = nil
+  }
+
+  private func updateHover(for event: NSEvent) {
+    let target = interactionTarget(at: convert(event.locationInWindow, from: nil))
+    if hoveredView !== target {
+      hoveredView?.mouseExited(with: event)
+      if let target {
+        target.mouseEntered(with: event)
+      }
+      hoveredView = target
+    } else {
+      target?.mouseMoved(with: event)
+    }
+  }
+
+  /// The point is in this untransformed proxy's local coordinate system. Both
+  /// conversions end in the same window coordinate system, including the
+  /// parent SwiftUI scale and pan transforms applied to the drawing canvas.
+  private func interactionTarget(at point: NSPoint) -> NSView? {
+    // Native inline text input sits above the canvas and must receive pointer
+    // events first for selection and caret placement. Its transformed AppKit
+    // bounds use the same window-coordinate conversion as the canvas.
+    if let textEditor = bridge?.textEditor,
+       textEditor.window === window,
+       visualBounds(of: textEditor).contains(windowPoint(for: point)) {
+      return textEditor
+    }
+
+    guard let canvas = bridge?.drawingCanvas,
+          canvas.window === window else { return nil }
+    return visualBounds(of: canvas).contains(windowPoint(for: point)) ? canvas : nil
+  }
+
+  private func windowPoint(for point: NSPoint) -> NSPoint {
+    convert(point, to: nil)
+  }
+
+  private func visualBounds(of view: NSView) -> NSRect {
+    view.convert(view.bounds, to: nil)
   }
 }
 
@@ -98,6 +255,7 @@ final class DrawingCanvasNSView: NSView {
   var displayScale: CGFloat = 1.0
   var canvasBounds: CGRect = .zero
   var acceptsInactiveWindowMouse: Bool
+  weak var interactionBridge: CanvasInteractionBridge?
   private let shortcutManager = AnnotateShortcutManager.shared
   private var currentPath: [CGPoint] = []
   /// Text-snapped highlighter bars for the in-progress drag. Empty means the
@@ -461,15 +619,26 @@ final class DrawingCanvasNSView: NSView {
 
   // MARK: - Hit Testing
 
+  /// Annotation hit regions are kept in a stable screen-space size. Annotation
+  /// geometry is stored in image coordinates, while the canvas is rendered
+  /// through both the fit scale and the enclosing zoom transform. Using the
+  /// model's historical image-space tolerance directly therefore makes line,
+  /// arrow, path, highlight, callout-tail, and counter hit regions grow with
+  /// zoom (or become unusably small for a scaled-to-fit image).
+  private var annotationHitToleranceInImagePoints: CGFloat {
+    selectionChromeMetrics.imageLength(forScreenPoints: 6)
+  }
+
   /// Find annotation at given point (in image coordinates), topmost first
   private func hitTestAnnotation(at point: CGPoint) -> AnnotationItem? {
+    let hitTolerance = annotationHitToleranceInImagePoints
     for annotation in state.annotations.renderOrdered.reversed() {
       // Quick bounds check first (optimization)
-      let expandedBounds = annotation.selectionBounds.insetBy(dx: -10, dy: -10)
+      let expandedBounds = annotation.selectionBounds.insetBy(dx: -hitTolerance, dy: -hitTolerance)
       guard expandedBounds.contains(point) else { continue }
 
       // Precise hit test
-      if annotation.containsPoint(point) {
+      if annotation.containsPoint(point, baseTolerance: hitTolerance) {
         return annotation
       }
     }
@@ -693,7 +862,11 @@ final class DrawingCanvasNSView: NSView {
     if state.selectedTool == .selection {
       if let annotation = hitTestAnnotation(at: imagePoint) {
         if !state.isAnnotationSelected(annotation.id) {
-          _ = state.selectAnnotation(at: imagePoint)
+          // The annotation has already been hit-tested with the canvas' fit ×
+          // zoom tolerance above. Re-running the model-only hit test here used
+          // a fixed image-space tolerance and could select a different result
+          // than the one under the pointer at high zoom.
+          state.setSelectedAnnotationIds([annotation.id])
         }
         beginAnnotationDrag(anchor: annotation, at: imagePoint)
         return
@@ -1307,12 +1480,19 @@ final class DrawingCanvasNSView: NSView {
 
   private func maxDrawingDistance(from start: CGPoint, to end: CGPoint, path: [CGPoint]) -> CGFloat {
     let points = path + [end]
-    let scale = max(displayScale, 0.0001)
+    // NSEvent locations converted into this view are in the pre-zoom canvas
+    // coordinate space because the outer SwiftUI scale transform is inverted
+    // during hit testing. Convert both the freehand display distance and the
+    // image-space path distance back to physical screen points before applying
+    // the commit threshold.
+    let zoomScale = max(state.zoomLevel, 0.0001)
+    let scale = max(displayScale * zoomScale, 0.0001)
+    let displayDistance = drawingDragDistance * zoomScale
     let imageDistance = points.reduce(CGFloat.zero) { maxDistance, point in
       let distance = hypot(point.x - start.x, point.y - start.y) * scale
       return max(maxDistance, distance)
     }
-    return max(drawingDragDistance, imageDistance)
+    return max(displayDistance, imageDistance)
   }
 
   private func resetDrawingInteraction() {
@@ -1851,13 +2031,15 @@ final class DrawingCanvasNSView: NSView {
       }
 
       // Check if over selected annotation body
-      if annotation.containsPoint(imagePoint) {
+      if annotation.containsPoint(imagePoint, baseTolerance: annotationHitToleranceInImagePoints) {
         NSCursor.openHand.set()
         return
       }
     }
 
-    if state.selectedAnnotations.contains(where: { $0.containsPoint(imagePoint) }) {
+    if state.selectedAnnotations.contains(where: {
+      $0.containsPoint(imagePoint, baseTolerance: annotationHitToleranceInImagePoints)
+    }) {
       NSCursor.openHand.set()
       return
     }

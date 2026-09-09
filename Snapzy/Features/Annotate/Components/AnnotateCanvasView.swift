@@ -66,6 +66,7 @@ struct AnnotateCanvasView: View {
   @State private var isDragOver = false
   @State private var showDropError = false
   @State private var dropErrorMessage = ""
+  @StateObject private var canvasInteractionBridge = CanvasInteractionBridge()
 
   /// Supported image types for drag-drop
   static let supportedImageTypes: [UTType] = [
@@ -313,15 +314,21 @@ struct AnnotateCanvasView: View {
         Group {
           sourceImageLayer(visibleBounds: foregroundBounds, scale: scale)
 
-          CanvasDrawingView(state: state, displayScale: scale, canvasBounds: foregroundBounds)
-            .frame(width: foregroundWidth, height: foregroundHeight)
+          CanvasDrawingView(
+            state: state,
+            displayScale: scale,
+            canvasBounds: foregroundBounds,
+            interactionBridge: canvasInteractionBridge
+          )
+          .frame(width: foregroundWidth, height: foregroundHeight)
 
           // Text editing overlay (when editing a text annotation)
           if state.editingTextAnnotationId != nil {
             TextEditOverlay(
               state: state,
               scale: scale,
-              canvasBounds: foregroundBounds
+              canvasBounds: foregroundBounds,
+              interactionBridge: canvasInteractionBridge
             )
             .frame(width: foregroundWidth, height: foregroundHeight)
             .clipped()
@@ -348,6 +355,22 @@ struct AnnotateCanvasView: View {
       ))
       .scaleEffect(state.zoomLevel)
       .offset(x: state.panOffset.width, y: state.panOffset.height)
+      // AppKit conversion exposes the layout transform, not a Core Animation
+      // presentation transform. Apply zoom atomically so a pointer cannot be
+      // mapped through a completed transform while pixels are mid-animation.
+      .animation(nil, value: state.zoomLevel)
+
+      // Keep AppKit input aligned with the transformed visual footprint. SwiftUI
+      // scales the canvas layer but leaves the representable's hit frame at its
+      // fit size, which otherwise makes portions of a zoomed tall capture inert.
+      // Native text input is registered with the bridge and receives priority
+      // within its transformed bounds. Perspective mockups have non-rectangular
+      // projected bounds, so the rectangular proxy yields to their existing interaction
+      // path rather than accepting clicks in visually empty corners.
+      if !shouldShowMockupTransforms {
+        CanvasInteractionProxy(bridge: canvasInteractionBridge)
+          .frame(width: containerSize.width, height: containerSize.height)
+      }
     }
     .contentShape(Rectangle())
     .contextMenu {

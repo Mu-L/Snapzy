@@ -1185,6 +1185,84 @@ final class AnnotateCoreTests: XCTestCase {
   }
 
   @MainActor
+  func testCanvasZoomedSmallDragCommitsUsingScreenDistance() {
+    let state = makeAnnotateState()
+    state.zoomLevel = 16
+    state.selectedTool = .rectangle
+
+    let canvas = DrawingCanvasNSView(state: state)
+    canvas.frame = CGRect(x: 0, y: 0, width: 400, height: 300)
+    canvas.displayScale = 1
+    canvas.canvasBounds = CGRect(x: 0, y: 0, width: 400, height: 300)
+
+    // The event location is in the pre-zoom canvas space. A quarter-point
+    // local drag is four physical screen points at 16× zoom and should count
+    // as an intentional drawing gesture.
+    let start = CGPoint(x: 100, y: 100)
+    let end = CGPoint(x: 100.25, y: 100.25)
+    canvas.mouseDown(with: makeMouseEvent(type: .leftMouseDown, location: start))
+    canvas.mouseDragged(with: makeMouseEvent(type: .leftMouseDragged, location: end))
+    canvas.mouseUp(with: makeMouseEvent(type: .leftMouseUp, location: end))
+
+    XCTAssertEqual(state.annotations.count, 1)
+    XCTAssertEqual(state.annotations[0].bounds, CGRect(x: 100, y: 100, width: 0.25, height: 0.25))
+  }
+
+  @MainActor
+  func testCanvasZoomNormalizesAnnotationHitToleranceToScreenSpace() {
+    let state = makeAnnotateState()
+    state.zoomLevel = 16
+    let existing = AnnotationItem(
+      type: .line(start: CGPoint(x: 50, y: 100), end: CGPoint(x: 350, y: 100)),
+      bounds: CGRect(x: 50, y: 100, width: 300, height: 0),
+      properties: AnnotationProperties()
+    )
+    state.annotations = [existing]
+    state.selectedTool = .selection
+
+    let canvas = DrawingCanvasNSView(state: state)
+    canvas.frame = CGRect(x: 0, y: 0, width: 400, height: 300)
+    canvas.displayScale = 1
+    canvas.canvasBounds = CGRect(x: 0, y: 0, width: 400, height: 300)
+
+    // Five image points are 80 physical screen points at 16× zoom. The old
+    // fixed six-image-point tolerance incorrectly selected the line here;
+    // hit testing should stay within a roughly six-screen-point target.
+    let point = CGPoint(x: 200, y: 105)
+    canvas.mouseDown(with: makeMouseEvent(type: .leftMouseDown, location: point))
+    canvas.mouseUp(with: makeMouseEvent(type: .leftMouseUp, location: point))
+
+    XCTAssertTrue(state.selectedAnnotationIds.isEmpty)
+  }
+
+  @MainActor
+  func testCanvasFitScaledSelectionDoesNotRerunModelOnlyHitTest() {
+    let state = makeAnnotateState()
+    state.loadImage(NSImage(size: CGSize(width: 4_000, height: 4_000)))
+    let existing = AnnotationItem(
+      type: .line(start: CGPoint(x: 50, y: 100), end: CGPoint(x: 350, y: 100)),
+      bounds: CGRect(x: 50, y: 100, width: 300, height: 0),
+      properties: AnnotationProperties()
+    )
+    state.annotations = [existing]
+    state.selectedTool = .selection
+
+    let canvas = DrawingCanvasNSView(state: state)
+    canvas.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+    canvas.displayScale = 0.05
+    canvas.canvasBounds = CGRect(x: 0, y: 0, width: 4_000, height: 4_000)
+
+    // Eight image points are only 0.4 screen points at this fit scale. The
+    // canvas hit test accepts the visible stroke, then selection must preserve
+    // that result instead of re-running AnnotateState's fixed image tolerance.
+    let point = CGPoint(x: 10, y: 5.4)
+    canvas.mouseDown(with: makeMouseEvent(type: .leftMouseDown, location: point))
+    canvas.mouseUp(with: makeMouseEvent(type: .leftMouseUp, location: point))
+
+    XCTAssertEqual(state.selectedAnnotationIds, [existing.id])
+  }
+
+  @MainActor
   func testCanvasShiftRectangleDragCommitsConstrainedPreviewEndpoint() throws {
     let state = makeAnnotateState()
     state.selectedTool = .rectangle

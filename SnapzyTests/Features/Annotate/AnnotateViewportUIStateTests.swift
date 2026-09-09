@@ -78,6 +78,133 @@ final class AnnotateViewportUIStateTests: XCTestCase {
   }
 
   @MainActor
+  func testTallCanvasAtFiftyTwoPercentHitTestsAcrossItsVisibleWidth() throws {
+    let state = AnnotateState(
+      image: NSImage(size: CGSize(width: 3_546, height: 16_348)),
+      url: URL(fileURLWithPath: "/tmp/tall-annotate-canvas.png")
+    )
+    Self.retainedAnnotateStates.append(state)
+    state.showSidebar = false
+
+    let window = makeAnnotationWindow(state: state)
+    defer {
+      window.close()
+      window.contentView = nil
+    }
+
+    window.setFrame(CGRect(x: 0, y: 0, width: 1_500, height: 900), display: false)
+    window.makeKeyAndOrderFront(nil)
+    drainMainRunLoop()
+
+    state.zoomLevel = state.zoomLevel(forDisplayedPercent: 52)
+    // A scrolling capture is commonly viewed away from the centered origin.
+    // Keep a non-zero pan in this regression case so the proxy must include the
+    // outer translation as well as the outer scale in its visual hit bounds.
+    state.panOffset = CGSize(width: -120, height: 80)
+    drainMainRunLoop()
+
+    let contentView = try XCTUnwrap(window.contentView)
+    let canvas = try XCTUnwrap(findDrawingCanvas(in: contentView))
+    let interactionProxy = try XCTUnwrap(findCanvasInteractionProxy(in: contentView))
+    XCTAssertLessThan(canvas.frame.width, contentView.bounds.width / 2)
+
+    // The 52%-wide image visually spans the viewport, but this point falls
+    // outside the canvas' unzoomed AppKit frame. It must still resolve to the
+    // interaction bridge, which forwards events through the drawing view's
+    // transformed coordinate conversion.
+    let visiblePoint = CGPoint(x: contentView.bounds.maxX - 40, y: contentView.bounds.midY)
+    XCTAssertTrue(
+      isDescendant(contentView.hitTest(visiblePoint), of: interactionProxy),
+      "Zoomed image content outside the unzoomed canvas frame must remain interactive"
+    )
+
+    state.selectedTool = .rectangle
+    let start = contentView.convert(visiblePoint, to: nil)
+    let end = CGPoint(x: start.x - 32, y: start.y - 24)
+    try dispatchMouseEvent(
+      makeMouseEvent(type: .leftMouseDown, location: start, window: window),
+      in: contentView
+    )
+    try dispatchMouseEvent(
+      makeMouseEvent(type: .leftMouseDragged, location: end, window: window),
+      in: contentView
+    )
+    try dispatchMouseEvent(
+      makeMouseEvent(type: .leftMouseUp, location: end, window: window),
+      in: contentView
+    )
+
+    XCTAssertEqual(state.annotations.count, 1)
+    XCTAssertGreaterThan(state.annotations[0].bounds.width, 0)
+    XCTAssertGreaterThan(state.annotations[0].bounds.height, 0)
+
+    // The same bridge must preserve the existing select → move → resize flow,
+    // rather than merely allowing insertion on the formerly inert surface.
+    let originalBounds = state.annotations[0].bounds
+    state.selectedTool = .selection
+    let selectionPoint = windowPoint(
+      for: CGPoint(x: originalBounds.midX, y: originalBounds.midY),
+      on: canvas
+    )
+    let movedPoint = CGPoint(x: selectionPoint.x - 24, y: selectionPoint.y + 18)
+    try dispatchMouseEvent(
+      makeMouseEvent(type: .leftMouseDown, location: selectionPoint, window: window),
+      in: contentView
+    )
+    try dispatchMouseEvent(
+      makeMouseEvent(type: .leftMouseDragged, location: movedPoint, window: window),
+      in: contentView
+    )
+    try dispatchMouseEvent(
+      makeMouseEvent(type: .leftMouseUp, location: movedPoint, window: window),
+      in: contentView
+    )
+
+    let movedBounds = state.annotations[0].bounds
+    XCTAssertEqual(state.selectedAnnotationId, state.annotations[0].id)
+    XCTAssertNotEqual(movedBounds.origin, originalBounds.origin)
+
+    let resizePoint = windowPoint(
+      for: CGPoint(x: movedBounds.maxX, y: movedBounds.maxY),
+      on: canvas
+    )
+    let resizedPoint = CGPoint(x: resizePoint.x + 30, y: resizePoint.y + 20)
+    try dispatchMouseEvent(
+      makeMouseEvent(type: .leftMouseDown, location: resizePoint, window: window),
+      in: contentView
+    )
+    try dispatchMouseEvent(
+      makeMouseEvent(type: .leftMouseDragged, location: resizedPoint, window: window),
+      in: contentView
+    )
+    try dispatchMouseEvent(
+      makeMouseEvent(type: .leftMouseUp, location: resizedPoint, window: window),
+      in: contentView
+    )
+
+    let resizedBounds = state.annotations[0].bounds
+    XCTAssertGreaterThan(resizedBounds.width, movedBounds.width)
+    XCTAssertGreaterThan(resizedBounds.height, movedBounds.height)
+  }
+
+  @MainActor
+  func testPerspectiveMockupDoesNotInstallRectangularInteractionProxy() throws {
+    let state = makeAnnotateStateWithImage()
+    state.editorMode = .mockup
+    state.mockupRotationY = 18
+    let window = makeAnnotationWindow(state: state)
+    defer {
+      window.close()
+      window.contentView = nil
+    }
+
+    window.makeKeyAndOrderFront(nil)
+    drainMainRunLoop()
+
+    XCTAssertNil(findCanvasInteractionProxy(in: try XCTUnwrap(window.contentView)))
+  }
+
+  @MainActor
   func testZoomShortcutOnlyUpdatesTheOriginatingAnnotationWindow() {
     let stateA = makeAnnotateStateWithImage()
     let stateB = makeAnnotateStateWithImage()
@@ -417,5 +544,82 @@ final class AnnotateViewportUIStateTests: XCTestCase {
   @MainActor
   private func drainMainRunLoop() {
     RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.05))
+  }
+
+  @MainActor
+  private func findDrawingCanvas(in view: NSView) -> DrawingCanvasNSView? {
+    if let canvas = view as? DrawingCanvasNSView {
+      return canvas
+    }
+    for subview in view.subviews {
+      if let canvas = findDrawingCanvas(in: subview) {
+        return canvas
+      }
+    }
+    return nil
+  }
+
+  @MainActor
+  private func findCanvasInteractionProxy(in view: NSView) -> CanvasInteractionProxyNSView? {
+    if let proxy = view as? CanvasInteractionProxyNSView {
+      return proxy
+    }
+    for subview in view.subviews {
+      if let proxy = findCanvasInteractionProxy(in: subview) {
+        return proxy
+      }
+    }
+    return nil
+  }
+
+  @MainActor
+  private func isDescendant(_ view: NSView?, of ancestor: NSView) -> Bool {
+    var current = view
+    while let view = current {
+      if view === ancestor {
+        return true
+      }
+      current = view.superview
+    }
+    return false
+  }
+
+  @MainActor
+  private func windowPoint(for imagePoint: CGPoint, on canvas: DrawingCanvasNSView) -> CGPoint {
+    let displayPoint = CGPoint(
+      x: (imagePoint.x - canvas.canvasBounds.minX) * canvas.displayScale,
+      y: (imagePoint.y - canvas.canvasBounds.minY) * canvas.displayScale
+    )
+    return canvas.convert(displayPoint, to: nil)
+  }
+
+  @MainActor
+  private func dispatchMouseEvent(_ event: NSEvent, in contentView: NSView) throws {
+    let point = contentView.convert(event.locationInWindow, from: nil)
+    let target = try XCTUnwrap(contentView.hitTest(point))
+    switch event.type {
+    case .leftMouseDown:
+      target.mouseDown(with: event)
+    case .leftMouseDragged:
+      target.mouseDragged(with: event)
+    case .leftMouseUp:
+      target.mouseUp(with: event)
+    default:
+      XCTFail("Unexpected event type: \(event.type)")
+    }
+  }
+
+  private func makeMouseEvent(type: NSEvent.EventType, location: CGPoint, window: NSWindow) -> NSEvent {
+    NSEvent.mouseEvent(
+      with: type,
+      location: location,
+      modifierFlags: [],
+      timestamp: 0,
+      windowNumber: window.windowNumber,
+      context: nil,
+      eventNumber: 0,
+      clickCount: 1,
+      pressure: 1
+    )!
   }
 }
