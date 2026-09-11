@@ -5,14 +5,14 @@
 //  Unit tests for persisted preferences value models.
 //
 
-import XCTest
 @testable import Snapzy
+import XCTest
 
 @MainActor
 final class PreferencesCoreTests: XCTestCase {
-  // Keep MainActor ObservableObjects alive for the test process; XCTest scope
-  // cleanup can crash while deinitializing them on the macOS 15 back-deployed
-  // Swift concurrency runtime.
+  /// Keep MainActor ObservableObjects alive for the test process; XCTest scope
+  /// cleanup can crash while deinitializing them on the macOS 15 back-deployed
+  /// Swift concurrency runtime.
   private static var retainedNavigationStates: [PreferencesNavigationState] = []
 
   private func makeNavigationState(initialTab: PreferencesTab) -> PreferencesNavigationState {
@@ -191,6 +191,37 @@ final class PreferencesCoreTests: XCTestCase {
     XCTAssertEqual(navigation.selectedTab, .shortcuts)
     XCTAssertFalse(navigation.canGoForward)
     XCTAssertEqual(navigation.backStack, [.general, .capture])
+  }
+
+  func testAboutContributor_propertiesAndCollections() {
+    XCTAssertFalse(AboutContributor.featured.isEmpty)
+    XCTAssertFalse(AboutContributor.all.isEmpty)
+    XCTAssertGreaterThan(AboutContributor.all.count, AboutContributor.featured.count)
+
+    let allUsernames = Set(AboutContributor.all.map(\.username))
+    XCTAssertEqual(
+      allUsernames.count,
+      AboutContributor.all.count,
+      "Usernames must be unique in all-time contributors list"
+    )
+
+    for contributor in AboutContributor.all {
+      XCTAssertFalse(contributor.name.isEmpty)
+      XCTAssertFalse(contributor.username.isEmpty)
+      XCTAssertEqual(contributor.id, contributor.username)
+      XCTAssertEqual(contributor.profileURL.absoluteString, "https://github.com/\(contributor.username)")
+    }
+
+    for featured in AboutContributor.featured {
+      XCTAssertTrue(
+        allUsernames.contains(featured.username),
+        "Featured contributor \(featured.username) should be in all contributors list"
+      )
+    }
+
+    XCTAssertFalse(L10n.PreferencesAbout.seeMore.isEmpty)
+    XCTAssertFalse(L10n.PreferencesAbout.seeLess.isEmpty)
+    XCTAssertNotEqual(L10n.PreferencesAbout.seeMore, L10n.PreferencesAbout.seeLess)
   }
 
   private func makeDefaults(

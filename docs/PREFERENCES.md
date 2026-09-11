@@ -120,6 +120,7 @@ Provider configuration, credentials, expiration, usage stats, and the Cloud Uplo
 ### About (`PreferencesAboutSettingsView.swift`)
 
 - App icon/name/version+build, last update check.
+- Creator attribution ("Made by") & Special thanks section honoring contributors (featured list in default view with inline "See more" expansion to all-time contributors using `PreferencesFlowLayout`, individual GitHub profile links for each contributor, and repository contributors anchor link).
 - Check for Updates + Report a Problem (`CrashReportService.presentAlert()`) — see [UPDATES.md](UPDATES.md).
 - Update channel picker (`UpdateChannelSectionView` / `PreferencesUpdateChannelSection.swift`) — stable/beta.
 - Sponsor links (`SponsorLinks`), website/GitHub/issues link row.
