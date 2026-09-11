@@ -626,10 +626,23 @@ final class KeyboardShortcutManager {
   /// tests can substitute a stub to exercise session gating deterministically.
   var isRecordingSessionActive: () -> Bool = { ScreenRecordingManager.shared.isActive }
 
+  /// Authoritative session-activity truth for the current observation-driven refresh.
+  ///
+  /// `@Published` delivers on `willSet`: the sink fires BEFORE the new value is
+  /// committed to `ScreenRecordingManager.state`, so re-reading
+  /// `ScreenRecordingManager.shared.isActive` from inside the sink observes the
+  /// stale pre-transition value (session kinds stayed unregistered during a
+  /// recording and registered after it ended — issue #517). The publisher's
+  /// emitted value is the committed truth; it is parked here only for the
+  /// duration of the refresh it triggered (synchronous, main-actor confined).
+  private var sessionActivityOverride: Bool?
+
   /// Whether a binding for `kind` should hold a global registration right now.
   /// Session-scoped kinds register only while a recording session is active.
   func shouldRegisterNow(for kind: GlobalShortcutKind) -> Bool {
-    !Self.recordingSessionKinds.contains(kind) || isRecordingSessionActive()
+    guard Self.recordingSessionKinds.contains(kind) else { return true }
+    if let sessionActivityOverride { return sessionActivityOverride }
+    return isRecordingSessionActive()
   }
 
   private var fullscreenHotkeyRef: EventHotKeyRef?
@@ -795,14 +808,22 @@ final class KeyboardShortcutManager {
   /// Re-register shortcuts when a recording session starts or ends so
   /// session-scoped kinds only hold their global hotkeys while a session is
   /// active. `state` is only mutated on the main actor, so the sink fires
-  /// synchronously on main and registration stays in lockstep with the session.
+  /// synchronously on main.
+  ///
+  /// The sink acts on the EMITTED value, not on a fresh property read:
+  /// `@Published` fires on willSet, so `ScreenRecordingManager.shared.isActive`
+  /// would still answer with the previous state here (see
+  /// `sessionActivityOverride`).
   private func observeRecordingSessionState() {
     ScreenRecordingManager.shared.$state
       .map { $0 != .idle }
       .removeDuplicates()
       .dropFirst()
-      .sink { [weak self] _ in
-        self?.refreshShortcutRegistration()
+      .sink { [weak self] isActive in
+        guard let self else { return }
+        self.sessionActivityOverride = isActive
+        self.refreshShortcutRegistration()
+        self.sessionActivityOverride = nil
       }
       .store(in: &cancellables)
   }
@@ -1571,7 +1592,7 @@ final class KeyboardShortcutManager {
   /// combo plus its current disposition (registered / fn-monitor / session-gated /
   /// disabled / cleared / skipped).
   private func logRegistrationAudit() {
-    let sessionActive = isRecordingSessionActive()
+    let sessionActive = sessionActivityOverride ?? isRecordingSessionActive()
     let entries = GlobalShortcutKind.allCases.map { kind -> String in
       guard isShortcutEnabled(for: kind) else { return "\(kind.rawValue)=disabled" }
       guard let config = shortcut(for: kind) else { return "\(kind.rawValue)=cleared" }

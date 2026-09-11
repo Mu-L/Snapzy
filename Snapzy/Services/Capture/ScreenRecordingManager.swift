@@ -606,6 +606,15 @@ final class ScreenRecordingManager: NSObject, ObservableObject {
   var isPaused: Bool { state == .paused }
   var isActive: Bool { state != .idle }
 
+  #if DEBUG
+  /// Test-only hook: drive `state` without a real capture session so tests can
+  /// exercise the real `$state` observation path (KeyboardShortcutManager session
+  /// gating re-registers session shortcuts from this publisher).
+  func setStateForTesting(_ newState: RecordingState) {
+    state = newState
+  }
+  #endif
+
   // MARK: - Recording Components
 
   private var stream: SCStream?
