@@ -23,8 +23,11 @@ final class HistoryFloatingPanel: NSPanel {
     configurePanel()
   }
 
+  private static let defaultLevel: NSWindow.Level = .floating
+  private static let pinnedLevel = NSWindow.Level(rawValue: NSWindow.Level.floating.rawValue + 2)
+
   private func configurePanel() {
-    level = .floating
+    level = Self.defaultLevel
     isFloatingPanel = true
     hidesOnDeactivate = false
     isOpaque = false
@@ -33,6 +36,10 @@ final class HistoryFloatingPanel: NSPanel {
     collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
     acceptsMouseMovedEvents = true
     ignoresMouseEvents = false
+  }
+
+  func updateWindowLevel(isPinned: Bool) {
+    level = isPinned ? Self.pinnedLevel : Self.defaultLevel
   }
 
   override var canBecomeKey: Bool { true }
@@ -73,6 +80,15 @@ final class HistoryFloatingPanel: NSPanel {
       }
 
       NotificationCenter.default.post(name: .historySelectAll, object: self)
+      return true
+    }
+
+    if event.keyCode == 35 && flags == .command {
+      if isTextInputActive {
+        return super.performKeyEquivalent(with: event)
+      }
+
+      HistoryFloatingManager.shared.togglePin()
       return true
     }
 

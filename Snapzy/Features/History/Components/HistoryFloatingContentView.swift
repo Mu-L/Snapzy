@@ -198,6 +198,13 @@ struct HistoryFloatingContentView: View {
         )
 
         controlButton(
+          systemName: manager.isPinned ? "pin.fill" : "pin",
+          help: manager.isPinned ? L10n.PreferencesHistory.unpinPanel : L10n.PreferencesHistory.pinPanel,
+          isActive: manager.isPinned,
+          action: manager.togglePin
+        )
+
+        controlButton(
           systemName: "xmark",
           help: L10n.Common.close,
           action: manager.hide
@@ -371,6 +378,14 @@ struct HistoryFloatingContentView: View {
           action: manager.collapse
         )
       }
+
+      controlButton(
+        systemName: manager.isPinned ? "pin.fill" : "pin",
+        help: manager.isPinned ? L10n.PreferencesHistory.unpinPanel : L10n.PreferencesHistory.pinPanel,
+        size: 34,
+        isActive: manager.isPinned,
+        action: manager.togglePin
+      )
 
       controlButton(
         systemName: "xmark",
@@ -663,15 +678,33 @@ struct HistoryFloatingContentView: View {
     systemName: String,
     help: String,
     size: CGFloat = 30,
+    isActive: Bool = false,
     action: @escaping () -> Void
   ) -> some View {
     Button(action: action) {
       Image(systemName: systemName)
         .font(.system(size: size <= 34 ? 10.5 : 11, weight: .semibold))
         .frame(width: size, height: size)
-        .background(controlButtonBackground)
-        .foregroundColor(.primary.opacity(0.86))
+        .background(
+          isActive
+            ? AnyShapeStyle(Color.accentColor.opacity(colorScheme == .dark ? 0.26 : 0.16))
+            : controlButtonBackground
+        )
+        .foregroundColor(
+          isActive
+            ? Color.accentColor
+            : .primary.opacity(0.86)
+        )
         .clipShape(Circle())
+        .overlay(
+          Circle()
+            .stroke(
+              isActive
+                ? Color.accentColor.opacity(colorScheme == .dark ? 0.45 : 0.35)
+                : Color.clear,
+              lineWidth: 1
+            )
+        )
     }
     .buttonStyle(.plain)
     .help(help)

@@ -95,6 +95,10 @@ final class HistoryFloatingPanelController {
     panel.makeKeyAndOrderFront(nil)
   }
 
+  func updatePinnedState(_ isPinned: Bool) {
+    panel?.updateWindowLevel(isPinned: isPinned)
+  }
+
   private func requestShow(_ presentation: Presentation) {
     pendingHide = false
 
@@ -114,6 +118,7 @@ final class HistoryFloatingPanelController {
     position = presentation.position
     let targetFrame = frame(for: presentation.size, position: presentation.position)
     let panel = HistoryFloatingPanel(contentRect: targetFrame)
+    panel.updateWindowLevel(isPinned: HistoryFloatingManager.shared.isPinned)
     panel.onDidResignKey = { [weak self] in
       self?.handlePanelDidResignKey()
     }

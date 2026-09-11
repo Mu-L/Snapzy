@@ -8852,6 +8852,16 @@ nonisolated enum L10n {
       defaultValue: "Choose where the floating panel appears on screen",
       comment: "History settings description for panel position"
     )
+    static let pinPanel = string(
+      "preferences-history.pin-panel",
+      defaultValue: "Pin Panel (⌘P)",
+      comment: "Tooltip for pinning the history floating panel"
+    )
+    static let unpinPanel = string(
+      "preferences-history.unpin-panel",
+      defaultValue: "Unpin Panel (⌘P)",
+      comment: "Tooltip for unpinning the history floating panel"
+    )
     static let displaySection = string(
       "preferences-history.display-section",
       defaultValue: "Display",
