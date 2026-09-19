@@ -4,6 +4,16 @@ All notable changes to Snapzy will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.32.2] - 2026-09-19
+
+### Bug Fixes
+- Merge pull request #588 from duongductrong/fix/quicklook-pdf-capture (c7800536)
+-  Fixed Quick Look previews in filtered captures (5e124ff6)
+
+### Contributors
+- @duongductrong
+- @github-actions[bot]
+
 ## [1.32.1] - 2026-09-18
 
 ### Features
