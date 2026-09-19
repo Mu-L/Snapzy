@@ -111,6 +111,7 @@ final class ScreenCaptureManager: ObservableObject {
     let minimumOutputScaleFactor: CGFloat
     let assumedFullPixelSize: CGSize
     let displayID: CGDirectDisplayID
+    let quickLookCaptures: [ImmediateQuickLookCapture]
   }
 
   struct PreparedAreaCaptureResult {
@@ -434,6 +435,7 @@ final class ScreenCaptureManager: ObservableObject {
     excludeOwnApplication: Bool = false,
     prefetchedContentTask: ShareableContentPrefetchTask? = nil
   ) async throws -> [CGDirectDisplayID: FrozenDisplaySnapshot] {
+    let quickLookCaptures = WindowSelectionQueryService.captureImmediateQuickLookCaptures()
     let includeDesktopWindows = excludeDesktopIcons || excludeDesktopWidgets
     let content = try await loadShareableContent(
       prefetchedContentTask: prefetchedContentTask,
@@ -450,7 +452,7 @@ final class ScreenCaptureManager: ObservableObject {
       throw CaptureError.noDisplayFound
     }
 
-    let snapshots = try await withThrowingTaskGroup(
+    var snapshots = try await withThrowingTaskGroup(
       of: (CGDirectDisplayID, FrozenDisplaySnapshot).self,
       returning: [CGDirectDisplayID: FrozenDisplaySnapshot].self
     ) { group in
@@ -508,6 +510,28 @@ final class ScreenCaptureManager: ObservableObject {
       return result
     }
 
+    if !quickLookCaptures.isEmpty {
+      for (displayID, snapshot) in snapshots {
+        let restoredImage = Self.imageByCompositingQuickLookWindows(
+          baseImage: snapshot.image,
+          screenFrame: snapshot.screenFrame,
+          captures: quickLookCaptures.filter { $0.displayID == displayID }
+        )
+        guard restoredImage !== snapshot.image else { continue }
+        snapshots[displayID] = FrozenDisplaySnapshot(
+          displayID: snapshot.displayID,
+          screenFrame: snapshot.screenFrame,
+          scaleFactor: Self.imageScaleFactor(
+            for: restoredImage,
+            screenFrame: snapshot.screenFrame,
+            fallback: snapshot.scaleFactor
+          ),
+          colorSpaceName: snapshot.colorSpaceName,
+          image: restoredImage
+        )
+      }
+    }
+
     guard !snapshots.isEmpty else {
       throw CaptureError.noDisplayFound
     }
@@ -546,6 +570,7 @@ final class ScreenCaptureManager: ObservableObject {
     DiagnosticLogger.shared.log(.info, .capture, "Fullscreen capture started")
 
     do {
+      let quickLookCaptures = WindowSelectionQueryService.captureImmediateQuickLookCaptures()
       let includeDesktopWindows = excludeDesktopIcons || excludeDesktopWidgets
       let content = try await loadShareableContent(
         prefetchedContentTask: prefetchedContentTask,
@@ -595,9 +620,14 @@ final class ScreenCaptureManager: ObservableObject {
       }
 
       // Capture the image (compat: SCScreenshotManager requires macOS 14+)
-      let image = try await Self.captureImageCompat(
+      let capturedImage = try await Self.captureImageCompat(
         contentFilter: filter,
         configuration: config
+      )
+      let image = Self.imageByCompositingQuickLookWindows(
+        baseImage: capturedImage,
+        screenFrame: captureFrame,
+        captures: quickLookCaptures.filter { $0.displayID == display.displayID }
       )
 
       DiagnosticLogger.shared.log(
@@ -677,6 +707,9 @@ final class ScreenCaptureManager: ObservableObject {
       )
       let content: SCShareableContent?
       let targets: [DisplayCaptureTarget]
+      let quickLookCaptures = canUseFastPath
+        ? []
+        : WindowSelectionQueryService.captureImmediateQuickLookCaptures()
 
       if canUseFastPath {
         content = nil
@@ -711,7 +744,8 @@ final class ScreenCaptureManager: ObservableObject {
         showCursor: showCursor,
         excludeDesktopIcons: excludeDesktopIcons,
         excludeDesktopWidgets: excludeDesktopWidgets,
-        excludeOwnApplication: excludeOwnApplication
+        excludeOwnApplication: excludeOwnApplication,
+        quickLookCaptures: quickLookCaptures
       )
       let acquisitionDurationMs = Int(Date().timeIntervalSince(acquisitionStartedAt) * 1000)
 
@@ -836,7 +870,8 @@ final class ScreenCaptureManager: ObservableObject {
     showCursor: Bool,
     excludeDesktopIcons: Bool,
     excludeDesktopWidgets: Bool,
-    excludeOwnApplication: Bool
+    excludeOwnApplication: Bool,
+    quickLookCaptures: [ImmediateQuickLookCapture]
   ) async -> [DisplayPayloadResult] {
     if canUseFastPath {
       return await captureDisplayPayloadsUsingCoreGraphics(targets: targets)
@@ -887,13 +922,18 @@ final class ScreenCaptureManager: ObservableObject {
               contentFilter: request.filter,
               configuration: request.configuration
             )
+            let restoredImage = Self.imageByCompositingQuickLookWindows(
+              baseImage: image,
+              screenFrame: request.screenFrame,
+              captures: quickLookCaptures.filter { $0.displayID == request.displayID }
+            )
             let imageScaleFactor = Self.imageScaleFactor(
-              for: image,
+              for: restoredImage,
               screenFrame: request.screenFrame,
               fallback: request.captureScale
             )
             let promotedImage = Self.promoteScreenshotImageIfNeeded(
-              image,
+              restoredImage,
               logicalSize: request.screenFrame.size,
               sourceScaleFactor: imageScaleFactor,
               minimumOutputScaleFactor: request.outputScale,
@@ -1452,6 +1492,62 @@ final class ScreenCaptureManager: ObservableObject {
 
   // MARK: - Utility
 
+  /// Restore Quick Look previews that ScreenCaptureKit omits from a filtered
+  /// display capture. The retained crop and the destination use top-left image
+  /// pixel coordinates, matching the coordinate convention used by the area
+  /// crop code.
+  nonisolated static func imageByCompositingQuickLookWindows(
+    baseImage: CGImage,
+    screenFrame: CGRect,
+    captures: [ImmediateQuickLookCapture]
+  ) -> CGImage {
+    guard
+      !captures.isEmpty,
+      screenFrame.width > 0,
+      screenFrame.height > 0,
+      baseImage.width > 0,
+      baseImage.height > 0
+    else {
+      return baseImage
+    }
+
+    let baseBounds = CGRect(x: 0, y: 0, width: baseImage.width, height: baseImage.height)
+    let scaleX = CGFloat(baseImage.width) / screenFrame.width
+    let scaleY = CGFloat(baseImage.height) / screenFrame.height
+    let colorSpace = baseImage.colorSpace ?? CGColorSpaceCreateDeviceRGB()
+    guard let context = CGContext(
+      data: nil,
+      width: baseImage.width,
+      height: baseImage.height,
+      bitsPerComponent: 8,
+      bytesPerRow: 0,
+      space: colorSpace,
+      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+    ) else {
+      return baseImage
+    }
+
+    context.interpolationQuality = .none
+    context.draw(baseImage, in: baseBounds)
+
+    for capture in captures where capture.frame.intersects(screenFrame) {
+      let frame = capture.frame.intersection(screenFrame)
+      guard !frame.isEmpty else { continue }
+
+      let destinationRect = CGRect(
+        x: (frame.minX - screenFrame.minX) * scaleX,
+        y: (screenFrame.maxY - frame.maxY) * scaleY,
+        width: frame.width * scaleX,
+        height: frame.height * scaleY
+      ).integral.intersection(baseBounds)
+      guard !destinationRect.isEmpty else { continue }
+
+      context.draw(capture.image, in: destinationRect)
+    }
+
+    return context.makeImage() ?? baseImage
+  }
+
   /// Get list of available displays
   func getAvailableDisplays() async -> [SCDisplay] {
     do {
@@ -1530,14 +1626,19 @@ final class ScreenCaptureManager: ObservableObject {
       contentFilter: context.contentFilter,
       configuration: context.configuration
     )
+    let restoredImage = Self.imageByCompositingQuickLookWindows(
+      baseImage: fullImage,
+      screenFrame: context.screenFrame,
+      captures: context.quickLookCaptures
+    )
 
     // Reconcile assumed-vs-actual: SCStream can return an image whose pixel
     // size differs from `screenFrame × assumedScale` on scaled HiDPI displays.
     // Trusting the pre-computed `pixelCropRect` against the actual image clamps
     // the crop to upper-left when the image is smaller than assumed (issue #308).
     let reconciled = Self.reconciledPixelCrop(
-      fullImagePixelWidth: fullImage.width,
-      fullImagePixelHeight: fullImage.height,
+      fullImagePixelWidth: restoredImage.width,
+      fullImagePixelHeight: restoredImage.height,
       screenFrame: context.screenFrame,
       logicalSourceRect: context.sourceRect,
       logicalCropSize: context.logicalCropSize,
@@ -1547,8 +1648,8 @@ final class ScreenCaptureManager: ObservableObject {
     let assumedWidth = Int(context.assumedFullPixelSize.width.rounded())
     let assumedHeight = Int(context.assumedFullPixelSize.height.rounded())
     let mismatch =
-      abs(fullImage.width - assumedWidth) > 1 ||
-      abs(fullImage.height - assumedHeight) > 1
+      abs(restoredImage.width - assumedWidth) > 1 ||
+      abs(restoredImage.height - assumedHeight) > 1
 
     DiagnosticLogger.shared.log(
       .debug,
@@ -1556,7 +1657,7 @@ final class ScreenCaptureManager: ObservableObject {
       "Area captured image",
       context: [
         "displayID": "\(context.displayID)",
-        "actualFull": "\(fullImage.width)x\(fullImage.height)",
+        "actualFull": "\(restoredImage.width)x\(restoredImage.height)",
         "assumedFull": "\(assumedWidth)x\(assumedHeight)",
         "actualScale": String(format: "%.3f", Double(reconciled.actualScale)),
         "assumedScale": String(format: "%.3f", Double(context.scaleFactor)),
@@ -1571,7 +1672,7 @@ final class ScreenCaptureManager: ObservableObject {
         "#308 dimension mismatch (actual≠assumed) — rebuilt crop from actual pixels",
         context: [
           "displayID": "\(context.displayID)",
-          "actualFull": "\(fullImage.width)x\(fullImage.height)",
+          "actualFull": "\(restoredImage.width)x\(restoredImage.height)",
           "assumedFull": "\(assumedWidth)x\(assumedHeight)",
           "actualScale": String(format: "%.3f", Double(reconciled.actualScale)),
         ]
@@ -1581,16 +1682,16 @@ final class ScreenCaptureManager: ObservableObject {
     let fullImageBounds = CGRect(
       x: 0,
       y: 0,
-      width: fullImage.width,
-      height: fullImage.height
+      width: restoredImage.width,
+      height: restoredImage.height
     )
     let capturedImage: CGImage?
     if reconciled.pixelCrop.integral == fullImageBounds.integral {
-      capturedImage = fullImage
+      capturedImage = restoredImage
     } else if reconciled.pixelCrop.isEmpty {
       capturedImage = nil
     } else {
-      capturedImage = fullImage.cropping(to: reconciled.pixelCrop)
+      capturedImage = restoredImage.cropping(to: reconciled.pixelCrop)
     }
 
     guard let capturedImage else {
@@ -1802,6 +1903,7 @@ final class ScreenCaptureManager: ObservableObject {
     prefetchedContentTask: ShareableContentPrefetchTask?,
     minimumOutputScaleFactor: CGFloat = ScreenCaptureManager.minimumScreenshotOutputScaleFactor
   ) async throws -> PreparedAreaCaptureContext {
+    let quickLookCaptures = WindowSelectionQueryService.captureImmediateQuickLookCaptures()
     let includeDesktopWindows = excludeDesktopIcons || excludeDesktopWidgets
     let content = try await loadShareableContent(
       prefetchedContentTask: prefetchedContentTask,
@@ -1922,7 +2024,8 @@ final class ScreenCaptureManager: ObservableObject {
       logicalCropSize: alignedRect.size,
       minimumOutputScaleFactor: outputScale,
       assumedFullPixelSize: CGSize(width: fullCaptureWidth, height: fullCaptureHeight),
-      displayID: targetDisplayID
+      displayID: targetDisplayID,
+      quickLookCaptures: quickLookCaptures
     )
 
     DiagnosticLogger.shared.log(

@@ -73,6 +73,20 @@ nonisolated struct ImmediateMenuBarPopoverCapture {
   let scaleFactor: CGFloat
 }
 
+/// A Quick Look preview captured before Snapzy presents selection UI.
+///
+/// Quick Look is rendered by `QuickLookUIService` as a transient WindowServer
+/// window. ScreenCaptureKit can enumerate that window but may report it as
+/// off-screen, so the preview must be retained from a display snapshot and
+/// restored over the filtered capture.
+nonisolated struct ImmediateQuickLookCapture {
+  let windowID: CGWindowID
+  let displayID: CGDirectDisplayID
+  let frame: CGRect
+  let image: CGImage
+  let scaleFactor: CGFloat
+}
+
 nonisolated enum AreaSelectionTarget: Equatable {
   case rect(CGRect)
   case window(WindowCaptureTarget)
