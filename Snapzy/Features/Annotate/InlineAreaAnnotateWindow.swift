@@ -1878,6 +1878,17 @@ private struct InlineAreaPropertiesBar: View {
           }
 
           if state.quickPropertiesSupportsTextBackground {
+            InlineAreaSegmentedPicker(
+              title: L10n.AnnotateUI.textStyle,
+              items: TextPresentation.allCases,
+              selection: Binding(
+                get: { state.quickTextPresentation },
+                set: { state.setTextPresentation($0) }
+              ),
+              icon: { $0.icon },
+              tooltip: \.helpText
+            )
+
             InlineAreaColorControl(
               title: L10n.Common.background,
               selectedColor: state.quickTextBackgroundBinding,
