@@ -1109,7 +1109,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
       let selectionContext: CaptureContext = switch selection.target {
       case .window(let target):
         CaptureContext.fromPID(target.ownerPID, windowTitle: target.title)
-      case .rect:
+      case .rect, .display:
         context
       }
 
@@ -1129,7 +1129,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
         )
 
         switch selection.target {
-        case .rect:
+        case .rect, .display:
           DiagnosticLogger.shared.log(
             .info,
             .capture,
@@ -1331,7 +1331,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
       let selectionContext: CaptureContext = switch selection.target {
       case .window(let target):
         CaptureContext.fromPID(target.ownerPID, windowTitle: target.title)
-      case .rect:
+      case .rect, .display:
         context
       }
 
@@ -1368,7 +1368,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
 
         let result: CaptureResult
         switch selection.target {
-        case .rect:
+        case .rect, .display:
           result = await self.captureLiveRectFromSnapshots(
             selection: selection,
             snapshots: mouseUpSnapshots,
@@ -2226,6 +2226,14 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
                   hiddenWindowSession.restore()
                 }
               )
+            case .display:
+              RecordingCoordinator.shared.showToolbar(
+                for: selection.rect,
+                captureMode: .fullscreen,
+                onSessionEnded: {
+                  hiddenWindowSession.restore()
+                }
+              )
             case .window(let target):
               RecordingCoordinator.shared.showToolbar(
                 for: selection.rect,
@@ -2775,7 +2783,7 @@ final class ScreenCaptureViewModel: ObservableObject, KeyboardShortcutDelegate {
           let selectionContext: CaptureContext = switch selection.target {
           case .window(let target):
             CaptureContext.fromPID(target.ownerPID, windowTitle: target.title)
-          case .rect:
+          case .rect, .display:
             captureContext
           }
 
